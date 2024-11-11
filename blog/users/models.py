@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MinValueValidator, MaxValueValidator, URLValidator
 from django.db import models
 
 class User(AbstractUser):
@@ -8,10 +9,25 @@ class User(AbstractUser):
 
 
 class Client(User):   
-    age = models.PositiveIntegerField(null=False)
-    weight = models.FloatField(null=False)  # Weight in kilograms
-    height = models.FloatField(null=False)  # Height in centimeters
-    goal_weight = models.FloatField(null=False)  # Desired weight
+    age = models.PositiveIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(120)],
+        null=False
+    )
+    weight = models.FloatField(
+        validators=[MinValueValidator(1.0), MaxValueValidator(500.0)],
+        null=False,
+        help_text="Weight in kilograms"
+    )
+    height = models.FloatField(
+        validators=[MinValueValidator(30.0), MaxValueValidator(300.0)],
+        null=False,
+        help_text="Height in centimeters"
+    )
+    goal_weight = models.FloatField(
+        validators=[MinValueValidator(1.0), MaxValueValidator(500.0)],
+        null=False,
+        help_text="Desired weight in kilograms"
+    )
     activity_level = models.CharField(
         max_length=20,
         choices=[
@@ -24,9 +40,14 @@ class Client(User):
         null=True,
         blank=True
     )
-    profile_picture = models.TextField(default="https://e7.pngegg.com/pngimages/946/556/png-clipart-computer-icons-login-user-profile-client-smiley-%D0%B7%D0%BD%D0%B0%D1%87%D0%BA%D0%B8.png")  # Profile picture
+    profile_picture = models.TextField(
+        default="https://e7.pngegg.com/pngimages/946/556/png-clipart-computer-icons-login-user-profile-client-smiley-%D0%B7%D0%BD%D0%B0%D1%87%D0%BA%D0%B8.png",
+        validators=[URLValidator()],
+        help_text="URL of the profile picture"
+    )
     program_nutrition = models.FileField(upload_to='nutrition_programs/', null=True, blank=True)
     program_fitness = models.FileField(upload_to='fitness_programs/', null=True, blank=True)
+
     class Meta:
         verbose_name = "Client"
         verbose_name_plural = "Clients"
@@ -37,10 +58,15 @@ class Client(User):
     
     
 class CoachNutritionist(User):
-    photo=models.TextField(default="https://www.shareicon.net/data/256x256/2016/07/21/799323_user_512x512.png")
+    photo = models.TextField(
+        default="https://www.shareicon.net/data/256x256/2016/07/21/799323_user_512x512.png",
+        validators=[URLValidator()],
+        help_text="URL of the profile photo"
+    )
     certifications = models.TextField(blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
-    client_id=models.ManyToManyField(Client)
+    client_id = models.ManyToManyField(Client)
+
     class Meta:
         verbose_name = "Coach/Nutritionist"
         verbose_name_plural = "Coaches/Nutritionists"

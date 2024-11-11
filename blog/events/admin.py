@@ -23,7 +23,7 @@ class EventAdmin(admin.ModelAdmin):
             'fields': ('title', 'description', 'date', 'location', 'organizer')
         }),
         ('Détails numériques', {
-            'fields': ('max_participants', 'price')
+            'fields': ('max_participants', 'price','image')
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at')
