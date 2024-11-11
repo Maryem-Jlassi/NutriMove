@@ -1,0 +1,61 @@
+{% extends 'produits/base.html' %}
+
+{% load static %}
+
+{% block content %}
+<style>
+    body {
+        background-image: url('{% static "images/background.jpg" %}');  
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    #delete-product-container {
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 5px;
+        max-width: 600px;
+        margin: 50px auto;
+        text-align: center;
+    }
+
+    .btn-custom {
+        margin-right: 10px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+</style>
+
+<div id="delete-product-container">
+    <h1>Supprimer le produit</h1>
+    <p>Êtes-vous sûr de vouloir supprimer le produit "{{ object.nom }}" ?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger btn-custom">Confirmer la suppression</button>
+        <a href="{% url 'produit_list' %}" class="btn btn-secondary btn-custom">Annuler</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un Participant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #28a745;
+        }
+        form {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .error {
+            color: #dc3545;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            border-radius: 4px;
+            padding: 10px 15px;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <h2>Ajouter un Participant</h2>
+
+    {% if form.non_field_errors %}
+        <div class="error">
+            {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Client Selection -->
+        <div>
+            <label for="client">Client:</label>
+            <select name="client" id="client" required>
+                <option value="">Sélectionnez un client</option>
+                {% for client in clients %}
+                    <option value="{{ client.id }}" {% if form.client.value == client.id|stringformat:"s" %}selected{% endif %}>
+                        {{ client }}
+                    </option>
+                {% endfor %}
+            </select>
+            {{ form.client.errors }}
+        </div>
+
+        <div>
+            <label for="ticket_number">Numéro de Ticket:</label>
+            {{ form.ticket_number }}
+            {{ form.ticket_number.errors }}
+        </div>
+
+        <div>
+            <label for="seat_number">Nombre de place:</label>
+            {{ form.seat_number }}
+            {{ form.seat_number.errors }}
+        </div>
+
+        <div>
+            <label for="comments">Commentaires:</label>
+            {{ form.comments }}
+            {{ form.comments.errors }}
+        </div>
+
+        <button type="submit">Ajouter Participant</button>
+    </form>
+
+    <!-- Bouton de retour stylisé -->
+    <a href="{% url 'participant_list' event.id %}" class="btn-secondary">Retour à la liste des participants</a>
+</body>
+</html>

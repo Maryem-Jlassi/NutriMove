@@ -1,0 +1,102 @@
+{% extends 'produits/base.html' %}
+
+{% load static %}
+
+{% block title %}{% if object %}Modifier le produit{% else %}Ajouter un produit{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background-image: url('{% static "images/background.jpg" %}');  
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    .container {
+        background-color: rgba(255, 255, 255, 0.9); /* Couleur de fond blanche semi-transparente pour le formulaire */
+        padding: 20px; /* Ajout de remplissage */
+        border-radius: 8px; /* Arrondi des coins */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre pour le conteneur */
+    }
+</style>
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4">{% if object %}Modifier le produit{% else %}Ajouter un produit{% endif %}</h1>
+    
+    <form method="post" enctype="multipart/form-data" class="bg-light p-4 rounded shadow">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="id_reference">Référence:</label>
+            {{ form.reference }}  {# Directement rendre le champ de référence #}
+        </div>
+
+        <div class="form-group">
+            <label for="id_nom">Nom:</label>
+            {{ form.nom }}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_description">Description:</label>
+            {{ form.description }}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_categorie">Catégorie:</label>
+            {{ form.categorie }}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_prix">Prix:</label>
+            {{ form.prix }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_quantite_disponible">Quantité disponible:</label>
+            {{ form.quantite_disponible }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_image">Image:</label>
+            {{ form.image }}
+            {% if object and object.image %}
+                <div>
+                    <img src="{{ object.image.url }}" alt="{{ object.nom }}" style="max-width: 200px; max-height: 200px; margin-top: 10px;">
+                </div>
+            {% else %}
+                <p>Aucune image associée.</p>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_marque">Marque:</label>
+            {{ form.marque }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_poids">Poids (kg):</label>
+            {{ form.poids }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_dimensions">Dimensions:</label>
+            {{ form.dimensions }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_en_stock">En stock:</label>
+            {{ form.en_stock }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_note_moyenne">Note moyenne:</label>
+            {{ form.note_moyenne }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+    </form>
+    
+    <a href="{% url 'produit_list' %}" class="btn btn-secondary mt-2">Annuler</a>
+</div>
+{% endblock %}

@@ -1,0 +1,135 @@
+{% extends 'fitness/index.html' %}
+<!-- In any template across your project -->
+{% load js_files %}  <!-- Load the custom tag -->
+
+{% load_js_files "js" as js_files %}  <!-- Get all JS files in the "js" directory -->
+
+{% for js_file in js_files %}
+    <script src="{{ js_file }}"></script>  <!-- Dynamically include each JS file -->
+{% endfor %}
+{% load static %}
+
+{% block title %}Liste des Produits{% endblock %}
+
+{% block content %}
+<style>
+    
+
+    #product-container {
+    background-color: #f8f9fa; /* Light gray background for a clean feel */
+    padding: 30px 15px; /* Slight padding for mobile responsiveness */
+    border-radius: 15px; /* Increased border radius for modern look */
+    box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.1); /* Softer shadow for depth */
+    transition: all 0.3s ease-in-out; /* Smooth transition for hover effects */
+}
+
+#product-container .card {
+    border: none; /* Remove card border for a cleaner design */
+    border-radius: 12px; /* Soft rounded corners for each card */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    transition: all 0.3s ease-in-out; /* Smooth hover effect */
+}
+
+#product-container .card:hover {
+    transform: translateY(-8px); /* Slightly stronger hover effect */
+    box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.2); /* Enhanced shadow */
+}
+
+.card-img-top {
+    border-radius: 10px 10px 0 0; /* Rounded corners on top image */
+    object-fit: cover; /* Ensures images cover the area nicely */
+    max-height: 250px; /* Set maximum height for uniformity */
+    width: 100%; /* Ensure image fits well in the container */
+}
+
+.card-body {
+    padding: 20px; /* Extra space inside the card body */
+}
+
+.card-title {
+    font-size: 1.25rem; /* Slightly larger font size for titles */
+    font-weight: bold; /* Make titles stand out */
+    margin-bottom: 15px; /* Add space below titles */
+}
+
+.card-subtitle {
+    font-size: 1.125rem; /* Subtle difference for prices */
+    color: #007bff; /* Highlight price with a blue shade */
+    font-weight: 600;
+}
+
+.card-text {
+    font-size: 1rem; /* Standard font size for descriptions */
+    color: #555; /* Darker text for better readability */
+}
+
+.card-text strong {
+    color: #000; /* Strong emphasis on labels */
+}
+
+.card-body a {
+    text-transform: uppercase; /* Capitalize button text */
+    font-weight: bold; /* Bold text for clarity */
+    padding: 10px 20px; /* Larger clickable area */
+    font-size: 0.9rem; /* Slightly smaller button text */
+    border-radius: 30px; /* Rounded buttons */
+}
+
+.card-body a.btn-info {
+    background-color: #28a745; /* Green color for "Details" button */
+    color: white; /* White text */
+    border: none; /* Remove button border */
+    text-align: center; /* Center button text */
+    transition: background-color 0.3s; /* Button hover transition */
+}
+
+.card-body a.btn-info:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+/* Responsive design for different screen sizes */
+@media (max-width: 767px) {
+    #product-container {
+        padding: 15px; /* Less padding for mobile */
+    }
+
+    .col-md-4 {
+        flex: 0 0 100%; /* Stack products on small screens */
+        max-width: 100%;
+    }
+}
+
+
+</style>
+
+<h1 class="text-center mb-4">Liste des Produits</h1>
+
+
+<div class="row" id="product-container">
+    {% for produit in produits %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                {% if produit.image %}
+                    <img src="{{ produit.image.url }}" class="card-img-top" alt="{{ produit.nom }}" onerror="this.onerror=null; this.src='{% static 'images/default-product.jpg' %}';">
+                {% else %}
+                    <img src="{% static 'images/default-product.jpg' %}" class="card-img-top" alt="{{ produit.nom }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ produit.nom }}</h5>
+                    <h6 class="card-subtitle mb-2">{{ produit.prix }} €</h6>
+                    <p class="card-text"><strong>Description:</strong> {{ produit.description }}</p>
+                    <p class="card-text"><strong>Catégorie:</strong> {{ produit.categorie }}</p>
+                    <p class="card-text"><strong>Quantité disponible:</strong> {{ produit.quantite_disponible }}</p>
+                    <p class="card-text"><strong>Marque:</strong> {{ produit.marque }}</p>
+                    <p class="card-text"><strong>En stock:</strong> {{ produit.en_stock|yesno:"Oui,Non" }}</p>
+                    <p class="card-text"><strong>Note moyenne:</strong> {{ produit.note_moyenne }}</p>
+                    <a href="{% url 'produit_detail' produit.reference %}" class="btn btn-info">Détails</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p class="text-center">Aucun produit disponible.</p>
+    {% endfor %}
+</div>
+
+{% endblock %}

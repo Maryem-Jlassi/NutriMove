@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Événements</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #ff6b4d;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 12px; /* Plus d'espacement pour le confort visuel */
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9; /* Couleur de fond pour les lignes paires */
+        }
+        td:last-child {
+            text-align: right; /* Alignement à droite pour le prix */
+        }
+    </style>
+</head>
+<body>
+    <h1>Liste des Événements</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Description</th>
+                <th>Date</th>
+                <th>Lieu</th>
+                <th>Organisateur</th>
+                <th>Prix</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in events %}
+            <tr>
+                <td>{{ event.title }}</td>
+                <td>{{ event.description }}</td>
+                <td>{{ event.date|date:"d/m/Y H:i" }}</td>
+                <td>{{ event.location }}</td>
+                <td>{{ event.organizer }}</td>
+                <td>{{ event.price }} €</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">Aucun événement trouvé.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
