@@ -1,5 +1,9 @@
 git add dashboard/
 git commit -m "front commited"
+
+git add blog/
+git commit -m "back commited"
+
 git push origin main
 
 
