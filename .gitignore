@@ -1,4 +1,7 @@
 git add dashboard/
+git commit -m "front commited"
+git push origin main
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
