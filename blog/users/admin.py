@@ -107,7 +107,7 @@ class ClientAdmin(admin.ModelAdmin):
             'fields': ('email', 'username', 'password')
         }),
         ('Personal Information', {
-            'fields': ('first_name', 'last_name', 'age', 'weight', 'height', 'goal_weight', 'activity_level', 'profile_picture')
+            'fields': ('first_name', 'last_name','sexe', 'age', 'weight', 'height', 'goal_weight', 'activity_level', 'profile_picture')
         }),
         ('Programs', {
             'fields': ('program_nutrition', 'program_fitness')
@@ -116,7 +116,7 @@ class ClientAdmin(admin.ModelAdmin):
             'fields': ('is_active', 'is_client')
         }),
     )
-    list_display = ('username', 'email', 'age', 'weight', 'height', 'goal_weight', 'activity_level', 'is_active','program_fitness','program_nutrition')
+    list_display = ('username', 'email','sexe' ,'age', 'weight', 'height', 'goal_weight', 'activity_level', 'is_active','program_fitness','program_nutrition')
 
     # Allows using the password in plain text in the edit form
     add_fieldsets = (

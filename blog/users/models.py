@@ -1,14 +1,16 @@
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator, MaxValueValidator, URLValidator
 from django.db import models
-
+import uuid
+from django.utils import timezone
 class User(AbstractUser):
     is_client = models.BooleanField(default=False)
     is_coach = models.BooleanField(default=False)
     is_nutritionist = models.BooleanField(default=False)
 
 
-class Client(User):   
+class Client(User): 
+    sexe=models.CharField(max_length=50,null=False)  
     age = models.PositiveIntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(120)],
         null=False
@@ -70,3 +72,14 @@ class CoachNutritionist(User):
     class Meta:
         verbose_name = "Coach/Nutritionist"
         verbose_name_plural = "Coaches/Nutritionists"
+        
+        
+class PasswordResetToken(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+
+    def is_expired(self):
+        return timezone.now() > self.expires_at
+

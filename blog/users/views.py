@@ -5,15 +5,151 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model, authenticate
 from .models import Client, CoachNutritionist
-from .serializers import ClientSerializer, CoachNutriSerializer
+from .serializers import *
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.shortcuts import get_list_or_404,get_object_or_404
 import os
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.db.models import Avg, Count
+from django.http import JsonResponse
+
+from django.core.mail import send_mail
+from django.utils import timezone
+from .models import PasswordResetToken
+from django.core.exceptions import PermissionDenied
+
 class IsSuperUser(BasePermission):
     def has_permission(self, request, view):
         return request.user and request.user.is_superuser
+
+@api_view(['POST'])
+def request_password_reset(request):
+    """Allow coaches or nutritionists to request a password reset for a client."""
+    
+    print(request.data)
+    serializer = PasswordResetRequestSerializer(data=request.data)
+    
+    if serializer.is_valid():
+        identifier = serializer.validated_data['identifier']
+        print(f"Received identifier: {identifier}")
+        
+        # Attempt to find the user by identifier (email or username)
+        try:
+            # Try fetching the user by email
+            user = get_user_model().objects.get(email=identifier)
+        except get_user_model().DoesNotExist:
+            # If not found by email, try fetching by username (if it's allowed to use a username)
+            try:
+                user = get_user_model().objects.get(username=identifier)
+            except get_user_model().DoesNotExist:
+                return Response({"error": "User does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Create a password reset token
+        token = PasswordResetToken.objects.create(
+            user=user,
+            expires_at=timezone.now() + timezone.timedelta(hours=1)  # Token valid for 1 hour
+        )
+        
+        # Generate the reset link using the token
+        reset_link = f"http://127.0.0.1:3000/users/reset-password/{token.token}/"  # React app running on port 3000
+
+        # Email content
+        subject = "Password Reset Request"
+        message = f"Hello {user.first_name},\n\n" \
+                  f"You requested a password reset for your account. To reset your password, " \
+                  f"click the link below:\n\n{reset_link}\n\n" \
+                  f"If you did not request a password reset, please ignore this email.\n\n" \
+                  f"Best regards,\nYour Support Team"
+        
+        print("Before sending email")
+        # Send email with the password reset link
+        try:
+            send_mail(
+                subject,
+                message,
+                'no-reply@yourdomain.com',  # Sender email
+                [identifier],  # Recipient (email)
+                fail_silently=False,
+            )
+            print("Email sent successfully")
+        except Exception as e:
+            print(f"Error sending email: {e}")
+            return Response({"error": "Failed to send email."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({"message": "Password reset link has been sent to the user's email."}, status=status.HTTP_200_OK)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def reset_password(request):
+    """Handle password reset confirmations."""
+    serializer = PasswordResetConfirmSerializer(data=request.data)
+    if serializer.is_valid():
+        token_value = serializer.validated_data['token']
+        new_password = serializer.validated_data['new_password']
+
+        try:
+            token = PasswordResetToken.objects.get(token=token_value)
+            if token.is_expired():
+                return Response({"error": "Token has expired."}, status=status.HTTP_400_BAD_REQUEST)
+
+            user = token.user
+            user.set_password(new_password)
+            user.save()
+
+            # Delete the token after it is used
+            token.delete()
+
+            return Response({"message": "Password has been reset successfully."}, status=status.HTTP_200_OK)
+        except PasswordResetToken.DoesNotExist:
+            return Response({"error": "Invalid token."}, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@permission_classes([IsAuthenticated])
+@api_view(['GET'])
+def statistics_view(request):
+    # Statistiques des clients
+    user = request.user
+
+    if not (user.is_coach or user.is_nutritionist):
+        return Response({"error": "User is not authorized to access this data"}, status=403)
+
+    try:
+        coach_nutritionist = CoachNutritionist.objects.get(pk=user.pk)
+    except CoachNutritionist.DoesNotExist:
+        return Response({"error": "No associated Coach/Nutritionist found for the user"}, status=404)
+
+    clients = coach_nutritionist.client_id.all()
+
+    total_clients = clients.count()
+    avg_age = clients.aggregate(Avg('age'))['age__avg'] or 'N/A'
+    avg_weight = clients.aggregate(Avg('weight'))['weight__avg'] or 'N/A'
+    avg_height = clients.aggregate(Avg('height'))['height__avg'] or 'N/A'
+    avg_goal_weight = clients.aggregate(Avg('goal_weight'))['goal_weight__avg'] or 'N/A'
+
+    program_fitness_count = clients.filter(program_fitness__isnull=False).exclude(program_fitness="").distinct().count()
+    program_nutrition_count = clients.filter(program_nutrition__isnull=False).exclude(program_nutrition="").distinct().count()
+
+    # Comptage des sexes
+    male_count = clients.filter(sexe='Homme').count()
+    female_count = clients.filter(sexe='Femme').count()
+
+    data = {
+        'total_clients': total_clients,
+        'avg_age': avg_age,
+        'avg_weight': avg_weight,
+        'avg_height': avg_height,
+        'avg_goal_weight': avg_goal_weight,
+        'program_fitness_count': program_fitness_count,
+        'program_nutrition_count': program_nutrition_count,
+        'male_count': male_count,
+        'female_count': female_count
+    }
+
+    return Response(data)
 
 @api_view(['GET'])
 def get_coach_clients(request, coach_id):
@@ -131,6 +267,7 @@ def get_client_profile(request):
                 'profile_picture': client_instance.profile_picture,
                 'program_nutrition': client_instance.program_nutrition.url,
                 'program_fitness': client_instance.program_fitness.url ,
+                'sexe':client_instance.sexe,
             })
         except Client.DoesNotExist:
             # Handle the case where the user is not found in the Client table

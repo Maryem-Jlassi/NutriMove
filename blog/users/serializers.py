@@ -58,3 +58,17 @@ class ClientSerializer(serializers.ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    identifier = serializers.CharField()
+
+    def validate_identifier(self, value):
+        # Try to get the user by username or email
+        user = User.objects.filter(username=value).first() or User.objects.filter(email=value).first()
+        if not user:
+            raise serializers.ValidationError("No user with this identifier found.")
+        return value
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    token = serializers.UUIDField()
+    new_password = serializers.CharField(write_only=True)

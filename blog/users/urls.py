@@ -10,6 +10,11 @@ urlpatterns = [
     path('delete-coach-nutri/<int:CoachNutriId>/', delete_CoachNutri, name='delete_coach_nutri'),
     path('update-coach-nutri/<int:CoachNutriId>/', update_CoachNutri, name='update_coach_nutri'),
     path('all-coach-nutri/', view_CoachNutri, name='view_coach_nutri'),
+    path('stats/', statistics_view, name='stats'),
+    path('request-password-reset/', request_password_reset, name='request_password_reset'),
+    path('reset-password/', reset_password, name='reset_password'),
+
+    
     
     # Coach-related URLs
     path('profile-coach/', get_user_profile, name='coach_profile'),
