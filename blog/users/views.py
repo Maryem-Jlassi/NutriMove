@@ -13,11 +13,13 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.db.models import Avg, Count
 from django.http import JsonResponse
-
+from django.shortcuts import render
 from django.core.mail import send_mail
 from django.utils import timezone
 from .models import PasswordResetToken
 from django.core.exceptions import PermissionDenied
+
+
 
 class IsSuperUser(BasePermission):
     def has_permission(self, request, view):
@@ -244,6 +246,8 @@ def get_client_profile(request):
     user_profile = {
         'userId': user.id,
         'username': user.username,
+        'first_name':user.first_name,
+        'last_name':user.last_name,
         'email': user.email,
         'is_active': user.is_active,
         'is_staff': user.is_staff,
@@ -265,8 +269,6 @@ def get_client_profile(request):
                 'goal_weight': client_instance.goal_weight,
                 'activity_level': client_instance.activity_level,
                 'profile_picture': client_instance.profile_picture,
-                'program_nutrition': client_instance.program_nutrition.url,
-                'program_fitness': client_instance.program_fitness.url ,
                 'sexe':client_instance.sexe,
             })
         except Client.DoesNotExist:

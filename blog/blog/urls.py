@@ -22,7 +22,7 @@ from events import views  # Import the views from your events app
 from django.shortcuts import render
 
 urlpatterns = [
-    path('', lambda request: render(request, 'fitnesss/index.html'), name='indexx'),
+    path('', lambda request: render(request, 'index.html'), name='indexx'),
     path('admin/', admin.site.urls),
     path('blog/',include('theblog.urls')),
     path('produit/',include('produits.urls')),

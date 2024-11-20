@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <!-- Breadcrumb Section Begin -->
+    <section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb-bg.jpg' %}">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="breadcrumb-text">
+                        <h2>Your Program</h2>
+                        <div class="bt-option">
+                            <a href="/">Home</a>
+                            <span>Services</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Breadcrumb Section End -->
+
+    <!-- Class Timetable Section Begin -->
+    <section class="class-timetable-section spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    
+                </div>
+                <div class="col-lg-6">
+                    <div class="table-controls">
+                        <ul>
+                            <li class="active" data-tsfilter="all">All programs</li>
+                            <li data-tsfilter="fitness">Fitness</li>
+                            <li data-tsfilter="nutrition">Nutrition</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Fitness Program Table -->
+            <div class="row fitness-table" style="display: none;">
+                <div class="col-lg-12">
+                    <div class="class-timetable">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Day</th>
+                                    <th>Type of Program</th>
+                                    <th>Exercises</th>
+                                    <th>Sets/Reps</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="fitness">
+                                    <td>Monday</td>
+                                    <td>Push</td>
+                                    <td>Bench Press<br>Push-ups</td>
+                                    <td>4x12<br>3x15</td>
+                                </tr>
+                                <tr class="fitness">
+                                    <td>Tuesday</td>
+                                    <td>Pull</td>
+                                    <td>Deadlift<br>Pull-ups</td>
+                                    <td>4x8<br>3x10</td>
+                                </tr>
+                                <tr class="fitness">
+                                    <td>Wednesday</td>
+                                    <td>Legs</td>
+                                    <td>Squats<br>Lunges</td>
+                                    <td>4x10<br>3x12</td>
+                                </tr>
+                                <tr class="fitness">
+                                    <td>Thursday</td>
+                                    <td>Push</td>
+                                    <td>Overhead Press<br>Dips</td>
+                                    <td>4x12<br>3x10</td>
+                                </tr>
+                                <tr class="fitness">
+                                    <td>Friday</td>
+                                    <td>Pull</td>
+                                    <td>Barbell Rows<br>Chin-ups</td>
+                                    <td>4x8<br>3x12</td>
+                                </tr>
+                                <tr class="fitness">
+                                    <td>Saturday</td>
+                                    <td>Legs</td>
+                                    <td>Leg Press<br>Calf Raises</td>
+                                    <td>4x10<br>3x20</td>
+                                </tr>
+                                <tr class="fitness">
+                                    <td>Sunday</td>
+                                    <td>Rest</td>
+                                    <td>Relax and Recover</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <!-- Nutrition Program Table -->
+            <div class="row nutrition-table" style="display: none;">
+                <div class="col-lg-12">
+                    <div class="class-timetable">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Day</th>
+                                    <th>Meal Times</th>
+                                    <th>Meal</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Monday -->
+                                <tr class="nutrition">
+                                    <td rowspan="3">Monday</td>
+                                    <td>Breakfast</td>
+                                    <td>Oats with protein shake</td>
+                                    <td>1 serving</td>
+                                </tr>
+                                <tr class="nutrition">
+                                    <td style="color: #ffffff;">Lunch</td>
+                                    <td>Chicken salad with quinoa</td>
+                                    <td>1 plate</td>
+                                </tr>
+                                <tr class="nutrition">
+                                    <td style="color: #ffffff;">Dinner</td>
+                                    <td>Grilled salmon with steamed veggies</td>
+                                    <td>1 plate</td>
+                                </tr>
+            
+                                <!-- Tuesday -->
+                                <tr class="nutrition">
+                                    <td rowspan="3">Tuesday</td>
+                                    <td>Breakfast</td>
+                                    <td>Greek yogurt with almonds</td>
+                                    <td>1 bowl</td>
+                                </tr>
+                                <tr class="nutrition">
+                                    <td style="color: #ffffff;">Dinner</td>
+                                    <td>Turkey and avocado wrap</td>
+                                    <td>1 wrap</td>
+                                </tr>
+                                <tr class="nutrition">
+                                    <td style="color: #ffffff;">Dinner</td>
+                                    <td>Grilled chicken with quinoa and veggies</td>
+                                    <td>1 plate</td>
+                                </tr>
+            
+                                <!-- Wednesday -->
+                                <tr class="nutrition">
+                                    <td rowspan="3">Wednesday</td>
+                                    <td>Breakfast</td>
+                                    <td>Scrambled eggs with avocado toast</td>
+                                    <td>1 plate</td>
+                                </tr>
+                                <tr class="nutrition">
+                                    <td style="color: #ffffff;">Dinner</td>
+                                    <td>Salmon salad with mixed greens</td>
+                                    <td>1 plate</td>
+                                </tr>
+                                <tr class="nutrition">
+                                    <td style="color: #ffffff;">Dinner</td>
+                                    <td>Steak with roasted vegetables</td>
+                                    <td>1 plate</td>
+                                </tr>
+            
+                                <!-- Thursday -->
+                                <tr class="nutrition">
+                                    <td rowspan="3">Thursday</td>
+                                    <td>Breakfast</td>
+                                    <td>Protein pancakes with berries</td>
+                                    <td>1 serving</td>
+                                </tr>
+                                <tr class="nutrition">
+                                    <td style="color: #ffffff;">Dinner</td>
+                                    <td>Chicken Caesar salad</td>
+                                    <td>1 plate</td>
+                                </tr>
+                                <tr class="nutrition">
+                                    <td style="color: #ffffff;">Dinner</td>
+                                    <td>Baked tilapia with steamed broccoli</td>
+                                    <td>1 plate</td>
+                                </tr>
+            
+                                <!-- Friday -->
+                                <tr class="nutrition">
+                                    <td rowspan="3">Friday</td>
+                                    <td>Breakfast</td>
+                                    <td>Overnight oats with chia seeds</td>
+                                    <td>1 serving</td>
+                                </tr>
+                                <tr class="nutrition">
+                                    <td style="color: #ffffff;">Dinner</td>
+                                    <td>Grilled chicken with sweet potatoes</td>
+                                    <td>1 plate</td>
+                                </tr>
+                                <tr class="nutrition">
+                                    <td style="color: #ffffff;">Dinner</td>
+                                    <td>Vegetable stir-fry with tofu</td>
+                                    <td>1 plate</td>
+                                </tr>
+            
+                                <!-- Saturday -->
+                                <tr class="nutrition">
+                                    <td rowspan="3">Saturday</td>
+                                    <td>Breakfast</td>
+                                    <td>Scrambled eggs with spinach</td>
+                                    <td>1 plate</td>
+                                </tr>
+                                <tr class="nutrition">
+                                    <td style="color: #ffffff;">Dinner</td>
+                                    <td>Chicken and avocado salad</td>
+                                    <td>1 bowl</td>
+                                </tr>
+                                <tr class="nutrition">
+                                    <td style="color: #ffffff;">Dinner</td>
+                                    <td>Grilled shrimp with quinoa</td>
+                                    <td>1 plate</td>
+                                </tr>
+            
+                                <!-- Sunday -->
+                                <tr class="nutrition">
+                                    <td rowspan="3">Sunday</td>
+                                    <td>Breakfast</td>
+                                    <td>Greek yogurt with honey and walnuts</td>
+                                    <td>1 bowl</td>
+                                </tr>
+                                <tr class="nutrition">
+                                    <td style="color: #ffffff;">Dinner</td>
+                                    <td>Grilled chicken wrap with hummus</td>
+                                    <td>1 wrap</td>
+                                </tr>
+                                <tr class="nutrition">
+                                    <td style="color: #ffffff;">Dinner</td>
+                                    <td>Cheat Meal: Pizza or dessert</td>
+                                    <td>1 serving</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+
+        </div>
+    </section>
+    <!-- Class Timetable Section End -->
+
+    <!-- Script for Filtering Timetable Rows -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.table-controls li');
+            const fitnessTable = document.querySelector('.fitness-table');
+            const nutritionTable = document.querySelector('.nutrition-table');
+
+            // Initially display both tables
+            fitnessTable.style.display = 'block';
+            nutritionTable.style.display = 'block';
+
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const filter = this.getAttribute('data-tsfilter');
+
+                    // Hide both tables initially
+                    fitnessTable.style.display = 'none';
+                    nutritionTable.style.display = 'none';
+
+                    // Show the appropriate table based on the filter
+                    if (filter === 'all') {
+                        fitnessTable.style.display = 'block';
+                        nutritionTable.style.display = 'block';
+                    } else if (filter === 'fitness') {
+                        fitnessTable.style.display = 'block';
+                    } else if (filter === 'nutrition') {
+                        nutritionTable.style.display = 'block';
+                    }
+
+                    // Update active class for buttons
+                    buttons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+{% endblock %}

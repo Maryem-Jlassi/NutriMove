@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import homeview, article_detail_view,CreateViewcomment,DeleteViewConference,UpdateViewcomment
+from .views import *
 from django.views.generic import RedirectView
 urlpatterns = [
     #path('', RedirectView.as_view(url='/home/', permanent=False)),  # Redirects root URL to /home
@@ -8,4 +8,6 @@ urlpatterns = [
     path('create/<int:pk>/',CreateViewcomment.as_view(),name="comment_create"),
     path('delete/<int:pk>/',DeleteViewConference.as_view(),name="comment_delete"),
     path('update/<int:pk>/',UpdateViewcomment.as_view(), name='comment_update'),
+    path('class-timetable/',program,name="class-timetable"),
+
 ]
