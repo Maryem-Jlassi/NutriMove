@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Validation Information</title>
+</head>
+<body>
+    <h1>Event: {{ event.title }}</h1>
+
+    <!-- Formulaire pour entrer le numéro de carte -->
+    <form method="get">
+        <label for="card_number">Enter Card Number:</label>
+        <input type="text" id="card_number" name="card_number" placeholder="Enter Card Number" required>
+        <button type="submit">Validate Card</button>
+    </form>
+
+    {% if card_number %}
+        <h3>Card Information:</h3>
+        <ul>
+            <li>Card Number: {{ card_number }}</li>
+            <li>Valid: {% if is_valid %}Yes{% else %}No{% endif %}</li>
+        </ul>
+    {% elif error %}
+        <p>Error: {{ error }}</p>
+    {% endif %}
+</body>
+</html>

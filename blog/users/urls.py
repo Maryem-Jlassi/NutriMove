@@ -30,11 +30,25 @@ urlpatterns = [
     path('update-client/<int:ClientId>/', update_Client, name='update_client'),
     path('all-client/', view_Client, name='view_client'),
     path('profile-client/', get_client_profile, name='client_profile'),
-
+    path('update-profile-client/', update_client_profile, name='update_client_profile'),
+    path('profile-client/program_fitness/', 
+         program_client_view, 
+         {'program_type': 'fitness'}, 
+         name='program_fitness'),
+    path('profile-client/program_nutrition/', 
+         program_client_view, 
+         {'program_type': 'nutrition'}, 
+         name='program_nutrition'),
+    
     # Authentication URLs
     path('login-coach/', login, name='coach_login'),
     path('logout-coach/', logout_view, name='coach_logout'),
     path('login-client/', login, name='client_login'),
     path('logout-client/', logout_view, name='client_logout'),
     path('register-client/', register_client, name='client_register'),
+    
+    
+    
+    path('class-timetable/',program,name="class-timetable"),
+
 ]

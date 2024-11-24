@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un Participant</title>
+    <!-- Lien vers Bootstrap 4 et Font Awesome -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #007bff;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center text-primary mb-4">Ajouter un Participant</h1>
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    <ul>
+                        {% for field, errors in form.errors.items %}
+                            <li><strong>{{ field|capfirst }}:</strong> {{ errors|join:", " }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <!-- Client -->
+            <div class="form-group">
+                <label for="client"><i class="fas fa-user"></i> Client:</label>
+                <select class="form-control" id="client" name="client" required>
+                    <option value="">Sélectionnez un client</option>
+                    {% for client in clients %}
+                        <option value="{{ client.id }}" {% if form.client.value == client.id|stringformat:"s" %}selected{% endif %}>
+                            {{ client.first_name }} {{ client.last_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                {% if form.client.errors %}
+                    <div class="error-message">
+                        {% for error in form.client.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Numéro de Ticket -->
+            <div class="form-group">
+                <label for="ticket_number"><i class="fas fa-ticket-alt"></i> Numéro de Ticket:</label>
+                {{ form.ticket_number }}
+                {% if form.ticket_number.errors %}
+                    <div class="error-message">
+                        {% for error in form.ticket_number.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Statut du Paiement -->
+            <div class="form-group">
+                <label for="payment_status"><i class="fas fa-credit-card"></i> Statut du Paiement:</label>
+                <select class="form-control" id="payment_status" name="payment_status" required>
+                    <option value="">Sélectionnez le statut</option>
+                    <option value="Paid" {% if form.payment_status.value == "Paid" %}selected{% endif %}>Payé</option>
+                    <option value="Pending" {% if form.payment_status.value == "Pending" %}selected{% endif %}>En Attente</option>
+                </select>
+                {% if form.payment_status.errors %}
+                    <div class="error-message">
+                        {% for error in form.payment_status.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Commentaires -->
+            <div class="form-group">
+                <label for="comments"><i class="fas fa-comment-alt"></i> Commentaires:</label>
+                {{ form.comments }}
+                {% if form.comments.errors %}
+                    <div class="error-message">
+                        {% for error in form.comments.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Niveau de Forme -->
+            <div class="form-group">
+                <label for="fitness_level"><i class="fas fa-dumbbell"></i> Niveau de Forme:</label>
+                {{ form.fitness_level }}
+                {% if form.fitness_level.errors %}
+                    <div class="error-message">
+                        {% for error in form.fitness_level.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Boutons de Soumission -->
+            <button type="submit" class="btn btn-primary btn-block">Ajouter Participant</button>
+            <button type="button" class="btn btn-secondary btn-block" onclick="window.location.href='{% url 'participant_list' event.id %}'">Retour à la liste des participants</button>
+        </form>
+    </div>
+
+    <!-- Lien vers les scripts Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+        <!-- Affichage des messages de notification -->
+        {% if messages %}
+            <div class="alert-container">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <h2>Confirmation de la suppression</h2>
+        <p>Êtes-vous sûr de vouloir supprimer le participant <strong>{{ participant.client.name }}</strong> ? Cette action est irréversible.</p>
+
+        <!-- Formulaire de confirmation de suppression -->
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Confirmer la suppression</button>
+            <a href="{% url 'participant_list' event_id=event_id %}" class="btn btn-secondary">Annuler</a>
+        </form>
+    </div>
+
+{% endblock %}

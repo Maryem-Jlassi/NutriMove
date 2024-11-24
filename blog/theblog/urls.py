@@ -8,6 +8,5 @@ urlpatterns = [
     path('create/<int:pk>/',CreateViewcomment.as_view(),name="comment_create"),
     path('delete/<int:pk>/',DeleteViewConference.as_view(),name="comment_delete"),
     path('update/<int:pk>/',UpdateViewcomment.as_view(), name='comment_update'),
-    path('class-timetable/',program,name="class-timetable"),
 
 ]

@@ -13,8 +13,7 @@ class homeview(ListView):
     model =post
     template_name="home.html"
 
-def program(request):
-    return render(request, 'class-timetable.html')
+
 
 class article_detail_view(DetailView):
     model=post

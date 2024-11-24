@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Envoyer un Email</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-group i {
+            font-size: 18px;
+            color: #28a745;
+        }
+
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            background-color: #f9f9f9;
+            transition: all 0.3s ease;
+        }
+
+        input[type="email"]:focus,
+        textarea:focus {
+            border-color: #28a745;
+            background-color: #fff;
+            box-shadow: 0 0 8px rgba(40, 167, 69, 0.2);
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .success-message {
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Envoyer un Email</h2>
+
+        <!-- Display any error or success messages -->
+        {% if messages %}
+            <div>
+                {% for message in messages %}
+                    <p class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Champ pour le client (choix d'un client) -->
+            <div class="form-group">
+                <label for="id_client"><i class="fas fa-user"></i> Choisir un client</label>
+                {{ form.client }} <!-- Champ pour sélectionner un client -->
+            </div>
+
+            <!-- Champ pour le titre -->
+            <div class="form-group">
+                <label for="id_title"><i class="fas fa-heading"></i> Titre du message</label>
+                {{ form.title }} <!-- Champ pour saisir le titre -->
+            </div>
+
+            <!-- Champ pour le message -->
+            <div class="form-group">
+                <label for="id_message"><i class="fas fa-comment-alt"></i> Message</label>
+                {{ form.message }}  <!-- Le champ où vous écrivez le message -->
+            </div>
+
+            <button type="submit"><i class="fas fa-paper-plane"></i> Envoyer l'Email</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -6,9 +6,10 @@ from rest_framework.response import Response
 from django.contrib.auth import get_user_model, authenticate
 from .models import Client, CoachNutritionist
 from .serializers import *
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.conf import settings
 from django.shortcuts import get_list_or_404,get_object_or_404
-import os
+from pathlib import Path
+import csv
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.db.models import Avg, Count
@@ -19,7 +20,8 @@ from django.utils import timezone
 from .models import PasswordResetToken
 from django.core.exceptions import PermissionDenied
 
-
+def program(request):
+    return render(request, 'class-timetable.html')
 
 class IsSuperUser(BasePermission):
     def has_permission(self, request, view):
@@ -270,6 +272,8 @@ def get_client_profile(request):
                 'activity_level': client_instance.activity_level,
                 'profile_picture': client_instance.profile_picture,
                 'sexe':client_instance.sexe,
+                'program_fitness': client_instance.program_fitness.url if client_instance.program_fitness else None,
+                'program_nutrition': client_instance.program_nutrition.url if client_instance.program_nutrition else None,
             })
         except Client.DoesNotExist:
             # Handle the case where the user is not found in the Client table
@@ -284,7 +288,24 @@ def get_client_profile(request):
                 'program_fitness': '',
             })
     return Response(user_profile)
+def get_client_programs(request, client_id):
+    # Get the Client object by client_id
+    client = get_object_or_404(Client, id=client_id)
+    
+    # Retrieve the file URLs for the nutrition and fitness programs
+    program_data = {
+        'program_fitness': {
+            'name': client.program_fitness.name if client.program_fitness else None,
+            'file_url': client.program_fitness.url if client.program_fitness else None
+        },
+        'program_nutrition': {
+            'name': client.program_nutrition.name if client.program_nutrition else None,
+            'file_url': client.program_nutrition.url if client.program_nutrition else None
+        }
+    }
 
+    # Return a JSON response with the program data
+    return JsonResponse(program_data)
 # Inscription d'un client
 @api_view(['POST'])
 def register_client(request):
@@ -311,12 +332,6 @@ def login(request):
 
     if not user.is_active:
         return Response({'error': 'User account is inactive.'}, status=status.HTTP_403_FORBIDDEN)
-
-    # Check user role based on URL and user type
-    #if 'login-client' in request.path and not (user.is_client or user.is_superuser):
-        #return Response({'error': 'Only clients or superusers can access this login.'}, status=status.HTTP_403_FORBIDDEN)
-    #elif 'login-coach' in request.path and not (user.is_coach or user.is_nutritionist or user.is_superuser):
-        #return Response({'error': 'Only coaches, nutritionists, or superusers can access this login.'}, status=status.HTTP_403_FORBIDDEN)
 
     # Generate tokens
     refresh = RefreshToken.for_user(user)
@@ -486,3 +501,110 @@ def update_Client(request, ClientId):
     except Client.DoesNotExist:
         return Response({'error': 'Client not found.'}, status=status.HTTP_404_NOT_FOUND)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_client_profile(request):
+    print(request.data)
+    try:
+        client = Client.objects.get(pk=request.user.pk)  # Assuming `id` is tied to the logged-in user
+    except Client.DoesNotExist:
+        return Response({"error": "Client not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = ClientSerializer(client, data=request.data, partial=True)  # Allow partial updates
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+def read_fitness_csv():
+    """Read and parse the fitness program CSV file."""
+    fitness_data = []
+    current_day_data = None
+    
+    csv_path = Path(settings.BASE_DIR) / 'data' / 'fitness_program.csv'
+    
+    with open(csv_path, newline='', encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile, delimiter=';')
+        for row in reader:
+            if row['Day']:  # New day entry
+                if current_day_data:
+                    fitness_data.append(current_day_data)
+                current_day_data = {
+                    'day': row['Day'],
+                    'type': row['Type of Program'],
+                    'exercises': []
+                }
+            
+            if row['Exercises']:  # Add exercise to current day
+                current_day_data['exercises'].append({
+                    'name': row['Exercises'],
+                    'sets_reps': row['Sets/Reps']
+                })
+                
+        # Add the last day's data
+        if current_day_data:
+            fitness_data.append(current_day_data)
+            
+    return fitness_data
+
+def read_nutrition_csv():
+    """Read and parse the nutrition program CSV file."""
+    nutrition_data = []
+    current_day_data = None
+    
+    csv_path = Path(settings.BASE_DIR) / 'data' / 'nutrition_program.csv'
+    
+    with open(csv_path, newline='', encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile, delimiter=';')
+        for row in reader:
+            if row['Day']:  # New day entry
+                if current_day_data:
+                    nutrition_data.append(current_day_data)
+                current_day_data = {
+                    'day': row['Day'],
+                    'meals': []
+                }
+            
+            if row['Meal']:  # Add meal to current day
+                current_day_data['meals'].append({
+                    'time': row['Meal Times'],
+                    'meal': row['Meal'],
+                    'quantity': row['Quantity']
+                })
+                
+        # Add the last day's data
+        if current_day_data:
+            nutrition_data.append(current_day_data)
+            
+    return nutrition_data
+
+def program_client_view(request, program_type=None):
+    """
+    View function to display either fitness or nutrition program based on URL.
+    """
+    context = {
+        'show_fitness': True,
+        'show_nutrition': True
+    }
+    
+    try:
+        if program_type == 'fitness':
+            context['fitness_program'] = read_fitness_csv()
+            context['show_nutrition'] = False
+        elif program_type == 'nutrition':
+            context['nutrition_program'] = read_nutrition_csv()
+            context['show_fitness'] = False
+        else:
+            # Load both programs for the main view
+            context['fitness_program'] = read_fitness_csv()
+            context['nutrition_program'] = read_nutrition_csv()
+            
+    except FileNotFoundError:
+        context['error'] = 'Program data files not found'
+    except Exception as e:
+        context['error'] = f'Error loading program data: {str(e)}'
+    
+    return render(request, 'profile-client/program.html', context)

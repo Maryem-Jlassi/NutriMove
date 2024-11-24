@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .event-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .event-image {
+            max-width: 100%;
+            height: auto;
+        }
+        .event-info {
+            margin-top: 20px;
+        }
+        .event-info p {
+            font-size: 18px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="event-container">
+        <h1>{{ event.title }}</h1>
+
+        <!-- Afficher l'image de l'événement -->
+        <img src="data:image/png;base64, {{ event.base64_image }}" alt="Event Image" class="event-image">
+
+        <div class="event-info">
+            <p><strong>Description:</strong> {{ event.Description }}</p>
+            <p><strong>Date:</strong> {{ event.Date }}</p>
+            <p><strong>Location:</strong> {{ event.Location }}</p>
+            <p><strong>Price:</strong> {{ event.Price }}</p>
+            <p><strong>Max Participants:</strong> {{ event.Max Participants }}</p>
+            <p><strong>Remaining Participants:</strong> {{ event.Remaining Participants }}</p>
+            <p><strong>Created At:</strong> {{ event.Created At }}</p>
+            <p><strong>Updated At:</strong> {{ event.Updated At }}</p>
+        </div>
+    </div>
+</body>
+</html>

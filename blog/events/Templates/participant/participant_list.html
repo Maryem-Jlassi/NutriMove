@@ -1,0 +1,293 @@
+
+
+{% load static %}
+
+{% block head %}
+<!-- Css Styles -->
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'css/flaticon.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'css/barfiller.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'css/slicknav.min.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+{% endblock %}
+
+{% block content %}
+<style>
+    /* Classes Section */
+    .participants-section {
+        background: #151515;
+        padding: 90px 0;
+        color: #ffffff;
+    }
+
+    .section-title {
+        text-align: center;
+        margin-bottom: 45px;
+    }
+
+    .section-title h2 {
+        color: #f36100;
+        font-size: 40px;
+        font-weight: 700;
+        margin-bottom: 25px;
+    }
+
+    /* Filtres et Contrôles */
+    .filter-container {
+        background: #1c1c1c;
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 40px;
+    }
+
+    .filter-container form {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .filter-container select {
+        background: #2d2d2d;
+        border: 1px solid #333;
+        color: #ffffff;
+        padding: 12px 25px;
+        border-radius: 30px;
+        font-size: 14px;
+        min-width: 200px;
+    }
+
+    .filter-container select option {
+        background: #2d2d2d;
+        color: #ffffff;
+    }
+
+    /* Table Styles */
+    .table {
+        background: #1c1c1c;
+        color: #ffffff;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .table th {
+        background: #2d2d2d;
+        color: #f36100;
+        border-color: #333;
+        font-weight: 600;
+        padding: 15px;
+    }
+
+    .table td {
+        border-color: #333;
+        padding: 15px;
+        vertical-align: middle;
+    }
+
+    /* Boutons et Actions */
+    .btn {
+        border-radius: 30px;
+        font-weight: 600;
+        padding: 10px 25px;
+        transition: all 0.3s;
+    }
+
+    .btn-primary {
+        background: #f36100;
+        border-color: #f36100;
+    }
+
+    .btn-primary:hover {
+        background: #e65c00;
+        border-color: #e65c00;
+    }
+
+    .btn-success {
+        background: #28a745;
+        border-color: #28a745;
+    }
+
+    .actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .actions button {
+        width: auto;
+        white-space: nowrap;
+    }
+
+    /* États et Indicateurs */
+    .tick-green {
+        color: #28a745;
+    }
+
+    .tick-red {
+        color: #dc3545;
+    }
+
+    .remaining-capacity {
+        background: #2d2d2d;
+        color: #f36100;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        font-size: 1.2em;
+        margin: 30px 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .filter-container form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-container select {
+            width: 100%;
+        }
+
+        .actions {
+            flex-direction: column;
+        }
+
+        .actions button {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+    }
+
+    /* Message vide */
+    .empty-message {
+        color: #666;
+        text-align: center;
+        padding: 30px;
+    }
+
+    /* Container principal */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    /* Bouton retour */
+    .back-button-container {
+        text-align: center;
+        margin-top: 30px;
+    }
+</style>
+
+<section class="participants-section">
+    <div class="container">
+        <div class="section-title">
+            <h2>Participants pour {{ event.title }}</h2>
+        </div>
+
+        <!-- Filtres -->
+        <div class="filter-container">
+            <form method="get" action="{% url 'participant_list' event.id %}">
+                <select name="payment_status" id="payment_status">
+                    <option value="">Filtrer par statut de paiement</option>
+                    <option value="True" {% if request.GET.payment_status == 'True' %}selected{% endif %}>Payé</option>
+                    <option value="False" {% if request.GET.payment_status == 'False' %}selected{% endif %}>Non payé</option>
+                </select>
+                
+                <select name="fitness_level" id="fitness_level">
+                    <option value="">Filtrer par niveau de fitness</option>
+                    <option value="Beginner" {% if request.GET.fitness_level == 'Beginner' %}selected{% endif %}>Débutant</option>
+                    <option value="Intermediate" {% if request.GET.fitness_level == 'Intermediate' %}selected{% endif %}>Intermédiaire</option>
+                    <option value="Advanced" {% if request.GET.fitness_level == 'Advanced' %}selected{% endif %}>Avancé</option>
+                </select>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-filter"></i> Filtrer
+                </button>
+            </form>
+        </div>
+
+        <!-- Bouton Ajouter -->
+        <div class="add-participant-btn-container">
+            <a class="btn btn-success" href="{% url 'participant_create' event.id %}">
+                <i class="fas fa-user-plus"></i> Ajouter un Participant
+            </a>
+        </div>
+
+        <!-- Table -->
+        <table class="table table-bordered mt-4">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-users"></i> #</th>
+                    <th><i class="fas fa-user"></i> Nom</th>
+                    <th><i class="fas fa-ticket-alt"></i> Ticket</th>
+                    <th><i class="fas fa-credit-card"></i> État du Paiement</th>
+                    <th><i class="fas fa-comment-alt"></i> Commentaires</th>
+                    <th><i class="fas fa-calendar-alt"></i> Date d'Enregistrement</th>
+                    <th><i class="fas fa-dumbbell"></i> Niveau de Fitness</th>
+                    <th><i class="fas fa-cogs"></i> Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for participant in participants %}
+                    <tr>
+                        <td>Participant {{ forloop.counter }}</td>
+                        <td>{{ participant.client.first_name }} {{ participant.client.last_name }}</td>
+                        <td>{{ participant.ticket_number }}</td>
+                        <td>
+                            {% if participant.payment_status %}
+                                <i class="fas fa-check-circle tick-green"></i> Payé
+                            {% else %}
+                                <i class="fas fa-times-circle tick-red"></i> Non payé
+                            {% endif %}
+                        </td>
+                        <td>{{ participant.comments }}</td>
+                        <td>{{ participant.registration_date }}</td>
+                        <td>{{ participant.get_fitness_level_display }}</td>
+                        <td>
+                            <div class="actions">
+                                <form action="{% url 'participant_update' event.id participant.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i> Modifier
+                                    </button>
+                                </form>
+                                <form action="{% url 'participant_delete' event.id participant.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash-alt"></i> Supprimer
+                                    </button>
+                                </form>
+                                <form action="{% url 'send_email' event.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-info btn-sm">
+                                        <i class="fas fa-paper-plane"></i> Mailing
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="8" class="empty-message">Aucun participant trouvé.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="remaining-capacity">
+            <i class="fas fa-users"></i> Capacité restante : {{ capacity_remaining }}
+        </div>
+
+        <div class="back-button-container">
+            <a class="btn btn-secondary" href="{% url 'event_list' %}">
+                <i class="fas fa-arrow-left"></i> Retour à la Liste des Événements
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

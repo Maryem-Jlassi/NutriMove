@@ -2,7 +2,13 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 import re
-from users.models import Client
+
+
+
+from django.urls import reverse
+from django.db import models
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 class Event(models.Model):
     title = models.CharField(max_length=100, verbose_name="Title")
@@ -20,18 +26,16 @@ class Event(models.Model):
         ('Tozeur', 'Tozeur'), ('Tunis', 'Tunis'), ('Zaghouan', 'Zaghouan')
     ]
     location = models.CharField(max_length=255, choices=TUNISIAN_GOVERNORATES, verbose_name="Location")
-    
+
     ORGANIZER_CHOICES = [
         ('nutritionist', 'Nutritionist'),
         ('coach', 'Coach'),
     ]
     organizer = models.CharField(max_length=100, choices=ORGANIZER_CHOICES, verbose_name="Organizer")
-    
+
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="Price")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Created At")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Updated At")
-
-    
     max_participants = models.PositiveIntegerField(default=0, verbose_name="Max Participants")
 
     def __str__(self):
@@ -50,33 +54,51 @@ class Event(models.Model):
             raise ValidationError(f"The location '{self.location}' is not a valid Tunisian governorate.")
         if self.date < timezone.now():
             raise ValidationError("The event date cannot be in the past.")
-            
+
+    def get_absolute_url(self):
+        """
+        This method returns the URL to view the details of the event.
+        """
+
+        return reverse('event_detail', kwargs={'pk': self.pk})
+
+
+
 class Participant(models.Model):
-    event = models.ForeignKey(Event, related_name='participants', on_delete=models.CASCADE)
-    client = models.ForeignKey(Client, related_name='participants', on_delete=models.CASCADE)
-    ticket_number = models.CharField(max_length=50, unique=True)
-    registration_date = models.DateTimeField(auto_now_add=True)
-    payment_status = models.BooleanField(default=False)
-    comments = models.TextField(blank=True)
-    seat_number = models.CharField(max_length=10, blank=True)
+    event = models.ForeignKey('Event', related_name='participants', on_delete=models.CASCADE)
+    client = models.ForeignKey('users.Client', related_name='participants', on_delete=models.CASCADE)
+
+    ticket_number = models.CharField(max_length=50, unique=True, verbose_name="Ticket Number")
+    comments = models.TextField(blank=True, verbose_name="Comments")
+    registration_date = models.DateTimeField(auto_now_add=True, verbose_name="Registration Date")
+    payment_status = models.BooleanField(default=False, verbose_name="Payment Status")
+
+    fitness_level = models.CharField(
+        max_length=50,
+        choices=[
+            ('Beginner', 'Beginner'),
+            ('Intermediate', 'Intermediate'),
+            ('Advanced', 'Advanced')
+        ],
+        default='Beginner',
+        verbose_name="Fitness Level"
+    )
 
     def __str__(self):
-        return f"{self.client} - {self.event}"
+        return f"{self.client.first_name} {self.client.last_name} - {self.ticket_number}"
 
     def clean(self):
         if not re.match(r'^[A-Z0-9]+$', self.ticket_number):
             raise ValidationError('The ticket number must contain only uppercase letters and digits.')
-        if self.seat_number and len(self.seat_number) > 10:
-            raise ValidationError('The seat number cannot exceed 10 characters.')
         if self.comments and len(self.comments) < 5:
             raise ValidationError('Comments must be at least 5 characters long.')
 
     def save(self, *args, **kwargs):
-        self.full_clean()  # Call clean method before saving
+        self.full_clean()
         super().save(*args, **kwargs)
 
     class Meta:
         unique_together = ('client', 'event')
-        ordering = ['-registration_date']  # Order participants by registration date
+        ordering = ['-registration_date']
         verbose_name = "Participant"
         verbose_name_plural = "Participants"
