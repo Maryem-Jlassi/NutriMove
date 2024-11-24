@@ -10,7 +10,12 @@ urlpatterns = [
   
     path('details/<int:pk>/',DetailsViewoffre.as_view(),
          name="detailoffre"), #affiche une conference bien determine selon le nombre entree
+    path('search/', search_offres, name='search_offres'),
+    #path('<int:offre_id>/export_program_pdf/', export_program_pdf, name='export_program_pdf'),
+    path('rate/<int:offre_id>/<int:user_id>/', rate_offre, name='rate_offre'),
+
+    path('download_program/<int:offre_id>/', export_program_pdf, name='export_program_pdf'),
 
     
 
-]
+] 

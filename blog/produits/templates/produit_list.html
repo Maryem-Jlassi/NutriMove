@@ -1,0 +1,382 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Liste des Produits{% endblock %}
+{% block head %}
+<!-- Css Styles -->
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'css/flaticon.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'css/barfiller.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'css/slicknav.min.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+{% endblock %}
+{% block content %}
+<style>
+    /* General product container */
+    #product-container {
+        background-color: #f0f8ff; /* Light blue background for a fresh, calm feel */
+        padding: 30px 15px;
+        border-radius: 20px; /* Rounded corners for modern look */
+        box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.15); /* Soft shadow for depth */
+        transition: all 0.3s ease-in-out;
+        overflow-x: auto; /* Enable horizontal scrolling */
+        white-space: nowrap; /* Prevent line breaks for scrolling */
+    }
+
+    /* Individual product card */
+    #product-container .card {
+        display: inline-block; /* Ensure the cards stay in a row */
+        border: 2px solid #007bff; /* Blue border for a clean look */
+        border-radius: 15px; /* Rounded corners */
+        box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1); /* Softer shadow */
+        transition: all 0.3s ease-in-out;
+        background-color: #ffffff; /* White background for cards */
+        margin-right: 15px; /* Space between cards */
+        width: 250px; /* Fixed width for consistent sizing */
+        transform: translateY(0); /* Start at default position */
+        opacity: 0.9; /* Slight opacity for smooth effect */
+    }
+
+    /* Hover effect for cards */
+    #product-container .card:hover {
+        transform: translateY(-12px) scale(1.05); /* Lift and zoom effect */
+        box-shadow: 0px 25px 50px rgba(0, 0, 0, 0.2); /* Deeper shadow on hover */
+        opacity: 1; /* Full opacity on hover */
+    }
+
+    /* Card image styling */
+    .card-img-top {
+        border-radius: 15px 15px 0 0; /* Rounded corners on top image */
+        object-fit: cover;
+        max-height: 250px;
+        width: 100%;
+        transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out; /* Smooth transition for zoom and filter */
+    }
+
+    /* Hover effect on image */
+    .card:hover .card-img-top {
+        transform: scale(1.1); /* Zoom effect on hover */
+        filter: brightness(1.2); /* Slight brightness increase on hover */
+    }
+
+    /* Card body padding */
+    .card-body {
+        padding: 20px;
+        transition: all 0.3s ease-in-out;
+    }
+
+    /* Title styling */
+    .card-title {
+        font-size: 1.6rem; /* Larger font size for clearer text */
+        font-weight: bold;
+        color: #007bff; /* Blue color for product names */
+        margin-bottom: 15px;
+        text-transform: uppercase; /* Uppercase for emphasis */
+    }
+
+    /* Price styling */
+    .card-subtitle {
+        font-size: 1.4rem; /* Larger font size for prices */
+        color: #28a745; /* Green for prices */
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    /* Text styling */
+    .card-text {
+        font-size: 1.2rem; /* Larger font size for better readability */
+        color: #333; /* Dark gray text */
+    }
+
+    /* Highlight labels */
+    .card-text strong {
+        color: #007bff; /* Blue color for labels */
+        font-weight: bold; /* Make labels bold for emphasis */
+    }
+
+    /* Button styling */
+    .card-body a {
+        text-transform: uppercase;
+        font-weight: bold;
+        padding: 12px 25px; /* Larger button area */
+        font-size: 1.1rem; /* Slightly larger button text */
+        border-radius: 30px;
+        text-align: center;
+        display: inline-block;
+        margin-top: 15px;
+        transition: background-color 0.3s, transform 0.3s ease-in-out; /* Button hover effects */
+    }
+
+    /* Button colors and hover effects */
+    .card-body a.btn-info {
+        background-color: #007bff; /* Blue background for "Details" button */
+        color: white;
+        border: none;
+    }
+
+    .card-body a.btn-info:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+        transform: scale(1.1); /* Slight zoom effect on hover */
+    }
+
+    /* Card entrance animation */
+    .card {
+        animation: fadeInUp 0.5s ease-out forwards; /* Apply entrance animation */
+    }
+
+    @keyframes fadeInUp {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive design */
+    @media (max-width: 767px) {
+        #product-container {
+            padding: 15px;
+        }
+
+        .col-md-4 {
+            flex: 0 0 100%; /* Stack cards on small screens */
+            max-width: 100%;
+        }
+    }
+
+    /* Style for the form container */
+form {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #2c2c2c;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1s ease-out;
+}
+
+/* Styling the label */
+form label {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ff7b00;  /* Orange color */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* 3D shadow effect */
+    transition: color 0.3s ease-in-out;
+}
+
+form label:hover {
+    color: #ffffff;  /* Hover color for label */
+}
+
+/* Styling the select dropdown */
+form select {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 2px solid #ff7b00;
+    background-color: #333333;
+    color: #ff7b00;
+    margin-top: 10px;
+    width: 200px;
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+/* Select dropdown hover effect */
+form select:hover {
+    border-color: #ffffff;
+    background-color: #444444;
+    color: #ffffff;
+}
+
+/* Focus effect on select */
+form select:focus {
+    border-color: #ff7b00;
+    background-color: #333333;
+    color: #ff7b00;
+    box-shadow: 0 0 8px rgba(255, 123, 0, 0.7);
+}
+
+/* Styling the button */
+form button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #ff7b00;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Button hover effect */
+form button:hover {
+    background-color: #e67e22;
+    transform: translateY(-2px); /* 3D effect on hover */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Button active effect */
+form button:active {
+    transform: translateY(2px);
+}
+
+/* Animation for fading in */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Styling for the search input field */
+form input[type="text"] {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 2px solid #ff7b00;
+    background-color: #333333;
+    color: #ff7b00;
+    margin-top: 10px;
+    width: 250px;
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+/* Search input hover effect */
+form input[type="text"]:hover {
+    border-color: #ffffff;
+    background-color: #444444;
+    color: #ffffff;
+}
+
+/* Focus effect on search input */
+form input[type="text"]:focus {
+    border-color: #ff7b00;
+    background-color: #333333;
+    color: #ff7b00;
+    box-shadow: 0 0 8px rgba(255, 123, 0, 0.7);
+}
+
+
+
+</style>
+
+
+
+
+<h1 style="text-align: center; background-color: rgb(12, 12, 12); color: #ff7b00; font-size: 3rem; padding: 20px 0;">NOS PRODUITS</h1>
+
+<section class="pricing-section spad">
+    <div class="container">
+        <!-- Form to filter by category -->
+        <form method="get" class="text-center mb-4">
+            <!-- Category filter -->
+            <label for="categorie">Choisir une catégorie :</label>
+            <select name="categorie" id="categorie">
+                <option value="">-- Toutes les catégories --</option>
+                <option value="sport" {% if request.GET.categorie == "sport" %}selected{% endif %}>Sport</option>
+                <option value="nutrition" {% if request.GET.categorie == "nutrition" %}selected{% endif %}>Nutrition</option>
+            </select>
+            
+            <!-- Search bar -->
+            <label for="search">Rechercher par nom :</label>
+            <input type="text" name="search" id="search" placeholder="Rechercher un produit" value="{{ request.GET.search }}">
+            
+            <button type="submit">Filtrer</button>
+        
+            <!-- Sorting Buttons -->
+            <div class="sorting-buttons mt-4">
+                <button type="submit" name="sort" value="price_asc" class="sort-btn">Prix Croissant</button>
+                <button type="submit" name="sort" value="price_desc" class="sort-btn">Prix Décroissant</button>
+            </div>
+        </form>
+        
+        
+
+        <!-- Displaying the products -->
+        <div class="product-scroller">
+            <div class="row justify-content-center">
+                {% for produit in produits %}
+                    <div class="col-lg-4 col-md-6">
+                        <div class="ps-item">
+                            {% if produit.image %}
+                                <img src="{{ produit.image.url }}" class="card-img-top" alt="{{ produit.nom }}" onerror="this.onerror=null; this.src='{% static 'images/default-product.jpg' %}';">
+                            {% else %}
+                                <img src="{% static 'images/default-product.jpg' %}" class="card-img-top" alt="{{ produit.nom }}">
+                            {% endif %}
+                            <div class="pi-price">
+                                <h2>{{ produit.prix }} €</h2>
+                                <span>{{ produit.nom }}</span>
+                            </div>
+                            <ul>
+                                <li><strong>Description:</strong> {{ produit.description }}</li>
+                                <li><strong>Catégorie:</strong> {{ produit.categorie }}</li>
+                                
+                                <li><strong>Marque:</strong> {{ produit.marque }}</li>
+                                <li><strong>En stock:</strong> {{ produit.en_stock|yesno:"Oui,Non" }}</li>
+                                <li><strong>Note moyenne:</strong> {{ produit.note_moyenne }}</li>
+                            </ul>
+                            <a href="{% url 'produit_detail' produit.reference %}" class="primary-btn pricing-btn">Détails</a>
+
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-center">Aucun produit disponible.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<style>
+    .product-scroller {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+        overflow-x: auto;
+        max-height: 500px; /* Adjust the height to show two rows */
+        padding: 15px;
+        margin-top: 20px;
+    }
+
+    .ps-item {
+        width: 30%; /* 3 items per row */
+        min-width: 250px; /* Minimum width to ensure proper card sizing */
+    }
+
+    /* Make sure that when there's an overflow, it scrolls horizontally */
+    .product-scroller::-webkit-scrollbar {
+        height: 10px;
+    }
+
+    .product-scroller::-webkit-scrollbar-thumb {
+        background-color: #888;
+        border-radius: 10px;
+    }
+
+    .product-scroller::-webkit-scrollbar-track {
+        background-color: #f1f1f1;
+    }
+</style>
+
+
+{% endblock %}

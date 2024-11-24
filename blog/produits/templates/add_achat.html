@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<script src="https://js.stripe.com/v3/"></script>
+
+<script>
+    var stripe = Stripe('your-publishable-key-here'); // Replace with your Stripe publishable key
+
+    document.querySelector('input[name="payment_method"]').forEach(function (radio) {
+        radio.addEventListener('change', function () {
+            if (this.value == 'stripe') {
+                // Show Stripe form when Stripe is selected
+                document.getElementById('stripe_payment').style.display = 'block';
+                createStripeToken();
+            } else {
+                // Hide Stripe form when PayPal is selected
+                document.getElementById('stripe_payment').style.display = 'none';
+            }
+        });
+    });
+
+    function createStripeToken() {
+        // Create a Stripe token (you should collect card details here)
+        var card = stripe.elements().create('card');
+        card.mount('#stripe_payment');
+        
+        // Handle form submission for Stripe
+        document.querySelector('form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            stripe.createToken(card).then(function(result) {
+                if (result.error) {
+                    // Show error message
+                    console.log(result.error.message);
+                } else {
+                    // Append stripe token to form
+                    var stripeTokenInput = document.createElement('input');
+                    stripeTokenInput.type = 'hidden';
+                    stripeTokenInput.name = 'stripeToken';
+                    stripeTokenInput.value = result.token.id;
+                    document.querySelector('form').appendChild(stripeTokenInput);
+
+                    // Submit the form
+                    document.querySelector('form').submit();
+                }
+            });
+        });
+    }
+</script>
+
+<style>
+    /* Rendre le fond noir et l'écriture orange */
+    body {
+        background-color: black;
+        color: orange;
+        font-family: Arial, sans-serif;
+        text-align: center;
+    }
+
+    /* Augmenter la taille des images */
+    img {
+        width: 80%;  /* La largeur de l'image est 80% de la taille de l'écran */
+        max-width: 800px;  /* Limite la taille maximale de l'image */
+        height: auto;  /* Garde les proportions de l'image */
+        display: block;
+        margin: 0 auto;
+    }
+
+    /* Styliser le formulaire */
+    form {
+        margin-top: 30px;
+        padding: 20px;
+        background-color: rgba(0, 0, 0, 0.8);
+        border-radius: 10px;
+        display: inline-block;
+    }
+
+    button {
+        background-color: rgb(255, 81, 0);
+        color: black;
+        font-size: 16px;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    button:hover {
+        background-color: #ff7f00;  /* Change la couleur quand on survole le bouton */
+    }
+    h1 {
+            font-size: 5em; /* Augmente la taille du texte */
+            color: rgb(255, 94, 0);
+            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7), 0 0 25px orange, 0 0 5px darkorange; /* Effet 3D */
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.8em; /* Augmente la taille du texte des paragraphes */
+            color: rgb(255, 255, 255);
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7), 0 0 15px orange, 0 0 5px darkorange; /* Effet 3D */
+            font-weight: bold;
+            margin: 15px 0;
+        }
+</style>
+<h1>Add Achat</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <!-- Payment Method Selection -->
+    <label for="payment_method_paypal">
+        <input type="radio" name="payment_method" id="payment_method_paypal" value="paypal" checked> PayPal
+    </label><br>
+    <label for="payment_method_stripe">
+        <input type="radio" name="payment_method" id="payment_method_stripe" value="stripe"> Stripe
+    </label><br>
+    <button type="submit">Add Achat</button>
+</form>
+
+
+
+{% endblock %}

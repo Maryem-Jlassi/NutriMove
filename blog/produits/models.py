@@ -2,6 +2,16 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
+from django.utils import timezone
+from users.models import Client
+from decimal import Decimal
+
+
+
+
+
+
+
 
 class Produit(models.Model):
     CATEGORIES_CHOICES = [
@@ -57,3 +67,43 @@ class Produit(models.Model):
     
     def __str__(self):
         return self.nom
+
+
+
+class Achat(models.Model):
+    client = models.ForeignKey(
+        'users.Client', 
+        on_delete=models.CASCADE,
+        related_name='achats',
+        verbose_name="Client"
+    )
+    produit = models.ForeignKey(
+        'Produit', 
+        on_delete=models.CASCADE,
+        related_name='achats',
+        verbose_name="Produit"
+    )
+    quantite = models.PositiveIntegerField(
+    verbose_name="Quantité",
+    validators=[MinValueValidator(1)],
+    default=1  # Default value set to 1
+)
+
+    date_achat = models.DateTimeField(default=timezone.now, verbose_name="Date d'achat")
+    total_prix = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name="Prix total",
+        validators=[MinValueValidator(0.01)],
+        default=Decimal('0.00')
+    )
+    paiement_effectue = models.BooleanField(default=False, verbose_name="Paiement effectué")
+    
+  
+
+    def __str__(self):
+        return f"{self.client.username} a acheté {self.produit.nom} - {self.quantite} unité(s)"
+
+    class Meta:
+        verbose_name = "Achat"
+        verbose_name_plural = "Achats"

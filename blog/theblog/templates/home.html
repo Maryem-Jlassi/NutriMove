@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+    Blogs
+{% endblock %}
+
+{% block content %}
+<script src="{% static 'js/jquery.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb-bg.jpg' %}">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb-text">
+                    <h2>Our blog</h2>
+                    <div class="bt-option">
+                        <a href="/">Home</a>
+                        <span>Our blog</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Blog Section Begin -->
+<section class="blog-section spad">
+    <div class="container">
+        <!-- Search and Filter Row -->
+        <div class="row mb-5">
+            <div class="col-md-12 col-sm-12 text-center">
+                <!-- Category Filter -->
+                <form method="get" action="">
+                    <div class="form-row">
+                        <input type="text" name="search" value="{{ request.GET.search }}" class="form-control" placeholder="Search by title">
+                        <!-- <div class="col-md-6">
+                             <select name="category" onchange="this.form.submit()" class="form-control">
+                               <option value="">All Categories</option>
+                                {% for category in categories %}
+                                    <option value="{{ category }}" {% if request.GET.category == category %}selected{% endif %}>
+                                        {{ category }}
+                                    </option>
+                                {% endfor %} 
+                            </select>
+                        </div>
+                        -->
+                        <div class="col-md-6">
+                            <!-- Search Bar -->
+                            
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Sort Button -->
+                <form method="get" action="" style="margin-top: 20px;">
+                    <button type="submit" name="sort" value="{% if request.GET.sort == 'asc' %}desc{% else %}asc{% endif %}" class="btn btn-primary" style="background-color: #e65c0e;">
+                        Sort by Date {% if request.GET.sort == 'asc' %}(Oldest first){% else %}(Newest first){% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Blog Content Row -->
+        <div class="row">
+            <!-- Main Blog Content -->
+            <div class="col-lg-8 p-0">
+                {% for post in object_list %}
+                <div class="blog-item wow fadeInUp" data-wow-delay="{{ forloop.counter0|add:0.3 }}s">
+                    <div class="bi-pic">
+                        {% if post.picture %}
+                            <img src="{{ post.picture.url }}" alt="{{ post.title }}">
+                        {% endif %}
+                    </div>
+                    <div class="bi-text">
+                        <h5><a href="{% url 'article_detail' post.id %}">{{ post.title }}</a></h5>
+                        <ul>
+                            <li>by {{ post.author }}</li>
+                            <li>{{ post.created|date:"F j, Y" }}</li>
+                            <li>{{ post.category }}</li>
+                        </ul>
+                        <p>{{ post.body|truncatewords:30 }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <!-- Pagination -->
+                {% if is_paginated %}
+                <div class="blog-pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        <a href="?page={{ num }}" {% if page_obj.number == num %}class="active"{% endif %}>{{ num }}</a>
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">Next</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4 col-md-8 p-0">
+                <div class="sidebar-option">
+                    <!-- Categories Widget -->
+                    <div class="so-categories">
+                        <!--<h5 class="title">Categories</h5>
+                        <ul>
+                           {% for category in categories %}
+                            <li>
+                                <a href="?category={{ category }}">
+                                    {{ category }} 
+                                    <span>
+                                        {% with count=category.blog_set.count %}
+                                            {{ count }}
+                                        {% endwith %}
+                                    </span>
+                                </a>
+                            </li>
+                            {% endfor %}--> 
+                        </ul>
+                    </div>
+
+                    <!-- Featured Posts Widget 
+                    <div class="so-latest">
+                        <h5 class="title">Featured posts</h5>
+                        {% for post in object_list|slice:":5" %}
+                            {% if forloop.first %}
+                            <div class="latest-large set-bg" data-setbg="{{ post.picture.url }}">
+                                <div class="ll-text">
+                                    <h5><a href="{% url 'article_detail' post.id %}">{{ post.title }}</a></h5>
+                                    <ul>
+                                        <li>{{ post.created|date:"F j, Y" }}</li>
+                                        <li>{{ post.category }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="latest-item">
+                                <div class="li-pic">
+                                    {% if post.picture %}
+                                        <img src="{{ post.picture.url }}" alt="{{ post.title }}">
+                                    {% endif %}
+                                </div>
+                                <div class="li-text">
+                                    <h6><a href="{% url 'article_detail' post.id %}">{{ post.title }}</a></h6>
+                                    <span class="li-time">{{ post.created|date:"F j, Y" }}</span>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>-->
+
+                    <!-- Popular Tags -->
+                    <div class="so-tags">
+                        <h5 class="title">Categories</h5>
+                        <!-- Link for "All Categories" -->
+                        <a href="{% url 'home' %}">All Categories</a>
+                    
+                        <!-- Links for individual categories -->
+                        {% for category in categories %}
+                            <a href="{% url 'home' %}?category={{ category }}">{{ category }}</a>
+                        {% endfor %}
+                    </div>
+                    
+                    
+                    
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Blog Section End -->
+
+{% endblock %}

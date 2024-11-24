@@ -1,6 +1,7 @@
 from django.db import models
-from django.core.validators import MaxValueValidator, FileExtensionValidator
+from django.core.validators import MaxValueValidator,MinValueValidator, FileExtensionValidator
 from django.core.exceptions import ValidationError
+from users.models import *
 # Create your models here.
 class offre(models.Model):
  titleOffre=models.CharField(max_length=255)
@@ -22,3 +23,12 @@ class offre(models.Model):
     return f"title offre = {self.titleOffre}"
  class meta:
     verbose_name_plural="offres"
+    
+class Rating(models.Model):
+    offre = models.ForeignKey(offre, related_name='ratings', on_delete=models.CASCADE)
+    user = models.ForeignKey(Client, on_delete=models.CASCADE)
+    score = models.PositiveIntegerField(default=0, validators=[MinValueValidator(1), MaxValueValidator(5)])  # Rating between 1 and 5
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Rating for {self.offre.titleOffre} by {self.user.username}"

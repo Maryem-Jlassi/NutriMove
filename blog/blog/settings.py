@@ -176,7 +176,13 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+PAYPAL_MODE = 'sandbox'  # Set to 'live' for production
+PAYPAL_CLIENT_ID = 'AV0xdA0cbp9neWw0KnKBE6gWnvz9ErofFU8q20h8XwLYpV2MpUQAQs9IvMaaz5XDxIsBlfUp2P6-dnCj'
+PAYPAL_CLIENT_SECRET = 'ECmWfIPx8A-Nii3GuKGF8s4u44s70IRz6grvRaEYboxJcVRLimcgQXh-c3_PLCwKr-_kbkU7pkv6Jo90'
 
+# Stripe API keys
+STRIPE_PUBLIC_KEY = 'pk_test_51QOk1KI0zbrS2Z4lpbs08CCRHy4zWq4fYUDrAzyxUqhJsEr6kxWVoWOfBTWPG7OgatzA5RsMW69gdeArZGbPKgkE007V5x0nw5'
+STRIPE_SECRET_KEY = 'sk_test_51QOk1KI0zbrS2Z4lG6yqJtszuiOJ8pi1k55VIXD64RkERE8ky9B9c37B17AYBMVx95krPSx4NSMQXZrqyBkhgcZQ00uRW6fczG'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -203,7 +209,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # or any other path you pre
 
 # Optionally, you can keep STATICFILES_DIRS for development
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'blog/static'),  # Adjust according to your structure
+    os.path.join(BASE_DIR, 'blog/static'),
+    os.path.join(BASE_DIR, 'theblog/static'),
+    os.path.join(BASE_DIR, 'produits/static'),# Adjust according to your structure
 ]
 
 # Default primary key field type
