@@ -27,16 +27,16 @@ const CustomListItem = styled(ListItem)(({ theme, selected, disabled }) => ({
     easing: theme.transitions.easing.easeInOut,
     duration: theme.transitions.duration.short,
   }),
-  backgroundColor: selected ? '#1976D2' : 'transparent',
+  backgroundColor: selected ? '#F36100' : 'transparent',
   color: disabled ? '#9e9e9e' : '#f5f5f5', // Couleur grise si désactivé
   borderRadius: '8px',
   margin: '20px 0',
   '&:hover': {
-    backgroundColor: disabled ? 'transparent' : '#1976D2', // Ne pas changer la couleur si désactivé
+    backgroundColor: disabled ? 'transparent' : '#F36100', // Ne pas changer la couleur si désactivé
     transform: disabled ? 'none' : 'scale(1.05)',
   },
   '&.Mui-selected': {
-    backgroundColor: disabled ? 'transparent' : '#1976D2',
+    backgroundColor: disabled ? 'transparent' : '#F36100',
     transform: disabled ? 'none' : 'scale(1.02)',
   },
 }));

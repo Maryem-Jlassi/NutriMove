@@ -100,37 +100,40 @@ def list_offres(request):
     return render(request, 'search_offres.html', {'offres': offres})
 
 
-
-def rate_offre(request, offre_id=1, user_id=5):
+@login_required
+def rate_offre(request, offre_id, user_id):
     try:
-        # Get the client instance
-        client_instance = get_object_or_404(Client, pk=user_id)
+        # Fetch the offre object using get_object_or_404
+        offre_instance = get_object_or_404(offre, id=offre_id)
         
-        # Get the offre (offer) instance using offre_id
-        offre_instance = get_object_or_404(offre, pk=offre_id)
-        
+        # Fetch the client instance using get_object_or_404
+        client_instance = Client.objects.get(pk=user.pk)
+        print(f"Client Instance: {client_instance}")  # This will output the client details in the console
+
         if request.method == 'POST':
-            # Get the rating score from the form
+            # Get the rating score from the POST data
             score = int(request.POST.get('score'))
             
             # Check if the user has already rated this offer
             existing_rating = Rating.objects.filter(offre=offre_instance, user=client_instance).first()
             
             if existing_rating:
-                # Update existing rating
+                # Update the existing rating
                 existing_rating.score = score
                 existing_rating.save()
             else:
-                # Create new rating
+                # Create a new rating
                 Rating.objects.create(offre=offre_instance, user=client_instance, score=score)
 
             # Redirect to the offer detail page
-            return redirect('offre_detail', offre_id=offre_instance.id)  # Make sure 'offre_detail' URL uses 'offre_id'
-        
-        # If it's a GET request, render the offer detail page with the offer instance
+            return redirect('offre_detail', offre_id=offre_instance.id)
+
+        # Render a template if not POST
         return render(request, 'listOffre.html', {'offre': offre_instance})
     
     except Client.DoesNotExist:
         return JsonResponse({'error': 'Client non trouvé.'}, status=404)
+    except offre.DoesNotExist:
+        return JsonResponse({'error': 'Offre non trouvée.'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)

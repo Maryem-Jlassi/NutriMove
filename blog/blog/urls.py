@@ -20,9 +20,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 from events import views  # Import the views from your events app
 from django.shortcuts import render
-
+from users.views import*
 urlpatterns = [
-    path('home/', lambda request: render(request, 'index.html'), name='indexx'),
+    path('', lambda request: render(request, 'homepage.html'), name='index'),
     path('admin/', admin.site.urls),
     path('blog/',include('theblog.urls')),
     path('produit/',include('produits.urls')),

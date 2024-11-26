@@ -157,7 +157,7 @@ const CoachingTable = () => {
     <Box sx={{ padding: 3 }}>
       <Grid container justifyContent="center" spacing={3}>
         <Grid item xs={12}>
-          <Typography variant="h4" color="primary" align="center" gutterBottom>
+          <Typography variant="h4" color="#000" align="center" gutterBottom  >
             Coaching Clients Management
           </Typography>
         </Grid>

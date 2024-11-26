@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'youssef.html' %}
 
 {% load static %}
 
@@ -104,20 +104,95 @@
             font-weight: bold;
             margin: 15px 0;
         }
+        /* General Styling for the Container */
+.add-achat-container {
+    max-width: 500px;
+    margin: 30px auto;
+    padding: 20px;
+    border: 2px solid #f0f0f0;
+    border-radius: 15px;
+    background: #000000;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+    animation: slideIn 0.8s ease-in-out;
+}
+
+/* Form Heading */
+.add-achat-container h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #da7401;
+}
+
+/* Form Styling */
+form {
+    margin-top: 10px;
+}
+
+/* Radio Button Styling */
+.payment-method {
+    margin: 20px 0;
+    text-align: left;
+}
+
+.radio-label {
+    font-size: 16px;
+    margin: 10px 0;
+    display: block;
+    color: #555;
+    cursor: pointer;
+}
+
+input[type="radio"] {
+    margin-right: 10px;
+}
+
+/* Submit Button Styling */
+.btn-submit {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-submit:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+/* Animation for the Container */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 </style>
-<h1>Add Achat</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <!-- Payment Method Selection -->
-    <label for="payment_method_paypal">
-        <input type="radio" name="payment_method" id="payment_method_paypal" value="paypal" checked> PayPal
-    </label><br>
-    <label for="payment_method_stripe">
-        <input type="radio" name="payment_method" id="payment_method_stripe" value="stripe"> Stripe
-    </label><br>
-    <button type="submit">Add Achat</button>
-</form>
+<div class="add-achat-container">
+    <h1>veuillez confirmer l'achat</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <!-- Payment Method Selection -->
+        <div class="payment-method">
+            <label for="payment_method_paypal" class="radio-label">
+                <input type="radio" name="payment_method" id="payment_method_paypal" value="paypal" checked> PayPal
+            </label>
+        </div>
+        <button type="submit" class="btn-submit">Add Achat</button>
+    </form>
+</div>
+
 
 
 

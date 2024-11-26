@@ -312,15 +312,15 @@
                         <li>Accès exclusif aux ressources</li>
                     </ul>
                     <a href="{% url 'detailoffre' c.id %}" class="primary-btn pricing-btn">Voir Détails</a>
-                    {% if user.is_authenticated and user.is_client %}
-                        <a href="{% url 'abonner' c.id user_id=user.id %}" class="primary-btn pricing-btn">S'abonner</a>
+                   
+                        <a href="{% url 'abonner' c.id  %}" class="primary-btn pricing-btn">S'abonner</a>
                  
                         
-                    {% endif %}
+                 
 
                     <!-- Système de notation -->
                     <h4 class="mt-4">Notez cette offre</h4>
-                    <form method="post" action="{% url 'rate_offre' offre_id=c.id user_id=user.id %}">
+                    <form method="post" action="{% url 'rate_offre' offre_id=c.id  %}">
 
                         {% csrf_token %}
                         <div class="star-rating">
@@ -709,3 +709,4 @@
 </body>
 
 </html>
+

@@ -7,7 +7,7 @@
     /* Rendre le fond noir et l'écriture orange */
     body {
         background-color: black;
-        color: orange;
+        color: rgb(255, 8, 0);
         font-family: Arial, sans-serif;
         text-align: center;
     }
@@ -45,23 +45,87 @@
     }
     h1 {
             font-size: 5em; /* Augmente la taille du texte */
-            color: rgb(255, 94, 0);
-            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7), 0 0 25px orange, 0 0 5px darkorange; /* Effet 3D */
+            color: rgb(255, 147, 85);
+            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7), 0 0 25px rgb(26, 17, 0), 0 0 5px darkorange; /* Effet 3D */
             font-weight: bold;
             margin-bottom: 20px;
         }
         p {
             font-size: 1.8em; /* Augmente la taille du texte des paragraphes */
-            color: rgb(255, 255, 255);
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7), 0 0 15px orange, 0 0 5px darkorange; /* Effet 3D */
+            color: rgb(197, 89, 0);
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7), 0 0 15px rgb(49, 32, 0), 0 0 5px rgb(58, 32, 0); /* Effet 3D */
             font-weight: bold;
             margin: 15px 0;
         }
-</style>
+        /* Grouping and Styling the Container */
+.product-container {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #000000;
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+}
 
-<div id="product-detail-container">
+/* Styling the Image */
+.product-container img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+/* Styling the Button */
+.btn-buy {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-buy:hover {
+    background-color: #218838;
+}
+
+/* Adding Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+</style>
+<section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb-bg.jpg' %}">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb-text">
+                    <h2>Product Details</h2>
+                    <div class="bt-option">
+                        <a href="/">Home</a>
+                       
+                        <a href="{% url 'produit_list' %}">Products</a>
+                        <span>Product details</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div id="product-detail-container" class="product-container">
     {% if produit.image %}
-        <img src="{{ produit.image.url }}" class="card-img-top" alt="{{ produit.nom }}" onerror="this.onerror=null; this.src='{% static 'images/default-product.jpg' %}';">
+        <img src="{{ produit.image.url }}" class="card-img-top" alt="{{ produit.nom }}" 
+             onerror="this.onerror=null; this.src='{% static 'images/default-product.jpg' %}';">
     {% else %}
         <img src="{% static 'images/default-product.jpg' %}" class="card-img-top" alt="{{ produit.nom }}">
     {% endif %}
@@ -71,21 +135,13 @@
     <p><strong>Prix :</strong> {{ produit.prix }} €</p>
     <p><strong>Quantité disponible :</strong> {{ produit.quantite_disponible }}</p>
     <p><strong>En stock :</strong> {{ produit.en_stock|yesno:"Oui,Non" }}</p>
+    <p><strong>Nombre d'achats :</strong> {{ total_achats }}</p>
 
     <form method="POST" action="{% url 'add_achat' produit.reference %}">
         {% csrf_token %}
-        <button type="submit">Acheter</button>
+        <button type="submit" class="btn-buy">Acheter</button>
     </form>
 </div>
-
-
-
-    
-    
-    
-    
-    
-    
 
     <a href="{% url 'produit_list' %}" class="btn btn-secondary">Retour à la liste des produits</a>
 </div>

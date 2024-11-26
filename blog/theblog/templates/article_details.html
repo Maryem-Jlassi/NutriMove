@@ -9,7 +9,8 @@
 <meta property="og:description" content="Here is a short description of the post content." />
 <meta property="og:image" content="URL_to_image" />
 <meta property="og:url" content="URL_of_the_page" />
- 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 </head>
     <!-- Blog Details Hero Section Begin -->
     <section class="blog-details-hero set-bg" data-setbg="{% if post.picture %}{{ post.picture.url }}{% else %}img/blog/details/details-hero.jpg{% endif %}"  >
@@ -40,8 +41,8 @@
                 <div class="col-lg-8 p-0 m-auto">
                     <div class="blog-details-text">
                         <div class="blog-details-title">
-                            
-                            <p>{{ post.body }}</p>
+                            <p> #{{ post.title_tag}}</p>
+                            <p style="border: 2px solid #fff; border-radius: 10px; padding: 20px; background-color: transparent; margin-top: 20px;"> {{ post.body }}</p>
                         </div>
                         <div class="container mt-4" >
                         <!-- Display Images If Available -->
@@ -71,28 +72,41 @@
 
                         <div class="blog-details-tag-share">
                             <div class="tags">
-                                <p> {{ post.title_tag}}</p>
+                                
                                 <!--<div class="d-flex align-items-center gap-3 mb-3"> -->
                                     <a href="{% url 'download_post_pdf' pk=post.pk %}" class="btn btn-primary" style="background-color: #4CAF50; color: white; padding: 10px 20px; border-radius: 5px;">
                                         Download as PDF
                                     </a>
                                  <!--</div>-->
                             </div>
-                            <div class="share">
+                            <div class="share" style="border: 2px solid #fff; border-radius: 10px; padding: 20px; background-color: transparent; margin-top: 20px;">
                                  <!-- Like Button and Download PDF Button -->
                         <form action="{% url 'like_post' pk=post.pk %}" method="post" class="d-inline" >
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-secondary" style="background-color: #e65c0e;">Like</button>*
+                            <button type="submit" class="btn btn-outline-secondary" style="background-color: #fff; color: #000;">Like</button>*
+
                             
                         </form>
                         <span id="likes-count" style="color: #fff;">{{ post.likes.count }} likes</span>
-                        <div class="share">
-                            <span>Share</span>  
-                            <a href="#" id="share-facebook"><i class="fa fa-facebook"></i> Facebook</a>
-                            <a href="#" id="share-twitter"><i class="fa fa-twitter"></i> Twitter</a>
-                            <a href="#" id="share-email"><i class="fa fa-envelope"></i> Email</a>
-                            <a href="#" id="share-linkedin"><i class="fa fa-linkedin"></i> LinkedIn</a>
-                            <a href="#" id="share-reddit"><i class="fa fa-reddit"></i> Reddit</a>
+                        <div class="share" style="border: 2px solid #fff; border-radius: 10px; padding: 20px; background-color: #e65c0e; margin-top: 20px;">
+                            <span>Share :</span>  
+                            <a href="#" id="share-facebook">
+                                <i class="fab fa-facebook" style="font-size: 20px; margin-right: 8px; color: white;"></i> Facebook
+                            </a>
+                            <a href="#" id="share-twitter">
+                                <i class="fab fa-twitter" style="font-size: 20px; margin-right: 8px; color: white;"></i> Twitter
+                            </a>
+                            <a href="#" id="share-email">
+                                <i class="fas fa-envelope" style="font-size: 20px; margin-right: 8px; color: white;"></i> Email
+                            </a>
+                            <a href="#" id="share-linkedin">
+                                <i class="fab fa-linkedin" style="font-size: 20px; margin-right: 8px; color: white;"></i> LinkedIn
+                            </a>
+                            <a href="#" id="share-reddit">
+                                <i class="fab fa-reddit" style="font-size: 20px; margin-right: 8px; color: white;"></i> Reddit
+                            </a>
+                            
+                            
 
 
                         </div>
@@ -102,29 +116,38 @@
 
                         <!-- Comment Section Begin -->
                         <section id="comments-section" class="mb-4">
-                            <h5>Comments:</h5>
+                            <h5 style="color: #fff" >Comments:</h5>
                             <div id="comments-container">
                                 {% if post.comments.all %}
                                     {% for comment in post.comments.all %}
                                         <div id="comment-{{ comment.id }}" class="comment-item mb-3 p-3 border rounded">
                                             <div class="d-flex justify-content-between">
-                                                <strong>{{ comment.name.username }}</strong>
+                                                <strong style="color: #fff" >{{ comment.name.username }}</strong>
                                                 <small class="text-muted">{{ comment.date_added|date:"F d, Y H:i" }}</small>
                                             </div>
                                             <p class="mb-2">{{ comment.body }}</p>
                                             
                                             {% if user == comment.name %}
                                             <div class="comment-actions mb-2">
-                                                <button class="btn btn-sm btn-outline-primary edit-comment-btn">Edit</button>
+                                                <button class="btn btn-sm btn-outline-primary edit-comment-btn" 
+                                                style="background-color: #e65c0e; padding: 5px; border-radius: 3px; border: 2px solid white;">
+                                            <i class="fas fa-edit" style="color: white;"></i>
+                                        </button>
+                                        
+                                                
+
                                                 <form class="edit-comment-form d-none" data-comment-id="{{ comment.id }}" method="post" action="{% url 'comment_update' comment.id %}">
                                                     {% csrf_token %}
                                                     <textarea name="body" class="form-control mb-2">{{ comment.body }}</textarea>
-                                                    <button type="submit" class="btn btn-sm btn-primary">Save</button>
-                                                    <button type="button" class="btn btn-sm btn-secondary cancel-edit">Cancel</button>
+                                                  
+                                                    
+                                                    
                                                 </form>
                                                 
-                                                <a href="{% url 'comment_delete' comment.id %}" class="btn btn-sm btn-outline-danger delete-comment">Delete</a>
-                                            </div>
+                                                <a href="{% url 'comment_delete' comment.id %}" class="btn btn-sm btn-outline-danger delete-comment">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </a>
+                                            </div>  
                                             {% endif %}
                                             
                                             <div class="d-flex justify-content-between align-items-center">
@@ -153,7 +176,7 @@
                                             <form class="reply-form mt-3 d-none" data-comment-id="{{ comment.id }}" method="post" action="{% url 'create_reply' comment.id %}">
                                                 {% csrf_token %}
                                                 <textarea name="body" class="form-control mb-2" rows="3" placeholder="Write your reply here..." required></textarea>
-                                                <button type="submit" class="btn btn-sm btn-primary">Submit Reply</button>
+                                                <button type="submit" class="btn btn-sm btn-primary" style="background-color: #e65c0e ">Submit Reply</button>
                                             </form>
                                         </div>
                                     {% endfor %}
@@ -169,7 +192,8 @@
                             <form id="comment-form" method="post" action="{% url 'create_comment' post.pk %}">
                                 {% csrf_token %}
                                 <div class="form-group">
-                                    <textarea name="body" class="form-control mb-3" rows="4" placeholder="Write your comment here..." required></textarea>
+                                    <textarea name="body" class="form-control mb-3" rows="4" placeholder="Write your comment here..." required style="border-radius: 10px; padding: 10px; border: 1px solid #ccc; font-size: 14px; background-color: #f9f9f9;"></textarea>
+
                                 </div>
                                 <button type="submit" class="btn btn-primary" style="background-color: #e65c0e;">Submit Comment</button>
                             </form>
@@ -191,8 +215,6 @@
         </div>
     </section>
     <!-- Blog Details Section End -->
-</div>
-
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

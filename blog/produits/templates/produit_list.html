@@ -278,36 +278,46 @@ form input[type="text"]:focus {
 </style>
 
 
+<section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb-bg.jpg' %}">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb-text">
+                    <h2>Products</h2>
+                    <div class="bt-option">
+                        <a href="/">Home</a>
+                        <span>Products</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-
-<h1 style="text-align: center; background-color: rgb(12, 12, 12); color: #ff7b00; font-size: 3rem; padding: 20px 0;">NOS PRODUITS</h1>
 
 <section class="pricing-section spad">
     <div class="container">
         <!-- Form to filter by category -->
         <form method="get" class="text-center mb-4">
-            <!-- Category filter -->
             <label for="categorie">Choisir une catégorie :</label>
             <select name="categorie" id="categorie">
                 <option value="">-- Toutes les catégories --</option>
                 <option value="sport" {% if request.GET.categorie == "sport" %}selected{% endif %}>Sport</option>
                 <option value="nutrition" {% if request.GET.categorie == "nutrition" %}selected{% endif %}>Nutrition</option>
             </select>
-            
+
             <!-- Search bar -->
             <label for="search">Rechercher par nom :</label>
             <input type="text" name="search" id="search" placeholder="Rechercher un produit" value="{{ request.GET.search }}">
-            
-            <button type="submit">Filtrer</button>
-        
+
             <!-- Sorting Buttons -->
             <div class="sorting-buttons mt-4">
                 <button type="submit" name="sort" value="price_asc" class="sort-btn">Prix Croissant</button>
                 <button type="submit" name="sort" value="price_desc" class="sort-btn">Prix Décroissant</button>
+                <button type="submit" name="sort" value="achats_asc" class="sort-btn">nombre d'achats asc</button>
+                <button type="submit" name="sort" value="achats_desc" class="sort-btn">nombre d'achats desc</button>
             </div>
         </form>
-        
-        
 
         <!-- Displaying the products -->
         <div class="product-scroller">
@@ -327,13 +337,12 @@ form input[type="text"]:focus {
                             <ul>
                                 <li><strong>Description:</strong> {{ produit.description }}</li>
                                 <li><strong>Catégorie:</strong> {{ produit.categorie }}</li>
-                                
                                 <li><strong>Marque:</strong> {{ produit.marque }}</li>
                                 <li><strong>En stock:</strong> {{ produit.en_stock|yesno:"Oui,Non" }}</li>
                                 <li><strong>Note moyenne:</strong> {{ produit.note_moyenne }}</li>
+                                <li><strong>nombre d'Achats:</strong> {{ produit.total_achats }}</li>
                             </ul>
                             <a href="{% url 'produit_detail' produit.reference %}" class="primary-btn pricing-btn">Détails</a>
-
                         </div>
                     </div>
                 {% empty %}
@@ -343,6 +352,7 @@ form input[type="text"]:focus {
         </div>
     </div>
 </section>
+
 
 
 

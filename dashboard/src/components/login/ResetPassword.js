@@ -82,7 +82,7 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     height: '100vh',
-    background: 'linear-gradient(135deg, #6a11cb, #2575fc)',
+    background: 'linear-gradient(135deg, #000, #ff5733)',
     fontFamily: 'Arial, sans-serif',
   },
   box: {
@@ -128,7 +128,7 @@ const styles = {
   button: {
     width: '100%',
     padding: '12px',
-    background: 'linear-gradient(135deg, #6a11cb, #2575fc)',
+    background: 'linear-gradient(135deg, #ff5733, #000)',
     color: '#fff',
     fontSize: '16px',
     border: 'none',

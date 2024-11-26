@@ -43,7 +43,7 @@ const ForgotPassword = () => {
       fontSize: '1.5rem',
       fontWeight: 'bold',
       textAlign: 'center',
-      color: '#007BFF',
+      color: '#00000',
     },
     dialogContent: {
       textAlign: 'center',

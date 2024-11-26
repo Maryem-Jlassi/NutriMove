@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect, memo } from "react";
 import {
   MDBBtn,
   MDBContainer,
@@ -23,14 +23,63 @@ import {
   Activity,
   ChevronRight,
   ChevronLeft,
-  Camera,
-  AtSign,
-  Shield,
-  Heart,
-  Scale,
-  Dumbbell
+  Camera
 } from 'lucide-react';
 import axiosInstance from "../../axiosInstance";
+import { useNavigate } from 'react-router-dom'; 
+
+// Memoized CustomInput component
+const CustomInput = memo(({ icon: Icon, label, name, type, value, onChange }) => (
+  <div className="custom-input-container position-relative mb-4">
+    <div className="position-absolute" style={{ left: '15px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}>
+      <Icon size={18} strokeWidth={2} className="text-muted" />
+    </div>
+    <MDBInput
+      label={label}
+      name={name}
+      type={type}
+      value={value}
+      onChange={onChange}
+      style={{ 
+        height: '45px', 
+        fontSize: '0.9rem',
+        paddingLeft: '45px',
+        backgroundColor: '#1a1a1a', // Dark background
+        color: '#f5f5f5' // Light text color
+      }}
+      labelStyle={{
+        marginLeft: '30px',
+        color: '#f5f5f5' // Light label color
+      }}
+    />
+  </div>
+));
+
+// Memoized CustomSelect component
+const CustomSelect = memo(({ icon: Icon, name, value, onChange, options }) => (
+  <div className="custom-select-container position-relative mb-4">
+    <div className="position-absolute" style={{ left: '15px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}>
+      <Icon size={18} strokeWidth={2} className="text-muted" />
+    </div>
+    <select
+      className="form-select"
+      name={name}
+      value={value}
+      onChange={onChange}
+      style={{ 
+        height: '45px', 
+        fontSize: '0.9rem',
+        paddingLeft: '45px',
+        backgroundColor: '#1a1a1a', // Dark background
+        color: '#f5f5f5' // Light text color
+      }}
+    >
+      {options.map(option => (
+        <option key={option.value} value={option.value}>{option.label}</option>
+      ))}
+    </select>
+  </div>
+));
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -47,44 +96,46 @@ const Register = () => {
     activityLevel: "",
     profilePicture: ""
   });
-
+  useEffect(() => {
+    document.body.style.backgroundColor = '#000'; // Black background
+    return () => {
+      document.body.style.backgroundColor = ''; // Reset the background color on cleanup
+    };
+  }, []);
   const [currentStep, setCurrentStep] = useState(1);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
   };
 
   const handleRegister = async () => {
     try {
-      const response = await axiosInstance('register-client/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          username: formData.username,
-          password: formData.password, // Ensure password handling on the backend
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          age: formData.age,
-          sexe: formData.sexe,
-          weight: formData.weight,
-          height: formData.height,
-          goal_weight: formData.goalWeight,
-          activity_level: formData.activityLevel,
-          profile_picture: formData.profilePicture,
-        }),
+      const response = await axiosInstance.post('register-client/', {
+        email: formData.email,
+        username: formData.username,
+        password: formData.password,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        age: formData.age,
+        sexe: formData.sexe,
+        weight: formData.weight,
+        height: formData.height,
+        goal_weight: formData.goalWeight,
+        activity_level: formData.activityLevel,
+        profile_picture: formData.profilePicture,
       });
   
-      const result = await response.json();
-  
-      if (response.ok) {
-        console.log('Registration successful:', result);
-        // You can add any redirection or confirmation here
+      if (response.status === 201) {
+        console.log('Registration successful:', response.data);
+        navigate('/login');
       } else {
-        throw new Error(result.detail || 'Registration failed');
+        throw new Error('Registration failed');
       }
     } catch (err) {
       setError(err.message || 'Registration failed. Please try again.');
@@ -105,61 +156,14 @@ const Register = () => {
     3: "Fitness Profile"
   };
 
-  const CustomInput = ({ icon: Icon, label, name, type, value, onChange, className = "" }) => (
-    <div className="custom-input-container position-relative mb-4">
-      <div className="position-absolute" style={{ left: '15px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}>
-        <Icon size={18} strokeWidth={2} className="text-muted" />
-      </div>
-      <MDBInput
-        label={label}
-        name={name}
-        type={type}
-        value={value}
-        onChange={onChange}
-        className={`${className}`}
-        style={{ 
-          height: '45px', 
-          fontSize: '0.9rem',
-          paddingLeft: '45px'
-        }}
-        labelStyle={{
-          marginLeft: '30px' // Déplace le label pour éviter la superposition avec l'icône
-        }}
-      />
-    </div>
-  );
-
-  const CustomSelect = ({ icon: Icon, name, value, onChange, options }) => (
-    <div className="custom-select-container position-relative mb-4">
-      <div className="position-absolute" style={{ left: '15px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}>
-        <Icon size={18} strokeWidth={2} className="text-muted" />
-      </div>
-      <select
-        className="form-select"
-        name={name}
-        value={value}
-        onChange={onChange}
-        style={{ 
-          height: '45px', 
-          fontSize: '0.9rem',
-          paddingLeft: '45px'
-        }}
-      >
-        {options.map(option => (
-          <option key={option.value} value={option.value}>{option.label}</option>
-        ))}
-      </select>
-    </div>
-  );
-
   return (
     <MDBContainer className="my-5">
-      <MDBCard className='text-black m-5' style={{ borderRadius: '25px' }}>
+      <MDBCard className='text-black m-5' style={{ borderRadius: '25px', backgroundColor: '#252525' }}>
         <MDBCardBody className="p-5">
           <MDBRow className="justify-content-center">
             <MDBCol md='10' lg='6' className='order-2 order-lg-1'>
               <div className="text-center mb-4">
-                <h3 className="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">
+                <h3 className="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4" style={{ color: '#F36100' }}>
                   {stepTitles[currentStep]}
                 </h3>
               </div>
@@ -182,7 +186,7 @@ const Register = () => {
                       onChange={handleChange}
                     />
                     <CustomInput
-                      icon={User}
+                      icon={User }
                       label="Username"
                       name="username"
                       type="text"
@@ -318,6 +322,7 @@ const Register = () => {
                     width={(currentStep / 3) * 100} 
                     valuemin={0} 
                     valuemax={100}
+                    style={{ backgroundColor: '#F36100' }} // Orange progress bar
                   >
                     Step {currentStep} of 3
                   </MDBProgressBar>
@@ -329,6 +334,7 @@ const Register = () => {
                       color='light'
                       className='mb-4'
                       onClick={handlePrevStep}
+                      style={{ backgroundColor: '#F36100', color: '#fff' }} // Orange button
                     >
                       <ChevronLeft size={20} className="me-2" />
                       Previous
@@ -339,6 +345,7 @@ const Register = () => {
                     <MDBBtn 
                       className='mb-4 ms-auto'
                       onClick={handleNextStep}
+                      style={{ backgroundColor: '#F36100', color: '#fff' }} // Orange button
                     >
                       Next
                       <ChevronRight size={20} className="ms-2" />
@@ -348,6 +355,7 @@ const Register = () => {
                       className='mb-4 ms-auto'
                       color='success'
                       onClick={handleRegister}
+                      style={{ backgroundColor: '#F36100', color: '#fff' }} // Orange button
                     >
                       Complete Registration
                       <ChevronRight size={20} className="ms-2" />

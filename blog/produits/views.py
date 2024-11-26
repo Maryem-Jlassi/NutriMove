@@ -23,7 +23,8 @@ from django.http import JsonResponse
 from .models import Produit, Client, Achat
 from .forms import AchatForm
 import json
-import stripe
+from django.db.models import Count 
+
 
 
 # Configure PayPal SDK
@@ -33,7 +34,7 @@ paypalrestsdk.configure({
     "client_secret": settings.PAYPAL_CLIENT_SECRET
 })
 
-stripe.api_key = settings.STRIPE_SECRET_KEY  # Set your Stripe secret key here
+
 
 
 def add_achat(request, produit_reference):
@@ -84,31 +85,13 @@ def add_achat(request, produit_reference):
                             approval_url = link.href
                             return redirect(approval_url)
 
-            elif payment_method == 'stripe':
-                # Set up Stripe payment
-                try:
-                    charge = stripe.Charge.create(
-                        amount=int(achat.total_prix * 100),   # Stripe expects the amount in cents
-                        currency="usd",  # or your desired currency
-                        description=f"Payment for {achat.produit.nom}",
-                        source=request.POST['stripeToken'],  # You'll send this from the frontend
-                    )
-                    if charge.status == "succeeded":
-                        # Payment succeeded, mark the achat as paid or do necessary actions
-                        achat.status = "paid"
-                        achat.save()
-                        return redirect('payment_success')  # Redirect to a success page
-                except stripe.error.StripeError as e:
-                    # Handle Stripe error (e.g., invalid card)
-                    print(f"Stripe error: {e}")
-                    return redirect('payment_error')  # Redirect to an error page if payment fails
-
-            return redirect('payment_error')  # If neither PayPal nor Stripe is selected
+            return redirect('payment_error')  # If PayPal is not selected or fails
 
     else:
         form = AchatForm(client=client, produit=produit)  # Pass client and produit to the form
 
     return render(request, 'add_achat.html', {'form': form, 'produit': produit})
+
 
 
 
@@ -169,25 +152,30 @@ class ProduitListView(ListView):
     context_object_name = 'produits'
 
     def get_queryset(self):
-        queryset = Produit.objects.all()
-        
+        # Annotate products with the count of related 'Achats'
+        queryset = Produit.objects.annotate(total_achats=Count('achats'))
+
         # Filter by category if specified
         categorie = self.request.GET.get('categorie')
         if categorie:
             queryset = queryset.filter(categorie=categorie)
-        
+
         # Search by name if a search term is provided
         search_term = self.request.GET.get('search')
         if search_term:
             queryset = queryset.filter(nom__icontains=search_term)  # Case-insensitive search
-        
-        # Sorting by price if specified
+
+        # Sorting by price or number of purchases
         sort_order = self.request.GET.get('sort')
         if sort_order == 'price_asc':
             queryset = queryset.order_by('prix')
         elif sort_order == 'price_desc':
             queryset = queryset.order_by('-prix')
-        
+        elif sort_order == 'achats_asc':
+            queryset = queryset.order_by('total_achats')
+        elif sort_order == 'achats_desc':
+            queryset = queryset.order_by('-total_achats')
+
         return queryset
 
 
@@ -198,9 +186,20 @@ class ProduitDetailView(DetailView):
     template_name = 'produit_detail.html'
 
     def get_object(self, queryset=None):
-        # You can override the get_object method to look up the product using its reference
-        reference = self.kwargs['reference']  # reference from the URL
+        # Retrieve the product using its reference
+        reference = self.kwargs['reference']
         return get_object_or_404(Produit, reference=reference)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        produit = self.get_object()
+
+        # Count the number of 'Achats' related to this product
+        total_achats = produit.achats.count()
+        
+        # Add the count to the context
+        context['total_achats'] = total_achats
+        return context
 
 # Création d'un produit
 class ProduitCreateView(CreateView):

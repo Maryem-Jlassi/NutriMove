@@ -27,6 +27,7 @@ import {
   ResetTvOutlined,
 } from "@mui/icons-material";
 import Cookies from "js-cookie";
+
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -50,7 +51,6 @@ const Login = () => {
       localStorage.setItem("refresh_token", token.refresh);
       localStorage.setItem("isAuthenticated", true);
 
-      // If the user is a client, store their information in cookies
       if (user.is_client) {
         Cookies.set("access_token", token.access, {
           secure: true,
@@ -108,7 +108,7 @@ const Login = () => {
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
-        backgroundColor: "#f0f2f5",
+        backgroundColor: "#121212", // Dark Gray Background
       }}
     >
       <MDBContainer>
@@ -125,7 +125,9 @@ const Login = () => {
             style={{
               width: "900px",
               margin: "auto",
-              boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.3)",
+              backgroundColor: "#1e1e1e", // Card Background
+              color: "#ffffff", // Text Color
             }}
           >
             <MDBRow className="g-0">
@@ -158,10 +160,10 @@ const Login = () => {
                       }}
                     >
                       <PersonOutlined
-                        style={{ fontSize: "4rem", color: "#1976D2" }}
+                        style={{ fontSize: "4rem", color: "#f36100" }} // Orange
                       />
                     </motion.div>
-                    <h2 className="mt-2" style={{ color: "#1976D2" }}>
+                    <h2 className="mt-2" style={{ color: "#f36100" }}>
                       Welcome Back!
                     </h2>
                   </motion.div>
@@ -172,7 +174,7 @@ const Login = () => {
                       animate={{ x: 0 }}
                       transition={{ type: "spring", stiffness: 300 }}
                       style={{
-                        color: "red",
+                        color: "#ff3d00", // Bright Red for errors
                         textAlign: "center",
                         marginBottom: "15px",
                       }}
@@ -187,36 +189,40 @@ const Login = () => {
                     transition={{ delay: 0.3 }}
                   >
                     <MDBInput
-                      className="mb-3"
-                      label="Username"
-                      type="text"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      leftIcon={
-                        <motion.div
-                          whileHover={{ scale: 1.2, rotate: 360 }}
-                          transition={{ type: "spring", stiffness: 300 }}
-                        >
-                          <PersonOutlined style={{ color: "#1976D2" }} />
-                        </motion.div>
-                      }
-                    />
+  className="mb-3"
+  label="Username"
+  type="text"
+  value={username}
+  onChange={(e) => setUsername(e.target.value)}
+  style={{ color: "white" }} // Input text white
+  labelStyle={{ color: "white" }} // Label text white
+  leftIcon={
+    <motion.div
+      whileHover={{ scale: 1.2, rotate: 360 }}
+      transition={{ type: "spring", stiffness: 300 }}
+    >
+      <PersonOutlined style={{ color: "#f36100" }} />
+    </motion.div>
+  }
+/>
 
-                    <MDBInput
-                      className="mb-3"
-                      label="Password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      leftIcon={
-                        <motion.div
-                          whileHover={{ scale: 1.2, rotate: 360 }}
-                          transition={{ type: "spring", stiffness: 300 }}
-                        >
-                          <LockOutlined style={{ color: "#1976D2" }} />
-                        </motion.div>
-                      }
-                    />
+<MDBInput
+  className="mb-3"
+  label="Password"
+  type="password"
+  value={password}
+  onChange={(e) => setPassword(e.target.value)}
+  style={{ color: "white" }} // Input text white
+  labelStyle={{ color: "white" }} // Label text white
+  leftIcon={
+    <motion.div
+      whileHover={{ scale: 1.2, rotate: 360 }}
+      transition={{ type: "spring", stiffness: 300 }}
+    >
+      <LockOutlined style={{ color: "#f36100" }} />
+    </motion.div>
+  }
+/>
                   </motion.div>
 
                   <motion.div
@@ -225,11 +231,11 @@ const Login = () => {
                     transition={{ delay: 0.4 }}
                   >
                     <MDBBtn
-                      color="primary"
+                      style={{ backgroundColor: "#f36100", borderColor: "#f36100", color: "#fff" }}
                       className="w-100 mb-3"
                       onClick={handleLogin}
                     >
-                      <LoginOutlined style={{ marginRight: "10px" }} />
+                      <LoginOutlined style={{ marginRight: "10px" , color: "#ffffff" }} />
                       Login
                     </MDBBtn>
 
@@ -239,7 +245,7 @@ const Login = () => {
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setOpenForgotPassword(true)}
                         style={{
-                          color: "#1976D2",
+                          color: "#f36100",
                           textDecoration: "underline",
                           cursor: "pointer",
                         }}
@@ -253,7 +259,7 @@ const Login = () => {
                           href="/register"
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          style={{ color: "#1976D2" }}
+                          style={{ color: "#f36100" }}
                         >
                           Register
                         </motion.a>
@@ -272,36 +278,49 @@ const Login = () => {
           onClose={() => setOpenForgotPassword(false)}
           maxWidth="sm"
           fullWidth
+          
         >
-          <DialogTitle>Reset Your Password</DialogTitle>
-          <DialogContent>
-            <p className="text-muted mb-3">
-              Enter your email to receive a reset link.
-            </p>
-            <MDBInput
-              label="Email"
-              value={resetEmail}
-              onChange={(e) => setResetEmail(e.target.value)}
-              leftIcon={<EmailOutlined style={{ color: "#1976D2" }} />}
-            />
-            <div className="text-center mt-4">
-              <MDBBtn
-                color="primary"
-                onClick={handlePasswordReset}
-                disabled={loading}
-                className="w-100"
-              >
-                {loading ? (
-                  <CircularProgress size={20} color="inherit" />
-                ) : (
-                  <>
-                    <ResetTvOutlined style={{ marginRight: "10px" }} />
-                    Send Reset Link
-                  </>
-                )}
-              </MDBBtn>
-            </div>
-          </DialogContent>
+          <DialogTitle style={{ color: "#f36100", fontWeight: "bold" }}>
+  Reset Your Password
+</DialogTitle>
+<DialogContent>
+  <p className="text-muted mb-3" style={{ color: "#f36100", fontSize: "16px" }}>
+    Enter your email to receive a reset link.
+  </p>
+  <MDBInput
+    label="Email"
+    value={resetEmail}
+    onChange={(e) => setResetEmail(e.target.value)}
+    style={{ color: "#f36100" }} // Makes the input text color match the theme
+    labelStyle={{ color: "#000000" }} // Ensures the label is black
+    leftIcon={<EmailOutlined style={{ color: "#f36100" }} />}
+  />
+  <div className="text-center mt-4">
+    <MDBBtn
+      size="sm" // Makes the button smaller
+      style={{
+        backgroundColor: "#f36100",
+        borderColor: "#f36100",
+        color: "#ffffff",
+        width: "auto", // Adjusts the width to the content size
+        padding: "10px 20px" // Adjusts padding for a better fit if needed
+      }}
+      onClick={handlePasswordReset}
+      disabled={loading}
+    >
+      {loading ? (
+        <CircularProgress size={20} style={{ color: "#ffffff" }} />
+      ) : (
+        <>
+          <ResetTvOutlined style={{ marginRight: "10px", color: "#ffffff" }} />
+          Send Reset Link
+        </>
+      )}
+    </MDBBtn>
+  </div>
+</DialogContent>
+
+
           <DialogActions>
             <MDBBtn
               outline

@@ -10,6 +10,7 @@ from django.conf import settings
 from django.shortcuts import get_list_or_404,get_object_or_404
 from pathlib import Path
 import csv
+import os
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.db.models import Avg, Count
@@ -22,7 +23,8 @@ from django.core.exceptions import PermissionDenied
 
 def program(request):
     return render(request, 'class-timetable.html')
-
+def home(request):
+    return render(request, 'index.html')
 class IsSuperUser(BasePermission):
     def has_permission(self, request, view):
         return request.user and request.user.is_superuser
@@ -248,8 +250,8 @@ def get_client_profile(request):
     user_profile = {
         'userId': user.id,
         'username': user.username,
-        'first_name':user.first_name,
-        'last_name':user.last_name,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
         'email': user.email,
         'is_active': user.is_active,
         'is_staff': user.is_staff,
@@ -262,7 +264,6 @@ def get_client_profile(request):
     # Check if the user is a Client
     if user.is_client:
         try:
-            # Retrieve the Client instance using the user instance
             client_instance = Client.objects.get(pk=user.pk)
             user_profile.update({
                 'age': client_instance.age,
@@ -271,12 +272,11 @@ def get_client_profile(request):
                 'goal_weight': client_instance.goal_weight,
                 'activity_level': client_instance.activity_level,
                 'profile_picture': client_instance.profile_picture,
-                'sexe':client_instance.sexe,
-                'program_fitness': client_instance.program_fitness.url if client_instance.program_fitness else None,
-                'program_nutrition': client_instance.program_nutrition.url if client_instance.program_nutrition else None,
+                'sexe': client_instance.sexe,
+                'program_fitness': os.path.join(settings.MEDIA_ROOT, client_instance.program_fitness.name) if client_instance.program_fitness else None,
+                'program_nutrition': os.path.join(settings.MEDIA_ROOT, client_instance.program_nutrition.name) if client_instance.program_nutrition else None,
             })
         except Client.DoesNotExist:
-            # Handle the case where the user is not found in the Client table
             user_profile.update({
                 'age': None,
                 'weight': None,
@@ -284,10 +284,13 @@ def get_client_profile(request):
                 'goal_weight': None,
                 'activity_level': None,
                 'profile_picture': None,
-                'program_nutrition': '',
-                'program_fitness': '',
+                'program_nutrition': None,
+                'program_fitness': None,
             })
+
     return Response(user_profile)
+
+
 def get_client_programs(request, client_id):
     # Get the Client object by client_id
     client = get_object_or_404(Client, id=client_id)

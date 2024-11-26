@@ -20,8 +20,8 @@ import UserProfileDialog from "./UserProfileDialog ";
 import { Navigate } from "react-router-dom";
 
 const CustomNavbar = styled(AppBar)(({ theme }) => ({
-  background: "linear-gradient(90deg, #000000, #1976D2)",
-  borderBottom: "2px solid #1976D2",
+  background: "linear-gradient(90deg, #000000, #F36100)",
+  borderBottom: "2px solid #F36100",
   width: "calc(100% - 200px)",
   marginLeft: "200px",
   position: "fixed",
@@ -121,9 +121,15 @@ const Header = () => {
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
           onClose={handleMenuClose}
+          sx={{
+            '& .MuiPaper-root': {
+              backgroundColor: 'black', // Set dropdown background color to black
+              color: 'white', // Set text color to white
+            }
+          }}
         >
-          <MenuItem onClick={handleViewProfile}>Voir Profil</MenuItem>
-          <MenuItem onClick={handleLogout}>Déconnexion</MenuItem>
+          <MenuItem onClick={handleViewProfile} sx={{ color: 'white' }}>Voir Profil</MenuItem>
+          <MenuItem onClick={handleLogout} sx={{ color: 'white' }}>Déconnexion</MenuItem>
         </Menu>
       </Toolbar>
 
