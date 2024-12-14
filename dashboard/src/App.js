@@ -8,6 +8,7 @@ import NutriTable from './components/dashboard/NutriTable';
 import PrivateRoute from './components/dashboard/PrivateRoute';
 import ForgotPassword from './components/login/ForgotPassword';
 import ResetPassword from './components/login/ResetPassword';
+import FaceRecognition from './components/login/FaceRecognitionLogin'
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
       }}
     >
       <Routes>
+        {/*<Route path="/FaceRecognition" element={<FaceRecognition />} />*/}
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />

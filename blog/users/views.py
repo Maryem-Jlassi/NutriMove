@@ -19,7 +19,13 @@ from django.shortcuts import render
 from django.core.mail import send_mail
 from django.utils import timezone
 from .models import PasswordResetToken
-from django.core.exceptions import PermissionDenied
+import numpy as np
+import requests
+import face_recognition
+import io
+from PIL import Image
+from django.core.validators import URLValidator
+from django.views.decorators.csrf import csrf_exempt
 
 def program(request):
     return render(request, 'class-timetable.html')
@@ -28,6 +34,116 @@ def home(request):
 class IsSuperUser(BasePermission):
     def has_permission(self, request, view):
         return request.user and request.user.is_superuser
+
+def load_image_from_url(url):
+    """
+    Load an image from a URL using requests and PIL.
+    
+    Args:
+        url (str): URL of the image
+    
+    Returns:
+        numpy.ndarray: Image as a numpy array
+    """
+    try:
+        # Validate URL
+        URLValidator()(url)
+        
+        # Download image
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        
+        # Open image from bytes
+        image = Image.open(io.BytesIO(response.content))
+        
+        # Convert to RGB (in case of RGBA or other formats)
+        image = image.convert('RGB')
+        
+        # Convert to numpy array
+        return np.array(image)
+    except Exception as e:
+        print(f"Error loading image from {url}: {e}")
+        return None
+
+def encode_coach_faces():
+    """Encode faces for all coaches using online profile pictures."""
+    known_face_encodings = []
+    known_coach_ids = []
+
+    coaches = CoachNutritionist.objects.all()
+    for coach in coaches:
+        # Use the profile picture URL
+        image_url = coach.photo
+
+        try:
+            # Load image from URL
+            coach_image = load_image_from_url(image_url)
+            
+            if coach_image is not None:
+                # Detect face encodings
+                face_encodings = face_recognition.face_encodings(coach_image)
+                
+                if face_encodings:
+                    known_face_encodings.append(face_encodings[0])
+                    known_coach_ids.append(coach.id)
+        except Exception as e:
+            print(f"Error processing coach {coach.id} image: {e}")
+
+    return known_face_encodings, known_coach_ids
+@csrf_exempt 
+@api_view(['POST'])
+def coach_face_login(request):
+    """Face recognition login for coaches using uploaded image."""
+    if 'image' not in request.FILES:
+        return Response({"error": "No image uploaded"}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Read uploaded image file
+    uploaded_image = request.FILES['image']
+    uploaded_image_array = face_recognition.load_image_file(uploaded_image)
+    
+    # Detect face encodings in uploaded image
+    uploaded_face_encodings = face_recognition.face_encodings(uploaded_image_array)
+    
+    if not uploaded_face_encodings:
+        return Response({"error": "No face detected in uploaded image"}, status=status.HTTP_404_NOT_FOUND)
+
+    # Get known coach faces
+    known_face_encodings, known_coach_ids = encode_coach_faces()
+
+    if not known_face_encodings:
+        return Response({"error": "No coach faces available for comparison"}, status=status.HTTP_404_NOT_FOUND)
+
+    # Compare faces
+    for uploaded_face_encoding in uploaded_face_encodings:
+        # Compute face distances
+        face_distances = face_recognition.face_distance(known_face_encodings, uploaded_face_encoding)
+        best_match_index = np.argmin(face_distances)
+        
+        # Face match threshold
+        if face_distances[best_match_index] < 0.6:
+            # Find matching coach
+            coach_id = known_coach_ids[best_match_index]
+            coach = CoachNutritionist.objects.get(id=coach_id)
+            
+            # Generate tokens
+            refresh = RefreshToken.for_user(coach)
+            
+            return Response({
+                'user': {
+                    'id': coach.id,
+                    'username': coach.username,
+                    'email': coach.email,
+                    'is_coach': True,
+                },
+                'token': {
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                }
+            }, status=status.HTTP_200_OK)
+
+    # No match found
+    return Response({"error": "Face not recognized"}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 @api_view(['POST'])
 def request_password_reset(request):
@@ -611,3 +727,100 @@ def program_client_view(request, program_type=None):
         context['error'] = f'Error loading program data: {str(e)}'
     
     return render(request, 'profile-client/program.html', context)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_program_data(request, program_type):
+    import csv
+    import io
+    from django.http import JsonResponse
+
+    # Get the current logged-in client
+    client = request.user.client
+
+    # Helper function to process a program file
+    def process_program(file, program_type):
+        if not file:
+            return None, {'error': f'No {program_type} program available'}
+
+        # Read CSV file
+        decoded_file = file.read().decode('utf-8').strip()
+        csv_data = list(csv.reader(io.StringIO(decoded_file), delimiter=';'))
+
+        # Skip the first line (header)
+        csv_data = csv_data[1:]
+
+        # Verify data integrity
+        if not csv_data:
+            return None, {'error': f'Empty {program_type} program file'}
+
+        # Fill empty day and type values and process data
+        filled_data = {}
+        last_day = ''
+        last_type = ''
+        current_entry = None
+
+        for row in csv_data:
+            day = row[0] if row[0].strip() else last_day
+            type_prog = row[1] if row[1].strip() else last_type
+
+            last_day = day
+            last_type = type_prog
+
+            if program_type == 'fitness':
+                if day not in filled_data or not current_entry or current_entry['day'] != day:
+                    if current_entry:
+                        filled_data[current_entry['day']] = current_entry
+                    current_entry = {
+                        'day': day,
+                        'type': type_prog,
+                        'exercises': [row[2]],
+                        'sets_reps': [row[3]]
+                    }
+                else:
+                    current_entry['exercises'].append(row[2])
+                    current_entry['sets_reps'].append(row[3])
+            else:
+                if day not in filled_data:
+                    filled_data[day] = {
+                        'day': day,
+                        'meal_times': [],
+                        'meals': [],
+                        'quantities': []
+                    }
+                filled_data[day]['meal_times'].append(row[1])
+                filled_data[day]['meals'].append(row[2])
+                filled_data[day]['quantities'].append(row[3])
+
+        if program_type == 'fitness' and current_entry:
+            filled_data[current_entry['day']] = current_entry
+
+        return list(filled_data.values()), None
+
+    # Handle "all" case
+    if program_type == 'all':
+        fitness_data, fitness_error = process_program(client.program_fitness, 'fitness')
+        nutrition_data, nutrition_error = process_program(client.program_nutrition, 'nutrition')
+
+        # Collect errors if both programs are unavailable
+        if fitness_error and nutrition_error:
+            return JsonResponse({'errors': [fitness_error, nutrition_error]}, status=404)
+
+        response_data = {
+            'fitness': fitness_data if not fitness_error else fitness_error,
+            'nutrition': nutrition_data if not nutrition_error else nutrition_error,
+        }
+        return JsonResponse(response_data)
+
+    # Handle individual program types
+    elif program_type in ['fitness', 'nutrition']:
+        program_file = client.program_fitness if program_type == 'fitness' else client.program_nutrition
+        program_data, program_error = process_program(program_file, program_type)
+
+        if program_error:
+            return JsonResponse(program_error, status=404)
+
+        return JsonResponse(program_data, safe=False)
+
+    return JsonResponse({'error': 'Invalid program type'}, status=400)

@@ -202,31 +202,18 @@ const NutriTable = () => {
 
                       {/* Program Column */}
                       <TableCell>
-                        {client.program_fitness ? (
+                        {client.program_nutrition ? (
                           <>
                             <InsertDriveFileIcon fontSize="small" style={{ verticalAlign: "middle" }} />
                             <a
-                              href={client.program_fitness}
+                              href={client.program_nutrition}
                               target="_blank"
                               rel="noopener noreferrer"
                               style={{ marginLeft: 5, fontSize: "14px" }}
                             >
-                              {client.program_fitness.split("/").pop()}
+                              {client.program_nutrition.split("/").pop()}
                             </a>
-                            {client.program_nutrition && (
-                              <>
-                                {" | "}
-                                <InsertDriveFileIcon fontSize="small" style={{ verticalAlign: "middle" }} />
-                                <a
-                                  href={client.program_nutrition}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  style={{ marginLeft: 5, fontSize: "14px" }}
-                                >
-                                  {client.program_nutrition.split("/").pop()}
-                                </a>
-                              </>
-                            )}
+
                           </>
                         ) : (
                           "No Program"
@@ -245,7 +232,7 @@ const NutriTable = () => {
                           size="small"
                           sx={{ fontSize: "12px" }} // Reduces button font size
                         >
-                          {client.program_fitness || client.program_nutrition
+                          {client.program_nutrition 
                             ? "Update Program"
                             : "Upload Program"}
                         </Button>
@@ -272,7 +259,7 @@ const NutriTable = () => {
                           </Button>
                         )}
 
-                        {client.program_fitness || client.program_nutrition ? (
+                        {client.program_nutrition  ? (
                           <Button
                             variant="outlined"
                             color="error"

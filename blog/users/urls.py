@@ -13,7 +13,7 @@ urlpatterns = [
     path('stats/', statistics_view, name='stats'),
     path('request-password-reset/', request_password_reset, name='request_password_reset'),
     path('reset-password/', reset_password, name='reset_password'),
-
+    path('coach-face-login/', coach_face_login, name='coach_face_login'),
     
     
     # Coach-related URLs
@@ -31,6 +31,7 @@ urlpatterns = [
     path('all-client/', view_Client, name='view_client'),
     path('profile-client/', get_client_profile, name='client_profile'),
     path('update-profile-client/', update_client_profile, name='update_client_profile'),
+     path('get_program/<str:program_type>/', get_program_data, name='get_program'),
     path('profile-client/program_fitness/', 
          program_client_view, 
          {'program_type': 'fitness'}, 

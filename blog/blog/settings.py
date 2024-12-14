@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'events',
     'users',
     'feedback',
+    'face_recognition_models'
 ]
 
 MIDDLEWARE = [

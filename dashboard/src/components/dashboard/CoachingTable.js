@@ -185,7 +185,7 @@ const CoachingTable = () => {
                       <TableCell>
                         <img
                           src={
-                            client.photo ||
+                            client.profile_picture ||
                             "https://e7.pngegg.com/pngimages/946/556/png-clipart-computer-icons-login-user-profile-client-smiley-%D0%B7%D0%BD%D0%B0%D1%87%D0%BA%D0%81.png"
                           }
                           alt={client.first_name}
@@ -213,20 +213,7 @@ const CoachingTable = () => {
                             >
                               {client.program_fitness.split("/").pop()}
                             </a>
-                            {client.program_nutrition && (
-                              <>
-                                {" | "}
-                                <InsertDriveFileIcon fontSize="small" style={{ verticalAlign: "middle" }} />
-                                <a
-                                  href={client.program_nutrition}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  style={{ marginLeft: 5, fontSize: "14px" }}
-                                >
-                                  {client.program_nutrition.split("/").pop()}
-                                </a>
-                              </>
-                            )}
+
                           </>
                         ) : (
                           "No Program"
@@ -245,7 +232,7 @@ const CoachingTable = () => {
                           size="small"
                           sx={{ fontSize: "12px" }} // Reduces button font size
                         >
-                          {client.program_fitness || client.program_nutrition
+                          {client.program_fitness 
                             ? "Update Program"
                             : "Upload Program"}
                         </Button>
@@ -272,7 +259,7 @@ const CoachingTable = () => {
                           </Button>
                         )}
 
-                        {client.program_fitness || client.program_nutrition ? (
+                        {client.program_fitness  ? (
                           <Button
                             variant="outlined"
                             color="error"
