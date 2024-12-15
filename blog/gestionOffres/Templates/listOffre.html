@@ -30,7 +30,8 @@
         <link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}" type="text/css">
         <link rel="stylesheet" href="{% static 'css/slicknav.min.css' %}" type="text/css">
         <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css">
-        
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
     
 
     <style>
@@ -65,7 +66,290 @@
         .star-rating label {
             margin-right: 3px;
         }
+
+        /* Pagination styles */
+.pagination .page-item .page-link {
+    color: #ff6f61; /* Couleur orange */
+    background-color: #1a1a1a; /* Fond noir */
+    border: 1px solid #ff6f61; /* Bordure orange */
+    padding: 10px 15px;
+    margin: 0 3px;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+    text-decoration: none;
+}
+
+.pagination .page-item .page-link:hover {
+    background-color: #ff6f61; /* Fond orange survolé */
+    color: #1a1a1a; /* Texte noir */
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #ff6f61; /* Fond orange */
+    color: white; /* Texte blanc */
+    border: 1px solid #ff6f61; /* Bordure orange */
+    pointer-events: none; /* Désactiver le clic */
+}
+
+.pagination .page-item.disabled .page-link {
+    background-color: #1a1a1a; /* Fond noir */
+    color: gray; /* Texte gris pour pages désactivées */
+    border: 1px solid #333; /* Bordure grise */
+}
+
     </style>
+
+    <style>
+        /* Card Container */
+        .class-item {
+            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+            border-radius: 20px;
+            padding: 40px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .class-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(243, 97, 0, 0.2);
+            border-color: rgba(243, 97, 0, 0.3);
+        }
+        
+        /* Header Section */
+        .offer-header {
+            position: relative;
+            text-align: center;
+            padding-bottom: 30px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .offer-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            background: linear-gradient(135deg, #f36100, #ff8142);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(243, 97, 0, 0.2);
+        }
+        
+        .offer-icon i {
+            font-size: 35px;
+            color: #ffffff;
+        }
+        
+        .offer-header h3 {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            transition: color 0.3s ease;
+        }
+        
+        /* Price Section */
+        .pi-price {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .pi-price h2 {
+            color: #f36100;
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .pi-price .period {
+            color: #888;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        
+        /* Features List */
+        .class-item ul {
+            list-style: none;
+            padding: 0;
+            margin: 25px 0;
+        }
+        
+        .class-item ul li {
+            color: #ffffff;
+            font-size: 15px;
+            padding: 12px 0;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .class-item ul li:last-child {
+            border-bottom: none;
+        }
+        
+        .class-item ul li strong {
+            color: #f36100;
+            margin-right: 10px;
+        }
+        
+        /* Action Buttons */
+        .primary-btn.pricing-btn {
+            width: 100%;
+            padding: 15px;
+            margin: 8px 0;
+            background: linear-gradient(135deg, #f36100, #ff8142);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: inline-block;
+        }
+        
+        .primary-btn.pricing-btn:hover {
+            background: linear-gradient(135deg, #ff8142, #f36100);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(243, 97, 0, 0.3);
+        }
+        
+        /* Rating Section */
+        .class-item h4 {
+            color: #ffffff;
+            font-size: 18px;
+            text-align: center;
+            margin: 30px 0 15px;
+        }
+        
+        .star-rating {
+            background: rgba(243, 97, 0, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            margin: 15px 0;
+        }
+        
+        .star-rating label {
+            font-size: 25px;
+            color: #4a4a4a;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: #f36100;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .class-item {
+                padding: 30px 20px;
+            }
+            
+            .pi-price h2 {
+                font-size: 36px;
+            }
+            
+            .offer-icon {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .offer-icon i {
+                font-size: 30px;
+            }
+        }
+        /* Section Analyse Faciale */
+        /* Section Analyse Faciale */
+        .analyze-section {
+            background: linear-gradient(135deg, #222222, #FF5733); /* Dégradé entre noir et orange */
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+            border-radius: 20px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.4); /* Ombre autour de la section */
+        }
+        
+        .analyze-section h2 {
+            font-size: 42px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 20px;
+            text-transform: uppercase; /* Texte en majuscules */
+            letter-spacing: 2px;
+        }
+        
+        .analyze-section p {
+            font-size: 20px;
+            color: #f1f1f1; /* Gris clair pour un bon contraste avec le fond sombre */
+            margin-bottom: 40px;
+        }
+        
+        /* Supprimer l'influence de Bootstrap */
+.btn-analyze {
+    background-color: #FF5733 !important; /* Orange vif, avec la priorité pour surcharger Bootstrap */
+    color: white !important;
+    padding: 20px 40px;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 50px;
+    border: 2px solid transparent;
+    display: inline-block;
+    text-decoration: none;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+/* On surcharge également les autres états du bouton */
+.btn-analyze:hover {
+    background-color: #C13F1F !important;
+    color: #FF5733 !important;
+    border-color: #FF5733 !important;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.btn-analyze:active {
+    background-color: #C13F1F !important;
+    transform: translateY(4px);
+}
+
+        
+        @media (max-width: 768px) {
+            .analyze-section {
+                padding: 60px 20px;
+            }
+        
+            .analyze-section h2 {
+                font-size: 36px;
+            }
+        
+            .analyze-section p {
+                font-size: 18px;
+            }
+        
+            .btn-analyze {
+                font-size: 16px;
+                padding: 15px 30px;
+                background-color: #C13F1F;
+            }
+        }
+        
+        
+
+        </style>  
 
 </head>
 <body>
@@ -85,7 +369,7 @@
                 <li><a href="./index.html">Home</a></li>
                 <li><a href="./about-us.html">About Us</a></li>
                 <li><a href="./class-details.html">Classes</a></li>
-                <li><a href="./services.html">offers</a></li>
+                <li><a href="./listOffre.html">offers</a></li>
                 <li><a href="./team.html">Our Team</a></li>
                 <li><a href="#">Pages</a>
                     <ul class="dropdown">
@@ -252,13 +536,6 @@
     </section>
     <!-- Services Section End -->
 
-
-
-
-
-
-
-
 <!-- ========================= 
 
     OFFERS SECTION   
@@ -273,37 +550,64 @@
                 </div>
             </div>
         </div>
-      <!-- Formulaire de recherche et tri -->
-<div class="search-sort-container wow fadeInUp" data-wow-delay="1.5s">
-    <form method="get" action="{% url 'search_offres' %}" class="search-sort-form">
-        <div class="input-group input-group-lg">
-            <!-- Champ de recherche -->
-            <input type="text" name="q" placeholder="Rechercher par titre" value="{{ request.GET.q|default_if_none:'' }}" class="form-control" />
-            
-            <!-- Bouton de recherche -->
-            <button type="submit" class="btn btn-search"><i class="fa fa-search"></i></button>
+
+        <!-- Bouton "Voir les Statistiques" -->
+        <div class="text-center my-4">
+            <a href="{% url 'offre_statistics_view' %}" class="btn btn-statistics">
+                Voir les statistiques des offres
+            </a>
         </div>
         
-        <!-- Tri par option -->
-        <div class="form-group">
-            <select name="sort_by" id="sort_by" class="custom-select" onchange="this.form.submit()">
-                <option value="price" {% if request.GET.sort_by == 'price' %}selected{% endif %}>Prix</option>
-                <option value="start_date" {% if request.GET.sort_by == 'start_date' %}selected{% endif %}>Date de début</option>
-                <option value="titleOffre" {% if request.GET.sort_by == 'titleOffre' %}selected{% endif %}>Titre de l'offre</option>
-            </select>
+
+        <!-- Section de recherche et tri -->
+        <div class="search-sort-container wow fadeInUp" data-wow-delay="0.3s">
+            <form method="get" action="{% url 'search_offres' %}" class="search-sort-form">
+                <div class="input-group input-group-lg">
+                    <input type="text" name="q" placeholder="Rechercher une offre..." 
+                           value="{{ request.GET.q|default_if_none:'' }}" class="form-control" />
+                    <button type="submit" class="btn btn-search">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+                <div class="form-group">
+                    <select name="sort_by" id="sort_by" class="custom-select" onchange="this.form.submit()">
+                        <option value="price" {% if request.GET.sort_by == 'price' %}selected{% endif %}>Prix</option>
+                        <option value="start_date" {% if request.GET.sort_by == 'start_date' %}selected{% endif %}>Date de début</option>
+                        <option value="titleOffre" {% if request.GET.sort_by == 'titleOffre' %}selected{% endif %}>Titre</option>
+                    </select>
+                </div>
+            </form>
         </div>
-    </form>
-</div>
+        <!--<form method="post" action="{% url 'analyze_face'  %}" enctype="multipart/form-data"> -->
+            
+        <section id="analyze" class="analyze-section spad">
+            <div class="container">
+                <div class="text-center">
+                    <h2>Analyse Faciale</h2>
+                    <p>Envoyez une image pour découvrir les offres adaptées à votre âge.</p>
+                    <!-- Bouton redirigeant vers la page d'analyse -->
+                    <a href="{% url 'analyze_face' %}" class="btn btn-primary">Analyser mon visage</a>
+                </div>
+            </div>
+        </section>
+        
 
-
+        <!-- Grid des offres -->
         <div class="row justify-content-center">
             {% for c in offres %}
-            <div class="col-lg-4 col-md-8">
-                <div class="ps-item">
-                    <h3>{{ c.titleOffre }}</h3>
-                    <div class="pi-price">
-                        <h2>DT {{ c.price }}</h2>
-                       
+            <div class="col-lg-4 col-md-6">
+                <div class="class-item">
+                    <div class="ci-pic">
+                        <div class="offer-header">
+                            <div class="offer-icon">
+                                <i class="fas fa-gift"></i>
+                            </div>
+                            <h3><i class="fas fa-tag me-2"></i>{{ c.titleOffre }}</h3>
+                            <div class="pi-price">
+                                <h2><i class="fas fa-coins me-2"></i>{{ c.price }} DT</h2>
+                                <span class="period">Par mois</span>
+                            </div>
+                        </div>
                     </div>
                     <ul>
                         <li><strong>Date de début:</strong> {{ c.start_date }}</li>
@@ -312,16 +616,41 @@
                         <li>Accès exclusif aux ressources</li>
                     </ul>
                     <a href="{% url 'detailoffre' c.id %}" class="primary-btn pricing-btn">Voir Détails</a>
-                   
-                        <a href="{% url 'abonner' c.id  %}" class="primary-btn pricing-btn">S'abonner</a>
-                 
-                        
-                 
+                    <a href="#" 
+                       class="primary-btn pricing-btn btn-abonner" 
+                       data-offre-id="{{ c.id }}">
+                       Participate
+                    </a>
+
+                    <!-- Fonction Écouter l'offre -->
+                    <button class="primary-btn pricing-btn" onclick="playAudio('{{ c.id }}')">Écouter l'offre</button>
+                    <audio id="audio-{{ c.id }}" style="display:none;" controls>
+                        <source src="{% url 'lire_offre_vocale' c.id %}" type="audio/mp3">
+                        Votre navigateur ne supporte pas la lecture de fichiers audio.
+                    </audio>
+
+                    <!-- JavaScript pour lecture audio -->
+                    <script>
+                        function playAudio(offreId) {
+                            const allAudioElements = document.querySelectorAll('audio');
+                            allAudioElements.forEach(audio => {
+                                audio.style.display = 'none';
+                                audio.pause();
+                            });
+
+                            const audioElement = document.getElementById('audio-' + offreId);
+                            if (audioElement) {
+                                audioElement.style.display = 'block';
+                                audioElement.play();
+                            } else {
+                                console.error(`Audio element not found for offer ID: ${offreId}`);
+                            }
+                        }
+                    </script>
 
                     <!-- Système de notation -->
                     <h4 class="mt-4">Notez cette offre</h4>
-                    <form method="post" action="{% url 'rate_offre' offre_id=c.id  %}">
-
+                    <form method="post" action="{% url 'rate_offre' offre_id=c.id %}">
                         {% csrf_token %}
                         <div class="star-rating">
                             <input type="radio" id="star5-{{ c.id }}" name="score" value="5" />
@@ -348,6 +677,65 @@
     </div>
 </section>
 
+<div class="row justify-content-center">
+    {% for c in offres %}
+    <!-- Votre code existant pour chaque offre -->
+    {% empty %}
+    <div class="col-md-12">
+        <p class="alert alert-warning">Aucune offre disponible</p>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="container bg-gray-100 py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <nav aria-label="Page navigation" class="bg-gray-100">
+                <ul class="pagination justify-content-center bg-gray-100">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link bg-gray-100" 
+                               href="?page=1{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                                Première
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link bg-gray-100" 
+                               href="?page={{ page_obj.previous_page_number }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                                Précédente
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link bg-gray-100">
+                            Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                        </span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link bg-gray-100" 
+                               href="?page={{ page_obj.next_page_number }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                                Suivante
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link bg-gray-100" 
+                               href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                                Dernière
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+
+
+
 <!-- Script JS corrigé -->
 <script>
     document.querySelectorAll('.star-rating').forEach(starContainer => {
@@ -365,12 +753,325 @@
             });
         });
     });
+
+
+
+// Function to get a specific cookie value
+// Function to get a specific cookie value
+function getCookie(name) {
+    const value = document.cookie; // Get cookies
+    const parts = value.split('; '); // Split cookies by ';'
+    for (let i = 0; i < parts.length; i++) {
+        const part = parts[i].split('='); // Split each cookie into name and value
+        if (part[0] === name) { // If cookie name matches
+            return decodeURIComponent(part[1]); // Return decoded value
+        }
+    }
+    return null; // Return null if cookie is not found
+}
+const token = localStorage.getItem('auth_token');
+if (token) {
+    console.log('Token trouvé:', token);
+} else {
+    console.error('Token non trouvé');
+}
+
+
+
+
+// Get the 'user_info' cookie
+const userInfoCookie = getCookie('user_info');
+
+// Parse the JSON string to an object
+const userInfo = JSON.parse(userInfoCookie);
+
+
+// Vérifier si le cookie user_info existe et le parser
+let allUserInfo = {};
+if (userInfoCookie) {
+    const userInfo = JSON.parse(userInfoCookie);
+
+    // Stocker toutes les informations de l'utilisateur dans un objet
+    allUserInfo = {
+        id: userInfo.id,
+        lastLogin: userInfo.last_login,
+        isSuperuser: userInfo.is_superuser,
+        username: userInfo.username,
+        firstName: userInfo.first_name,
+        lastName: userInfo.last_name,
+        email: userInfo.email,
+        isStaff: userInfo.is_staff,
+        isActive: userInfo.is_active,
+        dateJoined: userInfo.date_joined,
+        isClient: userInfo.is_client,
+        isCoach: userInfo.is_coach,
+        isNutritionist: userInfo.is_nutritionist,
+        gender: userInfo.sexe,
+        age: userInfo.age,
+        weight: userInfo.weight,
+        height: userInfo.height,
+        goalWeight: userInfo.goal_weight,
+        activityLevel: userInfo.activity_level,
+        profilePicture: userInfo.profile_picture,
+        programFitness: userInfo.program_fitness,
+        programNutrition: userInfo.program_nutrition,
+        groups: userInfo.groups,
+        userPermissions: userInfo.user_permissions
+    };
+
+    // Log toutes les informations de l'utilisateur
+    console.log(allUserInfo);
+    console.log(allUserInfo.id);
+} else {
+    console.error('Aucune information utilisateur trouvée dans les cookies.');
+}
+
+// Fonction pour envoyer une demande d'abonnement
+function abonnerOffre(offreId) {
+    // Vérifier si l'id de l'utilisateur est disponible
+    if (!allUserInfo.id) {
+        console.error('user id non trouvé, veuillez vous connecter.');
+        return;
+    }
+
+    const userId = allUserInfo.id; // Récupérer l'id de l'utilisateur à partir de allUserInfo
+
+    fetch(`http://localhost:8000/sabonner/${offreId}/${userId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`, // Utiliser le token dans l'en-tête
+        },
+        body: JSON.stringify({})  // Si vous avez besoin d'envoyer des données supplémentaires
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Erreur de requête: ' + response.statusText);
+        }
+        return response.json();  // Nous attendons une réponse JSON
+    })
+    .then(data => {
+        console.log('Abonnement réussi:', data);
+    })
+    .catch(error => {
+        console.error('Erreur lors de l\'abonnement:', error);
+    });
+}
+
+/*
+  function getCookie(name) {
+        // Add '=' to the end of the cookie name to ensure precise matching
+        const cookieName = name + '=';
+        
+        // Decode the cookie string, handling potential URI encoding
+        const decodedCookie = decodeURIComponent(document.cookie);
+        
+        // Split cookies into an array
+        const cookieArray = decodedCookie.split(';');
+        
+        // Iterate through all cookies
+        for (let i = 0; i < cookieArray.length; i++) {
+            let cookie = cookieArray[i];
+            
+            // Remove leading whitespace
+            while (cookie.charAt(0) === ' ') {
+                cookie = cookie.substring(1);
+            }
+            
+            // Check if this cookie starts with the name we're looking for
+            if (cookie.indexOf(cookieName) === 0) {
+                // Return the value of the cookie (everything after the name and '=')
+                return cookie.substring(cookieName.length, cookie.length);
+            }
+        }
+        
+        // Return null if the cookie is not found
+        return null;
+    }
+    
+    // Improved token retrieval
+    function getAuthToken() {
+        // Try different storage methods
+        const tokenFromLocalStorage = localStorage.getItem('auth_token');
+        const tokenFromCookie = getCookie('auth_token');
+    
+        // Prioritize token from localStorage, then from cookie
+        return tokenFromLocalStorage || tokenFromCookie || null;
+    }
+    
+    // Improved authentication function
+    function authenticateUser(username, password) {
+        return fetch('http://localhost:8000/api/token/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Authentication failed');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Store tokens securely
+            localStorage.setItem('auth_token', data.access);
+            localStorage.setItem('refresh_token', data.refresh);
+            
+            // Set cookie with additional security attributes
+            document.cookie = `auth_token=${data.access}; path=/; SameSite=Strict; Secure`;
+            
+            return data; // Return data for further processing if needed
+        })
+        .catch(error => {
+            console.error('Login error:', error);
+            throw error; // Re-throw to allow caller to handle
+        });
+    }
+    
+    // Token refresh mechanism
+    function refreshToken() {
+        const refreshToken = localStorage.getItem('refresh_token');
+        
+        if (!refreshToken) {
+            console.error('No refresh token available');
+            // Redirect to login or handle logout
+            return Promise.reject(new Error('No refresh token'));
+        }
+        
+        return fetch('http://localhost:8000/api/token/refresh/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                refresh: refreshToken
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Token refresh failed');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Update tokens
+            localStorage.setItem('auth_token', data.access);
+            
+            // Update cookie with new token
+            document.cookie = `auth_token=${data.access}; path=/; SameSite=Strict; Secure`;
+            
+            return data.access; // Return new access token
+        })
+        .catch(error => {
+            console.error('Token refresh failed', error);
+            // Clear tokens and redirect to login
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('refresh_token');
+            throw error;
+        });
+    }
+    
+    // Improved subscription function
+    function abonnerOffre(offreId, userId) {
+        const token = getAuthToken();
+        
+        if (!token) {
+            console.error('No authentication token found');
+            return Promise.reject(new Error('No token available'));
+        }
+    
+        return fetch(`http://localhost:8000/sabonner/${offreId}/${userId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({}) // Add any additional data if needed
+        })
+        .then(response => {
+            if (!response.ok) {
+                // If unauthorized, try to refresh token
+                if (response.status === 401) {
+                    return refreshToken()
+                        .then(newToken => {
+                            // Retry the request with new token
+                            return fetch(`http://localhost:8000/sabonner/${offreId}/${userId}/`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${newToken}`
+                                },
+                                body: JSON.stringify({})
+                            });
+                        });
+                }
+                throw new Error(`Subscription failed: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Subscription successful:', data);
+            return data;
+        })
+        .catch(error => {
+            console.error('Subscription error:', error);
+            throw error;
+        });
+    }
+    
+    // Example usage
+    function handleSubscription(offreId) {
+        const token = getAuthToken();
+        const userId = getUserIdFromStorage(); // You'll need to implement this
+    
+        if (!token) {
+            console.error('Please log in first');
+            // Redirect to login page or show login modal
+            return;
+        }
+    
+        abonnerOffre(offreId, userId)
+            .then(result => {
+                // Handle successful subscription
+                alert('Subscription successful!');
+            })
+            .catch(error => {
+                // Handle errors (e.g., show error message)
+                alert('Subscription failed: ' + error.message);
+            });
+    }
+*/
+
 </script>
 
 
 
 <!-- Styles CSS supplémentaires -->
 <style>
+    .btn-statistics {
+        background-color: #FF7F50; /* Orange corail */
+        color: #000; /* Noir */
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-decoration: none;
+        border: 2px solid #FF7F50;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-statistics:hover {
+        background-color: #000; /* Noir */
+        color: #FF7F50; /* Orange corail */
+        border-color: #FF7F50;
+    }
+    
     /* Formulaire de recherche et tri */
     .search-sort-container {
         margin-top: 30px;
@@ -709,4 +1410,3 @@
 </body>
 
 </html>
-

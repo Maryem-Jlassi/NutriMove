@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Breadcrumb Section -->
+<section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb-bg.jpg' %}">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb-text">
+                    <h2>Personalized Fitness Assistant</h2>
+                    <div class="bt-option">
+                        <a href="/">Home</a>
+                        <span>AI Assistant</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content Section -->
+<section style="background-color: #1e1e1e !important; color: white !important; min-height: 110vh;">
+    <div class="text-center">
+        <h1 class="mb-4" style="color: #ddd">Personalized Fitness Assistant</h1>
+        <p class="text-muted" style="color: #ddd !important;">Upload a picture of your meal, and we'll provide a calorie estimate and fitness tips!</p>
+    </div>
+
+    <div class="filter-controls">
+        <form id="upload-form" method="POST" enctype="multipart/form-data" action="{% url 'process_food_image' %}">
+            {% csrf_token %}
+            
+            <!-- Zone d'upload d'image avec bouton personnalisé -->
+            <div id="upload-container" style="width: 50%; margin: 0 auto; border: 2px dashed #ddd; padding: 40px; text-align: center; background-color: #2d2d2d;">
+                <p style="color: #ddd;">Cliquez sur le bouton ci-dessous pour télécharger votre image</p>
+                
+                <!-- Bouton personnalisé pour ouvrir la boîte de sélection d'image -->
+                <button type="button" id="custom-upload-button" class="btn btn-secondary" style="color: white;">
+                    Télécharger une image
+                </button>
+    
+                <!-- Champ d'upload d'image caché -->
+                <input type="file" name="food_image" id="file-input" class="form-control" accept="image/jpg, image/jpeg, image/png" style="display: none;">
+            </div>
+    <br>
+            <div class="text-center mt-3">
+                <button type="submit" id="submit-button" class="btn btn-primary">Analyser</button>
+                <!-- Spinner d'attente -->
+                <div id="loading-spinner" style="display: none; text-align: center;">
+                    <div class="spinner-border" role="status">
+                    </div>
+                    <p style="color: #ddd;">Analyse en cours...</p>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results Section -->
+    {% if image_url and detected_food and fitness_tip and audio_url %}
+    <div id="results-container" class="mt-5" style="text-align: center;">
+        <h4 style="color: #ddd">Uploaded Image:</h4>
+        <img src="{{ image_url }}" alt="Uploaded Food Image" style="max-width: 80%; border: 1px solid #555;">
+        <h4 style="color: #ddd">Fitness Tip:</h4>
+        <p>{{ fitness_tip }}</p>
+        <h4 style="color: #ddd">Fitness Tip Audio:</h4>
+        <audio controls>
+            <source src="{{ audio_url }}" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+    {% endif %}
+</section>
+
+<!-- Styles -->
+<style>
+.form-control {
+    background-color: #3c3c3c !important;
+    color: white !important;
+    border: 1px solid #555 !important;
+}
+
+/* Buttons */
+button[type="submit"] {
+    background-color: orange !important;
+    color: white !important;
+    border: none;
+    border-radius: 5px;
+}
+
+button[type="submit"]:hover {
+    background-color: #ff6f00 !important;
+}
+
+/* Breadcrumb Links */
+.breadcrumb-item a {
+    color: white !important;
+}
+
+.breadcrumb-item.active {
+    color: orange !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Sélectionner le bouton personnalisé et le champ d'input de fichier
+    const customUploadButton = document.getElementById('custom-upload-button');
+    const fileInput = document.getElementById('file-input');
+    const submitButton = document.getElementById('submit-button');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    
+    // Ajouter un événement de clic au bouton personnalisé
+    customUploadButton.addEventListener('click', function () {
+        // Simuler un clic sur le champ de fichier caché
+        fileInput.click();
+    });
+
+    // Optionnel: Afficher le nom du fichier sélectionné une fois téléchargé
+    fileInput.addEventListener('change', function () {
+        if (fileInput.files.length > 0) {
+            // Vous pouvez personnaliser cette partie pour afficher un message avec le nom du fichier
+            customUploadButton.textContent = 'Image sélectionnée: ' + fileInput.files[0].name;
+        }
+    });
+
+    // Ajouter un événement pour simuler un processus lors de l'envoi du formulaire
+    submitButton.addEventListener('click', function (e) {
+        e.preventDefault(); // Empêcher l'envoi immédiat du formulaire
+        
+        // Afficher le spinner et masquer le bouton d'analyse
+        submitButton.style.display = 'none';
+        loadingSpinner.style.display = 'block';
+
+        // Soumettre le formulaire après 2 secondes (simuler un traitement)
+        setTimeout(function () {
+            // Soumettre réellement le formulaire
+            document.getElementById('upload-form').submit();
+        }, 2000); // Vous pouvez ajuster le délai en fonction du traitement
+    });
+});
+</script>
+
+{% endblock %}

@@ -5,11 +5,31 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.utils import timezone
 from datetime import timedelta
-from django.urls import reverse
+from django.urls import reverse,reverse_lazy
 from django.views.generic.edit import CreateView
 from django.views.generic import ListView
+from django.conf import settings
 
 #create
+def feedback_page(request):
+    feedbacks = Feedback.objects.all().order_by('-date_created')
+    paginator = Paginator(feedbacks, 3)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    form = FeedbackForm(request.POST or None)
+    star_range = list(range(1, 6))
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            # Sauvegarde du formulaire dans la base de données
+            form.save()
+            messages.success(request, "Votre feedback a été soumis avec succès !")
+            return redirect('feedback_list')  # Redirige vers la liste des feedbacks
+        else:
+            messages.error(request, "Veuillez corriger les erreurs dans le formulaire.")
+    else:
+        form = FeedbackForm()
+    return render(request, 'feedbackpage.html', {'feedbacks': feedbacks, 'page_obj': page_obj,'star_range': star_range,'form': form})
 '''
 class CreateViewFeedback(CreateView):
     model = Feedback
@@ -24,54 +44,40 @@ class CreateViewFeedback(CreateView):
 
     def get_success_url(self):
         return reverse('acceuil')  
-'''
-#read
+
 class FeedbackListView(ListView):
     model = Feedback
-    template_name = 'feedback_list.html'
-    context_object_name = 'feedbacks'
-    paginate_by = 3
+    template_name = 'feedbackpage.html'  # Le template où la liste des feedbacks sera affichée
+    context_object_name = 'feedbacks'  # Nom de la variable dans le template
+    paginate_by = 3  # Nombre d'éléments par page
 
     def get_queryset(self):
-        feedbacks = Feedback.objects.all().order_by('-date_created')
-        # Filtrage par date, évaluation, etc.
-        date_filter = self.request.GET.get('date_filter')
-        rating_filter = self.request.GET.get('rating_filter')
+        return Feedback.objects.all()
 
-        if date_filter == 'last_week':
-            feedbacks = feedbacks.filter(date_created__gte=timezone.now() - timedelta(days=7))
-        elif date_filter == 'last_month':
-            feedbacks = feedbacks.filter(date_created__gte=timezone.now() - timedelta(days=30))
-        elif date_filter == 'last_year':
-            feedbacks = feedbacks.filter(date_created__gte=timezone.now() - timedelta(days=365))
-        if rating_filter:
-            feedbacks = feedbacks.filter(rating=rating_filter)
-        
+class FeedbackCreateView(CreateView):
+    model = Feedback
+    form_class = FeedbackForm
+    template_name = 'feedbackpage.html'
 
-        return feedbacks
-    # Méthode pour traiter la soumission du formulaire
-    def post(self, request, *args, **kwargs):
+    def form_valid(self, form):
+        form.instance.user = self.request.user if self.request.user.is_authenticated else None
+        messages.success(self.request, "Merci pour votre retour ! Votre feedback a été soumis.")
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        messages.success(self.request, "Feedback ajouté avec succès.")
+        return reverse_lazy('feedback') 
+def FeedbackCreateView(request):
+    if request.method == 'POST':
         form = FeedbackForm(request.POST)
         if form.is_valid():
-            feedback = form.save(commit=False)
-            feedback.user = request.user if request.user.is_authenticated else None
-            feedback.save()
-            messages.success(request, "Merci pour votre retour ! Votre feedback a été soumis.")
-            return redirect('feedback_list')  # Redirige vers la même page pour voir le nouveau feedback
-
-        # En cas d'erreur de validation, on réaffiche le formulaire avec les erreurs
-        context = self.get_context_data()
-        context['form'] = form
-        return render(request, self.template_name, context)
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = FeedbackForm()  # Ajoutez le formulaire de création
-        context['star_range'] = range(1, 6) 
-        return context
-
-
+            form.save()
+            return redirect('feedback_list')
+    else:
+        form = FeedbackForm()
+    return render(request, 'feedbackpage.html', {'form': form})
+    '''
 #update
-
 def feedback_update(request, id):
     feedback = get_object_or_404(Feedback, id=id)
     if request.method == 'POST':
@@ -79,20 +85,21 @@ def feedback_update(request, id):
         if form.is_valid():
             form.save()
             messages.success(request, "Feedback mis à jour avec succès.")
-            return redirect('acceuil')
+            return redirect('feedback_list')
     else:
         form = FeedbackForm(instance=feedback)
-    return render(request, 'feedback_list.html', {'form': form, 'feedback': feedback})
+    return render(request, 'feedbackpage.html', {'form': form, 'feedback': feedback})
 
 def feedback_delete(request, id):
     feedback = get_object_or_404(Feedback, id=id)
     if request.method == 'POST':
         feedback.delete()
         messages.success(request, "Feedback supprimé avec succès.")
-        return redirect('acceuil')
-
-
-
+        return redirect('feedback_list')
+    
+def virtual_nutritionist(request):
+    return redirect('upload_food_image')
+    #return render(request, 'upload_food_image')
 
 
 
@@ -139,10 +146,99 @@ def feedback_delete(request, id):
 
 
 
+from django.conf import settings
+from .utils import classify_food, generate_fitness_tip, convert_to_audio
+import uuid
+import os
+from django.shortcuts import render
+from django.core.files.storage import FileSystemStorage
 
 
+def process_food_image(request):
+    if request.method == 'POST' and 'food_image' in request.FILES:
+        try:
+            # Handle uploaded image
+            food_image = request.FILES['food_image']
+            
+            # Generate a unique filename to avoid conflicts
+            unique_filename = f"{uuid.uuid4()}{os.path.splitext(food_image.name)[1]}"
+            
+            # Save the image using FileSystemStorage
+            fs = FileSystemStorage(location=settings.MEDIA_ROOT, base_url=settings.MEDIA_URL)
+            file_path = fs.save(unique_filename, food_image)
+            image_url = fs.url(file_path)  # URL to serve the image
+            
+            # Classify the image
+            detected_food = classify_food(fs.path(file_path))
+            
+            # Generate a fitness tip
+            fitness_tip = generate_fitness_tip(detected_food)
+            
+            # Create an audio file for the tip
+            audio_file_name = "fitness_tip.mp3"
+            audio_file_path = os.path.join(settings.MEDIA_ROOT, audio_file_name)
+            convert_to_audio(fitness_tip, filename=audio_file_path)
+            audio_url = f"{settings.MEDIA_URL}{audio_file_name}" if os.path.exists(audio_file_path) else None
+            
+            # Return results to the template
+            return render(request, 'upload_food_image.html', {
+                'image_url': image_url,
+                'detected_food': detected_food,
+                'fitness_tip': fitness_tip,
+                'audio_url': audio_url,
+            })
+        except Exception as e:
+            print(f"Error processing the image: {e}")
+            return render(request, 'upload_food_image.html', {
+                'error': 'An error occurred while processing your image. Please try again.'
+            })
+    return render(request, 'upload_food_image.html')
 
+              
+'''
 
+import os
+from django.shortcuts import render
+from django.core.files.storage import FileSystemStorage
+from django.conf import settings
+from .utils import classify_food, generate_fitness_tip, convert_to_audio
 
+def process_food_image(request):
+    if request.method == 'POST' and 'food_image' in request.FILES:
+        try:
+            # Gérer l'image téléchargée
+            food_image = request.FILES['food_image']
+            fs = FileSystemStorage()
+            file_path = fs.save(food_image.name, food_image)
+            full_file_path = fs.path(file_path)  # Chemin absolu de l'image sauvegardée
+            image_url = fs.url(file_path)  # URL pour afficher l'image dans le template
+            
+            # Classifier l'image
+            detected_food = classify_food(full_file_path)
+            
+            # Générer un conseil fitness
+            fitness_tip = generate_fitness_tip(detected_food)
+            
+            audio_file_name = "fitness_tip.mp3"
+            audio_file_path = os.path.join(settings.BASE_DIR, 'feedback', 'static', audio_file_name)  # Sauvegarder dans 'static'
+            convert_to_audio(fitness_tip, filename=audio_file_path)
+            audio_url = f"{settings.STATIC_URL}{audio_file_name}"  # Utiliser STATIC_URL pour les fichiers dans 'static'
 
+            if not audio_url:
+                audio_url = "Error generating audio."
+            
+            # Renvoyer les résultats au template
+            return render(request, 'upload_food_image.html', {
+                'image_url': image_url,
+                'detected_food': detected_food,
+                'fitness_tip': fitness_tip,
+                'audio_url': audio_url,
+            })
+        except Exception as e:
+            print(f"Erreur lors du traitement de l'image : {e}")
+            return render(request, 'upload_food_image.html', {
+                'error': 'Une erreur est survenue lors du traitement de votre image. Veuillez réessayer.'
+            })
 
+    return render(request, 'upload_food_image.html')
+'''

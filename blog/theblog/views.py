@@ -22,6 +22,7 @@ from .models import post
 from django.utils.timezone import localtime
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
+from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
 from reportlab.platypus import (
     SimpleDocTemplate,
     Paragraph,
@@ -35,8 +36,32 @@ from django.http import HttpResponse
 from PIL import Image as PILImage
 from django.utils.timezone import localtime
 from reportlab.pdfgen import canvas
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_http_methods
+
+def translate_text(text: str, target_language="fr"):
+    try:
+        # Initialize the translation model pipeline
+        pipe = pipeline("translation", model="google-t5/t5-base")
+        # Perform translation
+        translated = pipe(text, target_lang=target_language)
+        return translated[0]['translation_text']
+    except Exception as e:
+        # Return error message in case of failure
+        return f"Error: {str(e)}"
+def translate_post(request, post_id):
+    try:
+        post = Post.objects.get(id=post_id)
+        # Your translation logic here, e.g. using a translation service
+        translated_body = translate_text(post.body)  # Implement your translation method
+        
+        return JsonResponse({
+            'translated_body': translated_body
+        })
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e)
+        }, status=400)
+
+
 class HomeView(ListView):
     model = Post
     template_name = "home.html"
@@ -77,75 +102,94 @@ class HomeView(ListView):
         return context
 
 
+pipe = pipeline("summarization", model="facebook/bart-large-cnn")
+
+# Alternatively, using AutoTokenizer and AutoModelForSeq2SeqLM
+tokenizer = AutoTokenizer.from_pretrained("facebook/bart-large-cnn")
+model = AutoModelForSeq2SeqLM.from_pretrained("facebook/bart-large-cnn")
+def summarize_article(request, post_id):
+    # Get the post object
+    post = get_object_or_404(Post, id=post_id)
+
+    # Check if the content is long enough to summarize
+    if len(post.body) > 100:
+        # Tokenize the input text (post.body) and get input IDs
+        inputs = tokenizer(post.body, return_tensors="pt", max_length=1024, truncation=True)
+
+        # Generate the summary using the model
+        summary_ids = model.generate(inputs['input_ids'], max_length=150, min_length=50, num_beams=4, early_stopping=True)
+
+        # Decode the generated summary
+        summary_text = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+    else:
+        summary_text = "The content is too short to summarize."
+
+    # Return the summary as JSON
+    return JsonResponse({"summary": summary_text})
 class ArticleDetailView(DetailView):
     model = Post
     template_name = "article_details.html"
+
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = commentForm()
-        return context
 
-@login_required
-@require_http_methods(["POST"])
-def create_comment(request, pk):
-    try:
-        # Retrieve the related Post instance
-        post_instance = get_object_or_404(Post, pk=pk)
 
-        # Process the form
-        form = commentForm(request.POST)
-        if form.is_valid():
-            new_comment = form.save(commit=False)
-            new_comment.post = post_instance
-            new_comment.name = request.user  # Assign the currently logged-in user
-            new_comment.save()
+class CreateCommentView(LoginRequiredMixin, CreateView):
+    model = comment
+    form_class = commentForm
+    http_method_names = ['post']
 
-            return JsonResponse({
-                'status': 'success',
-                'message': 'Comment added successfully!',
-                'comment': {
-                    'id': new_comment.id,
-                    'body': new_comment.body,
-                    'name': new_comment.name.username,
-                    'date_added': new_comment.date_added.strftime('%B %d, %Y %H:%M'),
-                }
-            })
+    def post(self, request, *args, **kwargs):
+        try:
+          
+            post_instance = get_object_or_404(Post, pk=self.kwargs['pk'])
 
-        else:
-            # Return form validation errors
+       
+            form = self.form_class(request.POST)
+
+            if form.is_valid():
+                new_comment = form.save(commit=False)
+                new_comment.post = post_instance
+                new_comment.name = request.user  
+                new_comment.save()
+
+                return JsonResponse({
+                    'status': 'success',
+                    'message': 'Comment added successfully!',
+                    'comment': {
+                        'id': new_comment.id,
+                        'body': new_comment.body,
+                        'name': new_comment.name.username,  
+                        'date_added': new_comment.date_added.strftime('%B %d, %Y %H:%M'),
+                    }
+                })
+            else:
+               
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Invalid form data',
+                    'errors': form.errors
+                }, status=400)
+                
+        except Exception as e:
+           
             return JsonResponse({
                 'status': 'error',
-                'message': 'Invalid form data',
-                'errors': form.errors
-            }, status=400)
+                'message': f'An unexpected error occurred: {str(e)}'
+            }, status=500)
 
-    except Exception as e:
-        # Handle unexpected exceptions
-        return JsonResponse({
-            'status': 'error',
-            'message': f'An unexpected error occurred: {str(e)}'
-        }, status=500)
+class UpdateCommentView(LoginRequiredMixin, UpdateView):
+    model = comment
+    template_name = 'create_comment.html'
+    form_class = commentForm
+    
+    def get_success_url(self):
+        return reverse('article_detail', kwargs={'pk': self.object.post.pk})
+    
+    def handle_no_permission(self):
+        if self.raise_exception or self.request.user.is_authenticated:
+            raise PermissionDenied("You don't have permission to edit this comment.")
+        return super().handle_no_permission()
 
-@login_required
-def update_comment(request, pk):
-    comment_instance = get_object_or_404(comment, pk=pk)
-
-    # Check if the logged-in user has permission to update this comment
-    if request.user != comment_instance.name:
-        raise PermissionDenied("You don't have permission to edit this comment.")
-
-    if request.method == 'POST':
-        form = commentForm(request.POST, instance=comment_instance)
-        if form.is_valid():
-            form.save()
-            # Redirect to the article detail page after a successful update
-            return redirect(reverse('article_detail', kwargs={'pk': comment_instance.post.pk}))
-    else:
-        form = commentForm(instance=comment_instance)
-
-    # Render the comment update form
-    return render(request, 'create_comment.html', {'form': form})
 class DeleteCommentView(LoginRequiredMixin, DeleteView):
     model = comment
     template_name = 'comment_confirm_delete.html'

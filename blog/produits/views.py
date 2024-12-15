@@ -12,7 +12,7 @@ from .models import Achat
 from .forms import AchatForm
 
 from django.shortcuts import render, redirect
-from users.models import Client  # Replace 'myproject' with your project folder name if needed
+from users.models import User  # Replace 'myproject' with your project folder name if needed
 
 from .forms import AchatForm
 
@@ -20,7 +20,7 @@ import paypalrestsdk
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
-from .models import Produit, Client, Achat
+from .models import Produit, User, Achat
 from .forms import AchatForm
 import json
 from django.db.models import Count 
@@ -40,36 +40,18 @@ paypalrestsdk.configure({
 def add_achat(request, produit_reference):
     produit = get_object_or_404(Produit, reference=produit_reference)
 
-    # Retrieve and decode user_info cookie
-    user_info_cookie = request.COOKIES.get('user_info', None)
-    
-    if user_info_cookie is None:
-        return redirect('produit_list')  # Redirect to login page if cookie is missing
-    
-    try:
-        # Decode the URL-encoded string and parse the JSON
-        user_info = json.loads(user_info_cookie.replace('%22', '"').replace('%2C', ',').replace('%3A', ':'))
-        
-        # Extract username from the decoded user_info object
-        client_username = user_info.get('username', None)
+    # Ensure the user is authenticated
+    if not request.user.is_authenticated:
+        return redirect('login')  # Redirect to login page if user is not authenticated
 
-        if client_username is None:
-            return redirect('produit_list')  # Redirect to login page if username is not found in the cookie
-
-        # Retrieve client using the username
-        client = get_object_or_404(Client, username=client_username)
-
-    except (json.JSONDecodeError, KeyError) as e:
-        # Handle errors in decoding or if the expected keys are not present
-        print(f"Error decoding cookie: {e}")
-        return redirect('produit_list')  # Redirect to login page if there is an issue with the cookie
+    user = request.user  # The logged-in user, who will be the client
 
     if request.method == 'POST':
-        form = AchatForm(request.POST, client=client, produit=produit)  # Pass client and produit to the form
+        form = AchatForm(request.POST)  # No need to pass client here, it will be set in the view
         if form.is_valid():
             achat = form.save(commit=False)
             achat.produit = produit  # Set the product
-            achat.client = client  # Set the client (from cookies)
+            achat.client = user  # Set the logged-in user (client)
             achat.save()
 
             # Get the selected payment method
@@ -88,9 +70,9 @@ def add_achat(request, produit_reference):
             return redirect('payment_error')  # If PayPal is not selected or fails
 
     else:
-        form = AchatForm(client=client, produit=produit)  # Pass client and produit to the form
+        form = AchatForm()
 
-    return render(request, 'add_achat.html', {'form': form, 'produit': produit})
+    return render(request, 'add_achat.html', {'form': form, 'produit': produit, 'user': user})
 
 
 

@@ -278,6 +278,9 @@ form input[type="text"]:focus {
 </style>
 
 
+
+
+
 <section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb-bg.jpg' %}">
     <div class="container">
         <div class="row">
@@ -294,11 +297,10 @@ form input[type="text"]:focus {
     </div>
 </section>
 
-
 <section class="pricing-section spad">
     <div class="container">
-        <!-- Form to filter by category -->
-        <form method="get" class="text-center mb-4">
+        <!-- Form to filter by category and search -->
+        <form id="filter-form" method="get" class="text-center mb-4">
             <label for="categorie">Choisir une catégorie :</label>
             <select name="categorie" id="categorie">
                 <option value="">-- Toutes les catégories --</option>
@@ -310,18 +312,22 @@ form input[type="text"]:focus {
             <label for="search">Rechercher par nom :</label>
             <input type="text" name="search" id="search" placeholder="Rechercher un produit" value="{{ request.GET.search }}">
 
-            <!-- Sorting Buttons -->
-            <div class="sorting-buttons mt-4">
-                <button type="submit" name="sort" value="price_asc" class="sort-btn">Prix Croissant</button>
-                <button type="submit" name="sort" value="price_desc" class="sort-btn">Prix Décroissant</button>
-                <button type="submit" name="sort" value="achats_asc" class="sort-btn">nombre d'achats asc</button>
-                <button type="submit" name="sort" value="achats_desc" class="sort-btn">nombre d'achats desc</button>
-            </div>
+            <!-- Sorting Dropdown -->
+            <label for="sort">Trier par :</label>
+            <select name="sort" id="sort">
+                <option value="price_asc" {% if request.GET.sort == "price_asc" %}selected{% endif %}>Prix Croissant</option>
+                <option value="price_desc" {% if request.GET.sort == "price_desc" %}selected{% endif %}>Prix Décroissant</option>
+                <option value="achats_asc" {% if request.GET.sort == "achats_asc" %}selected{% endif %}>Nombre d'achats asc</option>
+                <option value="achats_desc" {% if request.GET.sort == "achats_desc" %}selected{% endif %}>Nombre d'achats desc</option>
+            </select>
+
+            <!-- Submit button -->
+
         </form>
 
         <!-- Displaying the products -->
         <div class="product-scroller">
-            <div class="row justify-content-center">
+            <div class="row justify-content-center" id="product-list">
                 {% for produit in produits %}
                     <div class="col-lg-4 col-md-6">
                         <div class="ps-item">
@@ -330,19 +336,27 @@ form input[type="text"]:focus {
                             {% else %}
                                 <img src="{% static 'images/default-product.jpg' %}" class="card-img-top" alt="{{ produit.nom }}">
                             {% endif %}
+                            
                             <div class="pi-price">
                                 <h2>{{ produit.prix }} €</h2>
                                 <span>{{ produit.nom }}</span>
                             </div>
-                            <ul>
-                                <li><strong>Description:</strong> {{ produit.description }}</li>
-                                <li><strong>Catégorie:</strong> {{ produit.categorie }}</li>
-                                <li><strong>Marque:</strong> {{ produit.marque }}</li>
-                                <li><strong>En stock:</strong> {{ produit.en_stock|yesno:"Oui,Non" }}</li>
-                                <li><strong>Note moyenne:</strong> {{ produit.note_moyenne }}</li>
-                                <li><strong>nombre d'Achats:</strong> {{ produit.total_achats }}</li>
-                            </ul>
-                            <a href="{% url 'produit_detail' produit.reference %}" class="primary-btn pricing-btn">Détails</a>
+                            
+                            <!-- Button to toggle additional details -->
+                            <button class="btn toggle-details-btn" onclick="toggleDetails({{ produit.pk }})" style="background-color: rgb(211, 137, 0); color: white; border: none;">SEE MORE</button>
+
+                            <!-- Additional product details (initially hidden) -->
+                            <div id="details-{{ produit.pk }}" class="product-details" style="display: none;">
+                                <ul>
+                                    <li><strong>Description:</strong> {{ produit.description }}</li>
+                                    <li><strong>Catégorie:</strong> {{ produit.categorie }}</li>
+                                    <li><strong>Marque:</strong> {{ produit.marque }}</li>
+                                    <li><strong>En stock:</strong> {{ produit.en_stock|yesno:"Oui,Non" }}</li>
+                                    <li><strong>Note moyenne:</strong> {{ produit.note_moyenne }}</li>
+                                    <li><strong>Nombre d'Achats:</strong> {{ produit.total_achats }}</li>
+                                </ul>
+                                <a href="{% url 'produit_detail' produit.reference %}" class="primary-btn pricing-btn">Détails</a>
+                            </div>
                         </div>
                     </div>
                 {% empty %}
@@ -350,8 +364,69 @@ form input[type="text"]:focus {
                 {% endfor %}
             </div>
         </div>
+
+        <!-- JavaScript to handle category and search changes -->
+        <script>
+            // Function to handle filter and search dynamically
+            document.getElementById('categorie').addEventListener('change', updateProducts);
+            document.getElementById('search').addEventListener('input', updateProducts);
+            document.getElementById('sort').addEventListener('change', updateProducts);
+
+            function updateProducts() {
+                // Get current filter values
+                let categorie = document.getElementById('categorie').value;
+                let search = document.getElementById('search').value;
+                let sort = document.getElementById('sort').value;
+
+                // Create the query string
+                let queryString = `?categorie=${categorie}&search=${search}&sort=${sort}`;
+
+                // Fetch the filtered products
+                fetch(window.location.pathname + queryString)
+                    .then(response => response.text())
+                    .then(data => {
+                        const productList = document.getElementById('product-list');
+                        productList.innerHTML = ''; // Clear the existing list
+
+                        // Create a temporary element to parse the returned HTML
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = data;
+                        
+                        // Extract the new products and append them to the list
+                        const newProducts = tempDiv.querySelectorAll('#product-list .col-lg-4');
+                        newProducts.forEach(product => {
+                            productList.appendChild(product);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching products:', error));
+            }
+
+            // Function to toggle product details visibility
+            function toggleDetails(productId) {
+                var detailsDiv = document.getElementById('details-' + productId);
+                var button = document.querySelector('.toggle-details-btn[onclick="toggleDetails(' + productId + ')"]');
+                
+                if (detailsDiv.style.display === "none") {
+                    detailsDiv.style.display = "block";
+                    button.textContent = "Voir moins"; // Change button text to "Voir moins"
+                } else {
+                    detailsDiv.style.display = "none";
+                    button.textContent = "Voir plus"; // Change button text back to "Voir plus"
+                }
+            }
+        </script>
+
+        <center>
+            <iframe
+                allow="microphone;"
+                width="350"
+                height="430"
+                src="https://console.dialogflow.com/api-client/demo/embedded/18411e20-ffd7-4d2a-bfd5-d5b9119e24d5">
+            </iframe>
+        </center>
     </div>
 </section>
+
 
 
 
@@ -386,6 +461,49 @@ form input[type="text"]:focus {
     .product-scroller::-webkit-scrollbar-track {
         background-color: #f1f1f1;
     }
+    .product-scroller {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    overflow-x: auto;
+    max-height: 1000px; /* Increased height */
+    padding: 20px; /* Increased padding */
+    margin-top: 30px;
+    border: 2px solid #ccc; /* Add a light gray border */
+    border-radius: 10px; /* Rounded corners */
+    background-color: #000000; /* Light background for contrast */
+}
+
+.product-scroller::-webkit-scrollbar {
+    height: 10px; /* Thickness of the scrollbar */
+    background-color: #000000; /* Scrollbar track background */
+    border-radius: 10px;
+}
+
+.product-scroller::-webkit-scrollbar-thumb {
+    background-color: #c87800; /* Scrollbar thumb color */
+    border-radius: 10px; /* Rounded scrollbar thumb */
+    border: 2px solid #fff; /* Add a border to the thumb */
+}
+
+.product-scroller::-webkit-scrollbar-thumb:hover {
+    background-color: #c87800; /* Darker orange on hover */
+}
+
+.ps-item {
+    border: 2px solid #ddd; /* Border around each product */
+    border-radius: 10px; /* Rounded corners for products */
+    padding: 15px; /* Inner spacing */
+    background-color: #000000; /* White background for product cards */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ps-item:hover {
+    transform: translateY(-5px); /* Lift effect on hover */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+}
 </style>
 
 

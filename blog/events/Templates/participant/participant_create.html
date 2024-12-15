@@ -4,53 +4,121 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter un Participant</title>
-    <!-- Lien vers Bootstrap 4 et Font Awesome -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #ff6b00;
+            --text-color: #ffffff;
+            --background-color: #1e1e1e;
+            --input-background: #2c2c2c;
+            --border-radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             padding: 20px;
         }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background-color: #ffffff;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+        .participant-form {
+            background-color: var(--background-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 5px 15px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
         }
+
+        .form-title {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 25px;
         }
-        .form-control:focus {
-            box-shadow: none;
-            border-color: #007bff;
+
+        .form-label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
-        .btn-primary {
-            background-color: #007bff;
+
+        .form-input {
+            background-color: var(--input-background);
             border: none;
+            border-radius: var(--border-radius);
+            color: var(--text-color);
+            padding: 12px 16px;
+            width: 100%;
         }
-        .btn-primary:hover {
-            background-color: #0056b3;
+
+        .form-select {
+            appearance: none;
+            background-color: var(--input-background);
+            border: none;
+            border-radius: var(--border-radius);
+            color: var(--text-color);
+            padding: 12px 16px;
+            width: 100%;
         }
-        .btn-secondary {
-            background-color: #6c757d;
+
+        .form-textarea {
+            background-color: var(--input-background);
+            border: none;
+            border-radius: var(--border-radius);
+            color: var(--text-color);
+            padding: 12px 16px;
+            resize: vertical;
+            width: 100%;
         }
-        .btn-secondary:hover {
-            background-color: #5a6268;
+
+        .form-submit {
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: var(--border-radius);
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 12px 24px;
+            width: 100%;
         }
-        .error-message {
-            color: #dc3545;
-            font-size: 0.9em;
-            margin-top: 5px;
+
+        .form-submit:hover {
+            background-color: #ff8b33;
+        }
+
+        .form-back {
+            background-color: var(--input-background);
+            border: none;
+            border-radius: var(--border-radius);
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 15px;
+            padding: 12px 24px;
+            width: 100%;
+        }
+
+        .form-back:hover {
+            background-color: rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="text-center text-primary mb-4">Ajouter un Participant</h1>
+    <div class="participant-form">
+        <h1 class="form-title">Ajouter un Participant</h1>
         <form method="post" enctype="multipart/form-data" novalidate>
             {% csrf_token %}
             
@@ -64,10 +132,9 @@
                 </div>
             {% endif %}
 
-            <!-- Client -->
             <div class="form-group">
-                <label for="client"><i class="fas fa-user"></i> Client:</label>
-                <select class="form-control" id="client" name="client" required>
+                <label for="client" class="form-label">Client:</label>
+                <select class="form-select" id="client" name="client" required>
                     <option value="">Sélectionnez un client</option>
                     {% for client in clients %}
                         <option value="{{ client.id }}" {% if form.client.value == client.id|stringformat:"s" %}selected{% endif %}>
@@ -75,80 +142,40 @@
                         </option>
                     {% endfor %}
                 </select>
-                {% if form.client.errors %}
-                    <div class="error-message">
-                        {% for error in form.client.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
             </div>
 
-            <!-- Numéro de Ticket -->
             <div class="form-group">
-                <label for="ticket_number"><i class="fas fa-ticket-alt"></i> Numéro de Ticket:</label>
-                {{ form.ticket_number }}
-                {% if form.ticket_number.errors %}
-                    <div class="error-message">
-                        {% for error in form.ticket_number.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
+                <label for="ticket_number" class="form-label">Numéro de Ticket:</label>
+                <input class="form-input" type="text" id="ticket_number" name="ticket_number" required>
             </div>
 
-            <!-- Statut du Paiement -->
             <div class="form-group">
-                <label for="payment_status"><i class="fas fa-credit-card"></i> Statut du Paiement:</label>
-                <select class="form-control" id="payment_status" name="payment_status" required>
+                <label for="payment_status" class="form-label">Statut du Paiement:</label>
+                <select class="form-select" id="payment_status" name="payment_status" required>
                     <option value="">Sélectionnez le statut</option>
-                    <option value="Paid" {% if form.payment_status.value == "Paid" %}selected{% endif %}>Payé</option>
-                    <option value="Pending" {% if form.payment_status.value == "Pending" %}selected{% endif %}>En Attente</option>
+                    <option value="Paid">Payé</option>
+                    <option value="Pending">En Attente</option>
                 </select>
-                {% if form.payment_status.errors %}
-                    <div class="error-message">
-                        {% for error in form.payment_status.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
             </div>
 
-            <!-- Commentaires -->
             <div class="form-group">
-                <label for="comments"><i class="fas fa-comment-alt"></i> Commentaires:</label>
-                {{ form.comments }}
-                {% if form.comments.errors %}
-                    <div class="error-message">
-                        {% for error in form.comments.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
+                <label for="comments" class="form-label">Commentaires:</label>
+                <textarea class="form-textarea" id="comments" name="comments"></textarea>
             </div>
 
-            <!-- Niveau de Forme -->
             <div class="form-group">
-                <label for="fitness_level"><i class="fas fa-dumbbell"></i> Niveau de Forme:</label>
-                {{ form.fitness_level }}
-                {% if form.fitness_level.errors %}
-                    <div class="error-message">
-                        {% for error in form.fitness_level.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
+                <label for="fitness_level" class="form-label">Niveau de Forme:</label>
+                <select class="form-select" id="fitness_level" name="fitness_level" required>
+                    <option value="">Sélectionnez le niveau</option>
+                    <option value="Beginner">Débutant</option>
+                    <option value="Intermediate">Intermédiaire</option>
+                    <option value="Advanced">Avancé</option>
+                </select>
             </div>
 
-            <!-- Boutons de Soumission -->
-            <button type="submit" class="btn btn-primary btn-block">Ajouter Participant</button>
-            <button type="button" class="btn btn-secondary btn-block" onclick="window.location.href='{% url 'participant_list' event.id %}'">Retour à la liste des participants</button>
+            <button type="submit" class="form-submit">Ajouter Participant</button>
+            <button type="button" class="form-back" onclick="window.location.href='{% url 'participant_list' event.id %}'">Retour à la liste des participants</button>
         </form>
     </div>
-
-    <!-- Lien vers les scripts Bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

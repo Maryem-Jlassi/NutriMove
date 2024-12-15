@@ -33,18 +33,19 @@ class priceFilter(admin.SimpleListFilter):
         elif self.value() == 'high':
             return queryset.filter(price__gt=100)
         return queryset
+
 class offreAdmin(admin.ModelAdmin):
     # Affichage des offres
-    list_display = ('titleOffre', 'program', 'start_date', 'end_date', 'price',  'coach_id', 'nutrisionist_id', 'capacity')  
-    search_fields = ('titleOffre',  'start_date')  # Recherche par titre, ID et date de début
+    list_display = ('category','titleOffre', 'program', 'start_date', 'end_date', 'price', 'coach_id', 'nutrisionist_id', 'capacity')  
+    search_fields = ('titleOffre', 'start_date')  # Recherche par titre et date de début
     list_per_page = 2  # Pagination à 2 offres par page
     ordering = ('start_date',)  # Tri des offres par date de début
-    list_filter = (priceFilter,'titleOffre')  # Ajout du filtre de prix personnalisé
+    list_filter = (priceFilter, 'titleOffre')  # Ajout du filtre de prix personnalisé
     inlines = [abonnerInLine] 
     # Organisation des champs dans l'interface admin
     fieldsets = (
         ('Description', {
-            'fields': ('titleOffre',  'price', 'capacity', 'coach_id', 'nutrisionist_id')
+            'fields': ('titleOffre', 'price', 'capacity', 'coach_id', 'nutrisionist_id','category',)
         }),
         ('Horaires', {
             'fields': ('start_date', 'end_date')

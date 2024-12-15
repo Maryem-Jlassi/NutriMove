@@ -1,10 +1,55 @@
 {% extends 'base.html' %}
 {% load static %}
+
 <body style="background-color: #343434;">
 {% block content %}
 <!-- <div class="container mt-4" > -->
     <!-- Back Button -->
      <head>
+        <style>
+            /* Loading Spinner */
+            .loading-spinner {
+                border: 4px solid #ffffff;
+                border-top: 4px solid #e65c0e;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                animation: spin 1s linear infinite;
+                display: none;
+                margin: 20px auto;
+            }
+    
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+    
+            /* Modal Styles */
+            .modal {
+    display: none; /* Ensure this is the default state */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(82, 78, 78, 0.258);
+}
+
+.modal-content {
+    background-color: #000000;
+    margin: 15% auto;
+    padding: 20px;
+    border: 2px solid #e65c0e;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 10px;
+    position: relative;
+    color: white;
+    text-align: center;
+}
+        </style>
     <meta property="og:title" content="Check out this amazing post!" />
 <meta property="og:description" content="Here is a short description of the post content." />
 <meta property="og:image" content="URL_to_image" />
@@ -12,6 +57,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 </head>
+
+<div id="faces-info"></div>
     <!-- Blog Details Hero Section Begin -->
     <section class="blog-details-hero set-bg" data-setbg="{% if post.picture %}{{ post.picture.url }}{% else %}img/blog/details/details-hero.jpg{% endif %}"  >
         <a href="{% url 'home' %}" class="btn btn-secondary mb-3" style="background-color: #343434;">  BACK </a>   
@@ -42,9 +89,54 @@
                     <div class="blog-details-text">
                         <div class="blog-details-title">
                             <p> #{{ post.title_tag}}</p>
-                            <p style="border: 2px solid #fff; border-radius: 10px; padding: 20px; background-color: transparent; margin-top: 20px;"> {{ post.body }}</p>
+                            <button id="summarizeButton" style="background-color: #e65c0e; color: white; padding: 10px 20px; border-radius: 5px;">Generate Summary</button>
+                            <div id="summary-loading-spinner" style="display: none;color: #fff;">Loading...</div>
+                            <div id="summary-modal" style="display: none;">
+                                <span id="close-summary-modal">&times;</span>
+                                <p id="summary-modal-text" style="color: #fff;"></p>
+                            </div>
+                            
                         </div>
-                        <div class="container mt-4" >
+                            <p style="
+                            border: 2px solid #fff; 
+                            border-radius: 10px; 
+                            padding: 20px; 
+                            background-color: transparent; 
+                            margin-top: 20px; 
+                            font-size: 18px; 
+                            line-height: 1.6; 
+                            font-family: Arial, sans-serif; 
+                            color: #fff; 
+                            text-align: left;">
+                            {{ post.body }}
+                        </p>
+                        <!-- Add this script tag just before your main script -->
+                        <div id="translatedBody" style="
+                        display: none;
+                        border: 2px solid #fff; 
+                        border-radius: 10px; 
+                        padding: 20px; 
+                        background-color: transparent; 
+                        margin-top: 20px; 
+                        font-size: 18px; 
+                        line-height: 1.6; 
+                        font-family: Arial, sans-serif; 
+                        color: #fff; 
+                        text-align: left;">
+                        <!-- Translated content will be inserted here -->
+                    </div>
+
+   
+
+                
+
+                    
+
+                        </div>
+                        <!-- <h4 style="margin-top: 30px; color: #fff;">Summary</h4> -->
+                        
+                    
+                        
                         <!-- Display Images If Available -->
                         <div class="blog-details-pic">
                             
@@ -77,6 +169,9 @@
                                     <a href="{% url 'download_post_pdf' pk=post.pk %}" class="btn btn-primary" style="background-color: #4CAF50; color: white; padding: 10px 20px; border-radius: 5px;">
                                         Download as PDF
                                     </a>
+                                    
+                                    
+
                                  <!--</div>-->
                             </div>
                             <div class="share" style="border: 2px solid #fff; border-radius: 10px; padding: 20px; background-color: transparent; margin-top: 20px;">
@@ -125,7 +220,10 @@
                                                 <strong style="color: #fff" >{{ comment.name.username }}</strong>
                                                 <small class="text-muted">{{ comment.date_added|date:"F d, Y H:i" }}</small>
                                             </div>
-                                            <p class="mb-2">{{ comment.body }}</p>
+                                            <p class="mb-2">{{ comment.body|linebreaks }}</p>
+
+
+
                                             
                                             {% if user == comment.name %}
                                             <div class="comment-actions mb-2">
@@ -141,7 +239,7 @@
                                                     <textarea name="body" class="form-control mb-2">{{ comment.body }}</textarea>
                                                   
                                                     
-                                                    
+
                                                 </form>
                                                 
                                                 <a href="{% url 'comment_delete' comment.id %}" class="btn btn-sm btn-outline-danger delete-comment">
@@ -175,7 +273,7 @@
                                             <!-- Reply Form -->
                                             <form class="reply-form mt-3 d-none" data-comment-id="{{ comment.id }}" method="post" action="{% url 'create_reply' comment.id %}">
                                                 {% csrf_token %}
-                                                <textarea name="body" class="form-control mb-2" rows="3" placeholder="Write your reply here..." required></textarea>
+                                                <textarea name="body" class="form-control mb-2" rows="3" placeholder="Write your reply here..."  required></textarea>
                                                 <button type="submit" class="btn btn-sm btn-primary" style="background-color: #e65c0e ">Submit Reply</button>
                                             </form>
                                         </div>
@@ -215,113 +313,136 @@
         </div>
     </section>
     <!-- Blog Details Section End -->
+</div>
+
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const commentForm = document.getElementById('comment-form');
-        const statusDiv = document.getElementById('comment-status');
-    
-        function showStatus(message, isError = false) {
-            statusDiv.textContent = message;
-            statusDiv.className = `alert ${isError ? 'alert-danger' : 'alert-success'} mt-3`;
-            statusDiv.style.display = 'block';
-            setTimeout(() => {
-                statusDiv.style.display = 'none';
-            }, 5000);
+   document.addEventListener('DOMContentLoaded', function () {
+    console.log('DOM fully loaded and parsed');
+
+    // DOM elements
+    const summarizeButton = document.getElementById('summarizeButton');
+    const summaryLoadingSpinner = document.getElementById('summary-loading-spinner');
+    const summaryModal = document.getElementById('summary-modal');
+    const summaryModalText = document.getElementById('summary-modal-text');
+    const closeSummaryModal = document.getElementById('close-summary-modal');
+
+    // Check if all elements exist
+    if (!summarizeButton || !summaryLoadingSpinner || !summaryModal || !summaryModalText || !closeSummaryModal) {
+        console.error('One or more required elements are missing from the DOM.');
+        return;
+    }
+
+    // Add click event to summarize button
+    summarizeButton.addEventListener('click', function () {
+        // Show loading spinner
+        summaryLoadingSpinner.style.display = 'block';
+
+        // Clear previous summary
+        summaryModalText.textContent = '';
+
+        // Make AJAX request to fetch summary
+        fetch("{% url 'summarize_article' post.id %}", {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Hide loading spinner
+            summaryLoadingSpinner.style.display = 'none';
+
+            // Display the summary in the modal
+            summaryModalText.textContent = data.summary || 'No summary available.';
+            summaryModal.style.display = 'block';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+
+            // Hide loading spinner
+            summaryLoadingSpinner.style.display = 'none';
+
+            // Display error message in the modal
+            summaryModalText.textContent = 'Failed to generate summary. Please try again.';
+            summaryModal.style.display = 'block';
+        });
+    });
+
+    // Add click event to close button
+    closeSummaryModal.addEventListener('click', function () {
+        summaryModal.style.display = 'none';
+    });
+
+    // Close modal when clicking outside of it
+    window.addEventListener('click', function (event) {
+        if (event.target == summaryModal) {
+            summaryModal.style.display = 'none';
         }
+    });
+});
+
+
     
-        // Comment Submission
-        if (commentForm) {
-            commentForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                
-                const submitButton = this.querySelector('button[type="submit"]');
-                submitButton.disabled = true;
-                
-                const formData = new FormData(this);
-                
-                fetch(this.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        const newComment = createCommentElement(data.comment);
-                        const commentsContainer = document.getElementById('comments-container');
-                        const noCommentsMsg = document.getElementById('no-comments');
-                        
-                        if (noCommentsMsg) {
-                            noCommentsMsg.remove();
-                        }
-                        
-                        commentsContainer.insertAdjacentHTML('beforeend', newComment);
-                        commentForm.reset();
-                        showStatus('Comment posted successfully!');
-    
-                        // Add event listeners to new dynamically created elements
-                        attachCommentEventListeners();
-                    } else {
-                        throw new Error(data.message || 'Error posting comment');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showStatus(error.message || 'Error posting comment. Please try again.', true);
-                })
-                .finally(() => {
-                    submitButton.disabled = false;
-                });
-            });
+    document.getElementById('summarizeButton').addEventListener('click', function() {
+    // Get references to the summary section and button
+    const summarySection = document.getElementById('summarySection');
+    const summaryText = document.getElementById('summaryText');
+
+    // Initially hide the summary section (if it's not already hidden)
+    summarySection.style.display = 'none';
+
+    // Send an AJAX request to summarize the article
+    fetch("{% url 'summarize_article' post.id %}", {
+        method: "GET",
+        headers: {
+            'Content-Type': 'application/json'
         }
-    
-        function attachCommentEventListeners() {
-            // View Replies Button
-            document.querySelectorAll('.view-replies-btn').forEach(button => {
-                button.removeEventListener('click', handleViewReplies);
-                button.addEventListener('click', handleViewReplies);
-            });
-    
-            // Add Reply Button
-            document.querySelectorAll('.add-reply-btn').forEach(button => {
-                button.removeEventListener('click', handleAddReply);
-                button.addEventListener('click', handleAddReply);
-            });
-    
-            // Reply Form Submission
-            document.querySelectorAll('.reply-form').forEach(form => {
-                form.removeEventListener('submit', handleReplySubmit);
-                form.addEventListener('submit', handleReplySubmit);
-            });
-        }
-    
-        function handleViewReplies() {
-            const commentId = this.getAttribute('data-comment-id');
-            const repliesContainer = document.getElementById(`replies-container-${commentId}`);
-            repliesContainer.classList.toggle('d-none');
-            
-            this.textContent = repliesContainer.classList.contains('d-none') 
-                ? `View Replies (${repliesContainer.children.length})` 
-                : 'Hide Replies';
-        }
-    
-        function handleAddReply() {
-            const commentId = this.getAttribute('data-comment-id');
-            const replyForm = document.querySelector(`.reply-form[data-comment-id="${commentId}"]`);
-            replyForm.classList.toggle('d-none');  // Toggle the visibility of the reply form
-        }
-    
-        function handleReplySubmit(event) {
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Insert the summary into the summary section
+        summaryText.textContent = data.summary; 
+        
+        // Show the summary section
+        summarySection.style.display = 'block';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        summaryText.textContent = "Failed to generate summary.";
+        
+        // Show the summary section even if there's an error
+        summarySection.style.display = 'block';
+    });
+});
+document.addEventListener('DOMContentLoaded', function() {
+    const commentForm = document.getElementById('comment-form');
+    const statusDiv = document.getElementById('comment-status');
+
+    function showStatus(message, isError = false) {
+        statusDiv.textContent = message;
+        statusDiv.className = `alert ${isError ? 'alert-danger' : 'alert-success'} mt-3`;
+        statusDiv.style.display = 'block';
+        setTimeout(() => {
+            statusDiv.style.display = 'none';
+        }, 5000);
+    }
+
+    // Comment Submission
+    if (commentForm) {
+        commentForm.addEventListener('submit', function(event) {
             event.preventDefault();
-            const commentId = this.getAttribute('data-comment-id');
+            
             const submitButton = this.querySelector('button[type="submit"]');
             submitButton.disabled = true;
-    
+            
             const formData = new FormData(this);
-    
+            
             fetch(this.action, {
                 method: 'POST',
                 body: formData,
@@ -332,257 +453,339 @@
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    const newReply = createReplyElement(data.reply);
-                    const repliesContainer = document.querySelector(`#comment-${commentId} .replies`);
+                    const newComment = createCommentElement(data.comment);
+                    const commentsContainer = document.getElementById('comments-container');
+                    const noCommentsMsg = document.getElementById('no-comments');
                     
-                    const repliesSection = document.getElementById(`replies-container-${commentId}`);
-                    if (repliesSection.classList.contains('d-none')) {
-                        repliesSection.classList.remove('d-none');
+                    if (noCommentsMsg) {
+                        noCommentsMsg.remove();
                     }
                     
-                    repliesContainer.insertAdjacentHTML('beforeend', newReply);
-                    this.reset();
-                    showStatus('Reply posted successfully!');
+                    commentsContainer.insertAdjacentHTML('beforeend', newComment);
+                    commentForm.reset();
+                    showStatus('Comment posted successfully!');
+
+                    // Add event listeners to new dynamically created elements
+                    attachCommentEventListeners();
                 } else {
-                    throw new Error(data.message || 'Error posting reply');
+                    throw new Error(data.message || 'Error posting comment');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showStatus(error.message || 'Error posting reply. Please try again.', true);
+                showStatus(error.message || 'Error posting comment. Please try again.', true);
             })
             .finally(() => {
                 submitButton.disabled = false;
             });
-        }
-    
-        function createCommentElement(comment) {
-            return `
-                <div id="comment-${comment.id}" class="comment-item mb-3 p-3 border rounded">
-                    <div class="d-flex justify-content-between">
-                        <strong>${comment.name}</strong>
-                        <small class="text-muted">${comment.date_added}</small>
-                    </div>
-                    <p class="mb-2">${comment.body}</p>
-                </div>
-            `;
-        }
-    
-        function createReplyElement(reply) {
-            return `
-                <div id="reply-${reply.id}" class="reply-item mb-2 p-2 border rounded">
-                    <div class="d-flex justify-content-between">
-                        <strong>${reply.name}</strong>
-                        <small class="text-muted">${reply.date_added}</small>
-                    </div>
-                    <p class="mb-1">${reply.body}</p>
-                </div>
-            `;
-        }
-    
-        // Initial setup
-        attachCommentEventListeners();
-    });
-    
-    
-    
-    document.addEventListener('DOMContentLoaded', function() {
-        // Like Button functionality
-        const likeForm = document.querySelector('form[action*="like_post"]');
-        const likeButton = likeForm.querySelector('button[type="submit"]');
-        const likesCount = document.getElementById('likes-count');
+        });
+    }
+
+    function attachCommentEventListeners() {
+        // View Replies Button
+        document.querySelectorAll('.view-replies-btn').forEach(button => {
+            button.removeEventListener('click', handleViewReplies);
+            button.addEventListener('click', handleViewReplies);
+        });
+
+        // Add Reply Button
+        document.querySelectorAll('.add-reply-btn').forEach(button => {
+            button.removeEventListener('click', handleAddReply);
+            button.addEventListener('click', handleAddReply);
+        });
+
+        // Reply Form Submission
+        document.querySelectorAll('.reply-form').forEach(form => {
+            form.removeEventListener('submit', handleReplySubmit);
+            form.addEventListener('submit', handleReplySubmit);
+        });
+    }
+
+    function handleViewReplies() {
+        const commentId = this.getAttribute('data-comment-id');
+        const repliesContainer = document.getElementById(`replies-container-${commentId}`);
+        repliesContainer.classList.toggle('d-none');
         
-        likeForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-            
-            // Disable the button to prevent multiple clicks
-            likeButton.disabled = true;
+        this.textContent = repliesContainer.classList.contains('d-none') 
+            ? `View Replies (${repliesContainer.children.length})` 
+            : 'Hide Replies';
+    }
+
+    function handleAddReply() {
+        const commentId = this.getAttribute('data-comment-id');
+        const replyForm = document.querySelector(`.reply-form[data-comment-id="${commentId}"]`);
+        replyForm.classList.toggle('d-none');  // Toggle the visibility of the reply form
+    }
+
+    function handleReplySubmit(event) {
+        event.preventDefault();
+        const commentId = this.getAttribute('data-comment-id');
+        const submitButton = this.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+
+        const formData = new FormData(this);
+
+        fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const newReply = createReplyElement(data.reply);
+                const repliesContainer = document.querySelector(`#comment-${commentId} .replies`);
+                
+                const repliesSection = document.getElementById(`replies-container-${commentId}`);
+                if (repliesSection.classList.contains('d-none')) {
+                    repliesSection.classList.remove('d-none');
+                }
+                
+                repliesContainer.insertAdjacentHTML('beforeend', newReply);
+                this.reset();
+                showStatus('Reply posted successfully!');
+            } else {
+                throw new Error(data.message || 'Error posting reply');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showStatus(error.message || 'Error posting reply. Please try again.', true);
+        })
+        .finally(() => {
+            submitButton.disabled = false;
+        });
+    }
+
+    function createCommentElement(comment) {
+        return `
+            <div id="comment-${comment.id}" class="comment-item mb-3 p-3 border rounded">
+                <div class="d-flex justify-content-between">
+                    <strong>${comment.name}</strong>
+                    <small class="text-muted">${comment.date_added}</small>
+                </div>
+                <p class="mb-2">${comment.body}</p>
+            </div>
+        `;
+    }
+
+    function createReplyElement(reply) {
+        return `
+            <div id="reply-${reply.id}" class="reply-item mb-2 p-2 border rounded">
+                <div class="d-flex justify-content-between">
+                    <strong>${reply.name}</strong>
+                    <small class="text-muted">${reply.date_added}</small>
+                </div>
+                <p class="mb-1">${reply.body}</p>
+            </div>
+        `;
+    }
+
+    // Initial setup
+    attachCommentEventListeners();
+});
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Like Button functionality
+    const likeForm = document.querySelector('form[action*="like_post"]');
+    const likeButton = likeForm.querySelector('button[type="submit"]');
+    const likesCount = document.getElementById('likes-count');
     
+    likeForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        // Disable the button to prevent multiple clicks
+        likeButton.disabled = true;
+
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch(likeForm.action, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken,
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Increment the likes count dynamically
+                likesCount.textContent = data.likes_count;
+                likeButton.disabled = false;
+            } else {
+                alert('Error liking the post. Please try again.');
+                likeButton.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+            likeButton.disabled = false;
+        });
+    });
+});
+document.addEventListener('DOMContentLoaded', function () {
+    // Attach event listeners to the edit buttons
+    document.querySelectorAll('.comment-actions .btn-outline-primary').forEach(button => {
+        button.addEventListener('click', function (e) {
+            e.preventDefault();
+            const commentId = this.closest('.comment-item').id.split('-')[1];
+            const editForm = document.querySelector(`.edit-comment-form[data-comment-id="${commentId}"]`);
+            editForm.classList.remove('d-none'); // Show the edit form
+            this.closest('.comment-item').querySelector('p.mb-2').classList.add('d-none'); // Hide the comment body
+        });
+    });
+
+    // Attach event listeners to the cancel buttons
+    document.querySelectorAll('.cancel-edit').forEach(button => {
+        button.addEventListener('click', function () {
+            const editForm = this.closest('.edit-comment-form');
+            editForm.classList.add('d-none'); // Hide the edit form
+            editForm.closest('.comment-item').querySelector('p.mb-2').classList.remove('d-none'); // Show the comment body
+        });
+    });
+
+    // Handle the form submission via AJAX
+    document.querySelectorAll('.edit-comment-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const commentId = this.getAttribute('data-comment-id');
+            const submitButton = this.querySelector('button[type="submit"]');
+            const formData = new FormData(this);
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    
-            fetch(likeForm.action, {
+
+            submitButton.disabled = true;
+
+            fetch(this.action, {
                 method: 'POST',
+                body: formData,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
                     'X-CSRFToken': csrfToken,
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    // Increment the likes count dynamically
-                    likesCount.textContent = data.likes_count;
-                    likeButton.disabled = false;
-                } else {
-                    alert('Error liking the post. Please try again.');
-                    likeButton.disabled = false;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred. Please try again.');
-                likeButton.disabled = false;
-            });
-        });
-    });
-    document.addEventListener('DOMContentLoaded', function () {
-        // Attach event listeners to the edit buttons
-        document.querySelectorAll('.comment-actions .btn-outline-primary').forEach(button => {
-            button.addEventListener('click', function (e) {
-                e.preventDefault();
-                const commentId = this.closest('.comment-item').id.split('-')[1];
-                const editForm = document.querySelector(`.edit-comment-form[data-comment-id="${commentId}"]`);
-                editForm.classList.remove('d-none'); // Show the edit form
-                this.closest('.comment-item').querySelector('p.mb-2').classList.add('d-none'); // Hide the comment body
-            });
-        });
-    
-        // Attach event listeners to the cancel buttons
-        document.querySelectorAll('.cancel-edit').forEach(button => {
-            button.addEventListener('click', function () {
-                const editForm = this.closest('.edit-comment-form');
-                editForm.classList.add('d-none'); // Hide the edit form
-                editForm.closest('.comment-item').querySelector('p.mb-2').classList.remove('d-none'); // Show the comment body
-            });
-        });
-    
-        // Handle the form submission via AJAX
-        document.querySelectorAll('.edit-comment-form').forEach(form => {
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
-                const commentId = this.getAttribute('data-comment-id');
-                const submitButton = this.querySelector('button[type="submit"]');
-                const formData = new FormData(this);
-                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    
-                submitButton.disabled = true;
-    
-                fetch(this.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRFToken': csrfToken,
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const commentElement = document.getElementById(`comment-${commentId}`);
+                        commentElement.querySelector('p.mb-2').textContent = data.comment.body;
+                        commentElement.querySelector('p.mb-2').classList.remove('d-none'); // Show the updated comment body
+                        this.classList.add('d-none'); // Hide the edit form
+                    } else {
+                        alert(data.message || 'Error updating comment');
                     }
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            const commentElement = document.getElementById(`comment-${commentId}`);
-                            commentElement.querySelector('p.mb-2').textContent = data.comment.body;
-                            commentElement.querySelector('p.mb-2').classList.remove('d-none'); // Show the updated comment body
-                            this.classList.add('d-none'); // Hide the edit form
-                        } else {
-                            alert(data.message || 'Error updating comment');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred. Please try again.');
-                    })
-                    .finally(() => {
-                        submitButton.disabled = false;
-                    });
-            });
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                })
+                .finally(() => {
+                    submitButton.disabled = false;
+                });
         });
     });
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.btn-outline-danger').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                if (confirm('Are you sure you want to delete this comment?')) {
-                    const commentElement = this.closest('.comment-item');
-                    const deleteUrl = this.getAttribute('href');
-                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    
-                    fetch(deleteUrl, {
-                        method: 'POST',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'X-CSRFToken': csrfToken
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            commentElement.remove();
-                            console.log('Comment deleted successfully');
-                        } else {
-                            console.error('Error:', data.message);
-                            alert(data.message || 'Error deleting comment');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred while deleting the comment');
-                    });
-                }
-            });
+});
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.btn-outline-danger').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (confirm('Are you sure you want to delete this comment?')) {
+                const commentElement = this.closest('.comment-item');
+                const deleteUrl = this.getAttribute('href');
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                fetch(deleteUrl, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': csrfToken
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        commentElement.remove();
+                        console.log('Comment deleted successfully');
+                    } else {
+                        console.error('Error:', data.message);
+                        alert(data.message || 'Error deleting comment');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the comment');
+                });
+            }
         });
     });
+});
+
+document.getElementById('share-facebook').addEventListener('click', function (e) {
+    e.preventDefault();
     
-    document.getElementById('share-facebook').addEventListener('click', function (e) {
-        e.preventDefault();
-        
-        // Pass the Django username variable to JavaScript
-        const username = "{{ user.username }}";  // Django username variable
+    // Pass the Django username variable to JavaScript
+    const username = "{{ user.username }}";  // Django username variable
+
+    // Create a simplified custom message (no line breaks)
+    const customMessage = `Hello ${username}, Make sure to click on the link: ${window.location.href} Best regards, ${username}`;
+
+    // Encode the URL and the custom message
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(customMessage)}`;
+
+    // Open the Facebook share window
+    window.open(facebookUrl, '_blank', 'width=600,height=400');
+});
+
+
+
+// Share on Twitter
+document.getElementById('share-twitter').addEventListener('click', function (e) {
+    e.preventDefault();
+    const customMessage = "Check out this amazing post!"; // Custom message
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(customMessage)}&url=${encodeURIComponent(window.location.href)}&hashtags=Nutrimove,Fitness,Health`;
+    window.open(twitterUrl, '_blank', 'width=600,height=400');
+});
+
+// Share on LinkedIn
+document.getElementById('share-linkedin').addEventListener('click', function (e) {
+    e.preventDefault();
+    const customMessage = "Check out this amazing post!"; // Custom message
+    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`;
+    window.open(linkedInUrl, '_blank', 'width=600,height=400');
+});
+
+document.getElementById('share-email').addEventListener('click', function (e) {
+    e.preventDefault();
+    const username = "{{ user.username }}"; 
+    const subject = encodeURIComponent("Check out this Blog on Nutimove !"); // Custom subject
+    const body = encodeURIComponent(`Hello ,\n\nMake sure to click on the link: ${window.location.href}\n\nBest regards,\n${username}`);
+ // Custom body message
+    const emailUrl = `mailto:?subject=${subject}&body=${body}`;
+    window.location.href = emailUrl;
+});
+document.getElementById('share-reddit').addEventListener('click', function (e) {
+    e.preventDefault();
     
-        // Create a simplified custom message (no line breaks)
-        const customMessage = `Hello ${username}, Make sure to click on the link: ${window.location.href} Best regards, ${username}`;
-    
-        // Encode the URL and the custom message
-        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(customMessage)}`;
-    
-        // Open the Facebook share window
-        window.open(facebookUrl, '_blank', 'width=600,height=400');
-    });
-    
-    
-    
-    // Share on Twitter
-    document.getElementById('share-twitter').addEventListener('click', function (e) {
-        e.preventDefault();
-        const customMessage = "Check out this amazing post!"; // Custom message
-        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(customMessage)}&url=${encodeURIComponent(window.location.href)}&hashtags=Nutrimove,Fitness,Health`;
-        window.open(twitterUrl, '_blank', 'width=600,height=400');
-    });
-    
-    // Share on LinkedIn
-    document.getElementById('share-linkedin').addEventListener('click', function (e) {
-        e.preventDefault();
-        const customMessage = "Check out this amazing post!"; // Custom message
-        const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`;
-        window.open(linkedInUrl, '_blank', 'width=600,height=400');
-    });
-    
-    document.getElementById('share-email').addEventListener('click', function (e) {
-        e.preventDefault();
-        const username = "{{ user.username }}"; 
-        const subject = encodeURIComponent("Check out this Blog on Nutimove !"); // Custom subject
-        const body = encodeURIComponent(`Hello ,\n\nMake sure to click on the link: ${window.location.href}\n\nBest regards,\n${username}`);
-     // Custom body message
-        const emailUrl = `mailto:?subject=${subject}&body=${body}`;
-        window.location.href = emailUrl;
-    });
-    document.getElementById('share-reddit').addEventListener('click', function (e) {
-        e.preventDefault();
-        
-        // Pass the Django username variable to JavaScript
-        const username = "{{ user.username }}";  // Django username variable
-    
-        // Create a custom message for Reddit
-        const customMessage = `Check out this post by ${username}: ${window.location.href}`;
-    
-        // Reddit sharing URL format
-        const redditUrl = `https://www.reddit.com/submit?url=${encodeURIComponent(window.location.href)}&title=${encodeURIComponent(customMessage)}`;
-    
-        // Open the Reddit share window
-        window.open(redditUrl, '_blank', 'width=600,height=400');
-    });
-        </script>
-    
+    // Pass the Django username variable to JavaScript
+    const username = "{{ user.username }}";  // Django username variable
+
+    // Create a custom message for Reddit
+    const customMessage = `Check out this post by ${username}: ${window.location.href}`;
+
+    // Reddit sharing URL format
+    const redditUrl = `https://www.reddit.com/submit?url=${encodeURIComponent(window.location.href)}&title=${encodeURIComponent(customMessage)}`;
+
+    // Open the Reddit share window
+    window.open(redditUrl, '_blank', 'width=600,height=400');
+});
+    </script>
     
 {% endblock %}
 
 </body>
+

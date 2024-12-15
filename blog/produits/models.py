@@ -3,7 +3,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator, RegexVa
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 from django.utils import timezone
-from users.models import Client
+from users.models import User
 from decimal import Decimal
 
 
@@ -72,7 +72,7 @@ class Produit(models.Model):
 
 class Achat(models.Model):
     client = models.ForeignKey(
-        'users.Client', 
+        User, 
         on_delete=models.CASCADE,
         related_name='achats',
         verbose_name="Client"

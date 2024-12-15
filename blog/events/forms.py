@@ -39,3 +39,14 @@ class EmailForm(forms.Form):
     
     title = forms.CharField(widget=forms.Textarea, label='Message', required=True)
     message = forms.CharField(widget=forms.Textarea, label='Message', required=True)
+
+
+
+# events/forms.py
+
+from django import forms
+
+class ImageForm(forms.Form):
+    text = forms.CharField(label='Text', max_length=100, required=True)
+    width = forms.IntegerField(label='Width', min_value=1, required=True)
+    height = forms.IntegerField(label='Height', min_value=1, required=True)

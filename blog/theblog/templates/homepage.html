@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="{% static 'css/slicknav.min.css' %}" type="text/css">
     <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
 <body>
@@ -50,7 +50,7 @@
                     <li><a href="{% url 'event_list' %}">events</a></li>
                     <li><a href="{% url 'listViewoffre' %}">offres</a></li>
                     <li><a href="{% url 'home' %}">blog</a></li>
-                    <li><a href="{% url 'acceuil' %}">feedback</a></li>
+                    <li><a href="{% url 'feedback_list' %}">feedback</a></li>
 
 
                 </ul>
@@ -81,11 +81,9 @@
                                 <li><a href="{% url 'event_list' %}">events</a></li>
                                 <li><a href="{% url 'listViewoffre' %}">offres</a></li>
                                 <li><a href="{% url 'home' %}">blog</a></li>
-                                <li><a href="{% url 'acceuil' %}">feedback</a></li>
-                                
-                                
-                                
-        
+                                <li><a href="{% url 'feedback_list' %}">feedback</a></li>
+    
+                    
                             </ul>
                         </ul>
                     </nav>
@@ -761,7 +759,6 @@
         </div>
     </section>
     <!-- Hero Section End -->
-
     <!-- ChoseUs Section Begin -->
     <section class="choseus-section spad">
         <div class="container">
@@ -1070,10 +1067,107 @@
                     </div>
                 </div>
             </div>
+            <br>
+    
+            <!-- Centered 3D styled text above the chatbot -->
+            <style>
+                /* Chatbot Button Styles */
+                
+.chatbot-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #f36100;
+    color: white;
+    border-radius: 50%;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 1000;
+    transition: background-color 0.3s;
+}
+
+.chatbot-button:hover {
+    background-color: #ff7b2b;
+}
+
+/* Chatbot Modal Styles */
+.chatbot-modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    bottom: 70px;
+    right: 20px;
+    width: 350px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+}
+
+.chatbot-header {
+    background: #f36100;
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px 8px 0 0;
+}
+
+.close-chatbot {
+    cursor: pointer;
+    font-size: 20px;
+}
+            </style>
+            <script>
+                // JavaScript to handle chatbot button click
+document.addEventListener("DOMContentLoaded", function () {
+    const chatbotButton = document.getElementById("chatbot-button");
+    const chatbotModal = document.getElementById("chatbot-modal");
+    const closeChatbot = document.getElementById("close-chatbot");
+
+    // Show chatbot modal on button click
+    chatbotButton.addEventListener("click", function () {
+        chatbotModal.style.display = "block";
+    });
+
+    // Close chatbot modal
+    closeChatbot.addEventListener("click", function () {
+        chatbotModal.style.display = "none";
+    });
+
+    // Close modal when clicking outside of it
+    window.addEventListener("click", function (event) {
+        if (event.target === chatbotModal) {
+            chatbotModal.style.display = "none";
+        }
+    });
+});
+            </script>
+            <br>
+    
+            <!-- Chatbot iframe -->
+            <!-- Chatbot Button -->
+<div id="chatbot-button" class="chatbot-button">
+    <i class="fa-solid fa-robot"></i>
+</div>
+
+<!-- Chatbot Modal -->
+<div id="chatbot-modal" class="chatbot-modal">
+    <div class="chatbot-header">
+        <span>Chat with us!</span>
+        <span class="close-chatbot" id="close-chatbot">&times;</span>
+    </div>
+    <iframe
+        allow="microphone;"
+        width="350"
+        height="430"
+        src="https://console.dialogflow.com/api-client/demo/embedded/18411e20-ffd7-4d2a-bfd5-d5b9119e24d5">
+    </iframe>
+</div>
         </div>
     </section>
     <!-- Team Section End -->
-
     <!-- Get In Touch Section Begin -->
     <div class="gettouch-section">
         <div class="container">
@@ -1189,7 +1283,6 @@
         </div>
     </div>
     <!-- Search model end -->
-
     <!-- Js Plugins -->
     <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
@@ -1199,9 +1292,6 @@
     <script src="{% static 'js/jquery.slicknav.js' %}"></script>
     <script src="{% static 'js/owl.carousel.min.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
-
-
-
 </body>
 
 </html>

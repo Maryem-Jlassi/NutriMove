@@ -58,17 +58,79 @@
             margin: 15px 0;
         }
         /* Grouping and Styling the Container */
-.product-container {
-    max-width: 500px;
-    margin: 20px auto;
+/* Main container styling */
+#product-detail-container {
+    max-width: 600px; /* Max width of the product container */
+    margin: 20px auto; /* Center the container */
     padding: 20px;
     border: 2px solid #ccc;
     border-radius: 10px;
+    background-color: #000000; /* Light background for the whole container */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background-color: #000000;
     text-align: center;
     animation: fadeIn 1s ease-in-out;
 }
+
+/* Image styling */
+.product-img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+/* Product title */
+.product-title {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #a15000;
+    margin-bottom: 15px;
+}
+
+/* Product info styling */
+.product-info {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+/* Label and information styling */
+.label {
+    font-weight: bold;
+    color: #bb7000; /* Blue color for labels */
+}
+
+.info {
+    color: #ababab; /* Dark gray for product information */
+}
+
+/* Button styling */
+.btn-buy {
+    background-color: #28a745; /* Green button */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.btn-buy:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+/* Optional: Add keyframes for fade-in animation */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px); /* Start with a slight downward position */
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0); /* End at the original position */
+    }
+}
+
 
 /* Styling the Image */
 .product-container img {
@@ -113,7 +175,6 @@
                     <h2>Product Details</h2>
                     <div class="bt-option">
                         <a href="/">Home</a>
-                       
                         <a href="{% url 'produit_list' %}">Products</a>
                         <span>Product details</span>
                     </div>
@@ -122,27 +183,42 @@
         </div>
     </div>
 </section>
+
 <div id="product-detail-container" class="product-container">
     {% if produit.image %}
-        <img src="{{ produit.image.url }}" class="card-img-top" alt="{{ produit.nom }}" 
+        <img src="{{ produit.image.url }}" class="product-img" alt="{{ produit.nom }}" 
              onerror="this.onerror=null; this.src='{% static 'images/default-product.jpg' %}';">
     {% else %}
-        <img src="{% static 'images/default-product.jpg' %}" class="card-img-top" alt="{{ produit.nom }}">
+        <img src="{% static 'images/default-product.jpg' %}" class="product-img" alt="{{ produit.nom }}">
     {% endif %}
-    <h1>{{ produit.nom }}</h1>
-    <p><strong>Catégorie :</strong> {{ produit.categorie }}</p>
-    <p><strong>Description :</strong> {{ produit.description }}</p>
-    <p><strong>Prix :</strong> {{ produit.prix }} €</p>
-    <p><strong>Quantité disponible :</strong> {{ produit.quantite_disponible }}</p>
-    <p><strong>En stock :</strong> {{ produit.en_stock|yesno:"Oui,Non" }}</p>
-    <p><strong>Nombre d'achats :</strong> {{ total_achats }}</p>
+    
+    <h1 class="product-title">{{ produit.nom }}</h1>
+    
+    <div class="product-info">
+        <p><strong class="label">Catégorie :</strong> <span class="info">{{ produit.categorie }}</span></p>
+        <p><strong class="label">Description :</strong> <span class="info">{{ produit.description }}</span></p>
+        <p><strong class="label">Prix :</strong> <span class="info">{{ produit.prix }} €</span></p>
+        <p><strong class="label">Quantité disponible :</strong> <span class="info">{{ produit.quantite_disponible }}</span></p>
+        <p><strong class="label">En stock :</strong> <span class="info">{{ produit.en_stock|yesno:"Oui,Non" }}</span></p>
+        <p><strong class="label">Nombre d'achats :</strong> <span class="info">{{ total_achats }}</span></p>
+    </div>
 
-    <form method="POST" action="{% url 'add_achat' produit.reference %}">
+    <!-- Form will be submitted automatically using JavaScript -->
+    <form method="POST" action="{% url 'add_achat' produit.reference %}" id="auto-submit-form">
         {% csrf_token %}
-        <button type="submit" class="btn-buy">Acheter</button>
+        <!-- You can remove the button as the form will submit automatically -->
+        <button type="submit" class="btn-buy" style="display:none;">Acheter</button>
     </form>
 </div>
 
-    <a href="{% url 'produit_list' %}" class="btn btn-secondary">Retour à la liste des produits</a>
-</div>
+<a href="{% url 'produit_list' %}" class="btn btn-secondary">Retour à la liste des produits</a>
+
+<!-- JavaScript to automatically submit the form -->
+<script>
+    // Trigger the form submission automatically once the page is loaded
+    window.onload = function() {
+        document.getElementById('auto-submit-form').submit();
+    };
+</script>
+
 {% endblock %}

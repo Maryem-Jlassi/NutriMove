@@ -443,7 +443,6 @@ def event_statistique(request, event_id):
 
 
 
-
 import qrcode
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -457,22 +456,23 @@ def generate_qr_code(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
     event.capacity_remaining = event.max_participants - event.participants.count()
 
-
- # Vérifier si l'événement a une image
+    # Vérifier si l'événement a une image
     if event.image:
         # Lire l'image de l'événement
         image_file = event.image
         img_data = image_file.read()
+        base64_image = base64.b64encode(img_data).decode('utf-8')  # Convertir l'image en base64
     else:
         # Utiliser une image par défaut si l'événement n'a pas d'image
         default_image_path = static('images/default-event.jpg')
         with open(default_image_path, "rb") as f:
             img_data = f.read()
-            
+            base64_image = base64.b64encode(img_data).decode('utf-8')
+
     # Détails de l'événement à inclure dans le QR code
     event_details = {
         "title": event.title,
-        "image_file": image_file,
+        "image_file": base64_image,  # Ajoutez l'image en base64 dans les détails
         "description": event.description,
         "date": event.date.strftime('%Y-%m-%d %H:%M'),
         "location": event.location,
@@ -513,3 +513,313 @@ def generate_qr_code(request, event_id):
     # Retourner l'image QR code dans la réponse HTTP
     response = HttpResponse(img_io, content_type='image/png')
     return response
+
+
+
+
+
+
+import http.client
+import json
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+# Assurez-vous d'importer le modèle Event
+from .models import Event
+
+def text_to_speech(request, event_id):
+    # Récupérer l'événement par son ID
+    event = get_object_or_404(Event, id=event_id)
+
+    if request.method == "POST":
+        # Récupérer le texte du formulaire
+        text = request.POST.get("text", "")
+
+        if text:
+            # Payload pour l'API Text-to-Speech
+            payload = {
+                "voice_obj": {
+                    "id": 2014,
+                    "voice_id": "en-US-Neural2-A",
+                    "gender": "Male",  # Définir le genre de la voix
+                    "language_code": "en-US",  # Code de langue
+                    "language_name": "US English",  # Nom de la langue
+                    "voice_name": "John",  # Nom de la voix
+                    "sample_text": text,  # Le texte à convertir en audio
+                    "sample_audio_url": "",  # URL audio générée par l'API
+                    "status": 2,
+                    "rank": 0,
+                    "type": "google_tts",
+                    "isPlaying": False
+                },
+                "json_data": [{"block_index": 0, "text": text}]
+            }
+
+            headers = {
+                'x-rapidapi-key': "f875700bacmshc39a326dde2ffc3p163701jsn487deac76591",
+                'x-rapidapi-host': "realistic-text-to-speech.p.rapidapi.com",
+                'Content-Type': "application/json"
+            }
+
+            try:
+                # Requête API
+                conn = http.client.HTTPSConnection("realistic-text-to-speech.p.rapidapi.com")
+                conn.request("POST", "/v3/generate_voice_over_v2", json.dumps(payload), headers)
+                res = conn.getresponse()
+                data = res.read()
+                response_data = json.loads(data.decode("utf-8"))
+
+                # Extraire l'URL de l'audio généré
+                audio_url = response_data[0].get("link", "")
+                if audio_url:
+                    # Retourner l'URL de l'audio généré dans la réponse JSON
+                    return JsonResponse({"audio_filename": "video.mp3", "audio_url": audio_url})
+                else:
+                    return JsonResponse({"error": "Audio URL not found."})
+            except Exception as e:
+                return JsonResponse({"error": str(e)})
+
+    # Afficher le formulaire par défaut avec l'événement
+    return render(request, 'participant/text_to_speech.html', {
+        'event': event
+    })
+
+
+
+
+
+
+from django.shortcuts import render, get_object_or_404
+import http.client
+import json
+from .models import Event  # Assurez-vous que le modèle Event est bien importé
+
+def google_api_request(request, event_id):
+    # Vérifier que l'ID de l'événement est valide
+    event = get_object_or_404(Event, id=event_id)
+
+    if request.method == 'POST':
+        # Récupérer les données envoyées par le formulaire
+        text = request.POST.get('text')
+        place = request.POST.get('place')
+
+        if not text or not place:
+            return render(request, 'participant/google_api_form.html', {
+                'error': "Both 'text' and 'place' are required fields.",
+                'event': event
+            })
+
+        try:
+            # Configurer la requête vers l'API externe
+            conn = http.client.HTTPSConnection("google-api31.p.rapidapi.com")
+            payload = json.dumps({
+                "text": text,
+                "place": place,
+                "street": "",
+                "city": "",
+                "country": "",
+                "state": "",
+                "postalcode": "",
+                "latitude": "",
+                "longitude": "",
+                "radius": ""
+            })
+
+            headers = {
+                'x-rapidapi-key': "f875700bacmshc39a326dde2ffc3p163701jsn487deac76591",
+                'x-rapidapi-host': "google-api31.p.rapidapi.com",
+                'Content-Type': "application/json"
+            }
+
+            conn.request("POST", "/map2", payload, headers)
+            res = conn.getresponse()
+            api_response = res.read().decode("utf-8")
+            api_data = json.loads(api_response)
+            print(api_response)  # Correction ici
+
+            # Renvoyer les données à une page de résultats
+            return render(request, 'participant/google_api_result.html', {
+                'api_data': api_data,
+                'event': event
+            })
+
+        except Exception as e:
+            return render(request, 'participant/google_api_form.html', {
+                'error': f"An error occurred: {str(e)}",
+                'event': event
+            })
+
+    # Afficher le formulaire par défaut avec l'événement
+    return render(request, 'participant/google_api_form.html', {
+        'event': event
+    })
+
+
+
+
+
+
+
+import http.client
+import json
+from django.shortcuts import render, get_object_or_404
+from .forms import ImageForm
+from .models import Event
+
+def generate_image(request, event_id):
+    # Récupérer l'événement correspondant à l'ID
+    event = get_object_or_404(Event, id=event_id)
+
+    image_url = None
+    
+    if request.method == 'POST':
+        form = ImageForm(request.POST)
+        if form.is_valid():
+            text = form.cleaned_data['text']
+            width = form.cleaned_data['width']
+            height = form.cleaned_data['height']
+            
+            # Effectuer la requête API
+            conn = http.client.HTTPSConnection("chatgpt-42.p.rapidapi.com")
+            payload = json.dumps({
+                "text": text,
+                "width": width,
+                "height": height
+            })
+            headers = {
+                'x-rapidapi-key': "f875700bacmshc39a326dde2ffc3p163701jsn487deac76591",
+                'x-rapidapi-host': "chatgpt-42.p.rapidapi.com",
+                'Content-Type': "application/json"
+            }
+
+            conn.request("POST", "/texttoimage", payload, headers)
+
+            res = conn.getresponse()
+            data = res.read()
+
+            response_data = json.loads(data.decode("utf-8"))
+            image_url = response_data.get('generated_image', None)  # Récupérer l'URL de l'image
+            
+    else:
+        form = ImageForm()
+
+    return render(request, 'participant/generate_image.html', {'form': form, 'image_url': image_url, 'event': event})
+
+
+
+import http.client
+import json
+from django.shortcuts import render, get_object_or_404
+from .models import Event  # Ensure your Event model is correctly imported
+
+def chat_with_api(request, event_id):
+    # Fetch the event object based on the given ID
+    event = get_object_or_404(Event, id=event_id)
+
+    response_message = None  # To store the API's response
+
+    if request.method == "POST":
+        user_message = request.POST.get("message")  # Retrieve the user's message
+
+        # API connection and request
+        conn = http.client.HTTPSConnection("chatgpt-42.p.rapidapi.com")
+        payload = json.dumps({
+            "messages": [{"role": "user", "content": user_message}],
+            "system_prompt": "",
+            "temperature": 0.9,
+            "top_k": 5,
+            "top_p": 0.9,
+            "image": "",
+            "max_tokens": 256
+        })
+        headers = {
+            'x-rapidapi-key': "f875700bacmshc39a326dde2ffc3p163701jsn487deac76591",
+            'x-rapidapi-host': "chatgpt-42.p.rapidapi.com",
+            'Content-Type': "application/json"
+        }
+        conn.request("POST", "/matag2", payload, headers)
+        res = conn.getresponse()
+        data = res.read()
+
+        # Decode the API response
+        response_message = json.loads(data.decode("utf-8"))
+
+    # Render the template with the API response and event data
+    return render(request, "participant/chat.html", {
+        "response_message": response_message,
+        "event": event
+    })
+
+
+
+
+
+
+
+
+
+import requests
+from django.shortcuts import render, get_object_or_404
+from django.core.exceptions import ValidationError
+from .models import Event
+
+def analyze_face(request, event_id):
+    """
+    Analyse l'image téléchargée et retourne le résultat de l'analyse
+    """
+    event = get_object_or_404(Event, id=event_id)
+    response_message = None  # Variable pour stocker la réponse de l'API
+    error_message = None  # Variable pour stocker les messages d'erreur
+
+    if request.method == "POST":
+        image = request.FILES.get("image")  # Récupérer l'image téléchargée
+
+        if image:
+            # Préparer les données pour la requête POST
+            files = {'image': image}
+            headers = {
+                "x-rapidapi-key": "f875700bacmshc39a326dde2ffc3p163701jsn487deac76591",
+                "x-rapidapi-host": "face-analyzer1.p.rapidapi.com",
+            }
+
+            try:
+                # Effectuer la requête POST vers l'API avec l'image
+                api_url = "https://face-analyzer1.p.rapidapi.com/analyze/full"
+                response = requests.post(api_url, files=files, headers=headers)
+
+                # Vérifier si la requête est réussie
+                if response.status_code == 200:
+                    response_data = response.json()
+
+                    # Affichage de la réponse brute pour vérifier la structure
+                    print("Réponse brute de l'API : ", response_data)
+
+                    # Accéder au premier élément de la liste 'data'
+                    data = response_data.get("data", [{}])[0]  # Prendre le premier élément de la liste, ou un dictionnaire vide si vide
+
+                    # Extraire les données
+                    response_message = {
+                        "age": data.get("age"),
+                        "emotion": data.get("emotion"),
+                        "gender": data.get("gender")
+                    }
+
+                    # Vérifier si des données valides sont présentes
+                    if not response_message["age"] or not response_message["emotion"] or not response_message["gender"]:
+                        error_message = "L'API n'a pas pu analyser correctement l'image."
+                else:
+                    error_message = "Erreur lors de l'analyse de l'image. Code de statut : " + str(response.status_code)
+
+            except Exception as e:
+                error_message = f"Exception lors de l'appel à l'API : {str(e)}"
+
+    # Afficher le résultat de l'analyse ou un message d'erreur
+    return render(
+        request,
+        "participant/face_analyzer.html",
+        {
+            "response": response_message,
+            "event": event,
+            "error": error_message
+        }
+    )

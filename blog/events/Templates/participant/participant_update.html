@@ -4,75 +4,292 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modifier Participant</title>
-    <!-- Lien vers Bootstrap 4 et Font Awesome -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f8f9fa;
+        :root {
+            --primary-bg: #121212;
+            --secondary-bg: #1e1e1e;
+            --accent-color: #f36100;
+            --accent-hover: #ff7b33;
+            --text-color: #ffffff;
+            --input-bg: #2c2c2c;
+            --text-secondary: #b0b0b0;
+            --error-color: #ff4d4d;
+            --border-radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            font-family: 'Inter', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--primary-bg) 0%, #0a0a0a 100%);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
+            perspective: 1000px;
         }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background-color: #ffffff;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+        .participant-container {
+            max-width: 650px;
+            width: 100%;
+            background-color: var(--secondary-bg);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.4),
+                0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255,255,255,0.05);
+            transform-style: preserve-3d;
+            transform: rotateX(10deg) scale(0.95);
+            transition: all 0.3s ease;
         }
+
+        .participant-container:hover {
+            transform: rotateX(0) scale(1);
+            box-shadow: 
+                0 20px 45px rgba(0, 0, 0, 0.5),
+                0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .form-title {
+            text-align: center;
+            color: var(--accent-color);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .form-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--accent-color), transparent);
+        }
+
+        .form-title i {
+            margin-right: 15px;
+            font-size: 2.2rem;
+            text-shadow: 0 0 10px rgba(243, 97, 0, 0.5);
+        }
+
+        .form-title h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 25px;
+            position: relative;
         }
+
+        .form-group label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .form-group label i {
+            margin-right: 12px;
+            color: var(--accent-color);
+            width: 25px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .form-group:hover label i {
+            transform: scale(1.2);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 18px;
+            background-color: var(--input-bg);
+            border: 1px solid rgba(255,255,255,0.05);
+            color: var(--text-color);
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
         .form-control:focus {
-            box-shadow: none;
-            border-color: #007bff;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(243, 97, 0, 0.2);
         }
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-        .btn-secondary {
-            background-color: #6c757d;
-        }
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
+
         .error-message {
-            color: #dc3545;
-            font-size: 0.9em;
-            margin-top: 5px;
+            color: var(--error-color);
+            font-size: 0.85em;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .error-message i {
+            margin-right: 8px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 25px;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+            box-shadow: 0 5px 15px rgba(243, 97, 0, 0.4);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+            box-shadow: 0 7px 20px rgba(243, 97, 0, 0.5);
+        }
+
+        .btn-secondary {
+            background-color: var(--input-bg);
+            color: var(--text-secondary);
+            margin-top: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255,255,255,0.05);
+            color: var(--text-color);
+        }
+
+        .alert-danger {
+            background-color: rgba(255, 77, 77, 0.1);
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 25px;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .alert-danger ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .form-control.is-invalid {
+            border-color: var(--error-color);
+        }
+
+        .form-group label.text-gray {
+            color: #808080;
+        }
+
+        @media (max-width: 768px) {
+            .participant-container {
+                width: 95%;
+                padding: 25px;
+                transform: none;
+            }
+
+            .participant-container:hover {
+                transform: none;
+            }
+
+            .form-title h1 {
+                font-size: 1.6rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="text-center text-primary mb-4">Modifier Participant</h1>
+    <div class="participant-container">
+        <div class="form-title">
+            <i class="fas fa-user-edit"></i>
+            <h1>Modifier Participant</h1>
+        </div>
 
         <form method="post">
             {% csrf_token %}
             
-            <!-- Affichage des erreurs globales -->
             {% if form.errors %}
                 <div class="alert alert-danger">
                     <ul>
                         {% for field, errors in form.errors.items %}
-                            <li><strong>{{ field|capfirst }}:</strong> {{ errors|join:", " }}</li>
+                            <li>
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>{{ field|capfirst }}:</strong> {{ errors|join:", " }}
+                            </li>
                         {% endfor %}
                     </ul>
                 </div>
             {% endif %}
             
-            <!-- Client -->
             <div class="form-group">
-                <label for="client"><i class="fas fa-user"></i> Client:</label>
-                <input type="text" name="client_name" id="client_name" value="{{ participant.client }}" readonly class="form-control">
+                <label for="client_name">
+                    <i class="fas fa-user"></i> Client
+                </label>
+                <input type="text" name="client_name" id="client_name" 
+                       value="{{ participant.client }}" readonly 
+                       class="form-control">
                 <input type="hidden" name="client" value="{{ participant.client.id }}">
                 {% if form.client.errors %}
                     <div class="error-message">
+                        <i class="fas fa-times-circle"></i>
                         {% for error in form.client.errors %}
                             <p>{{ error }}</p>
                         {% endfor %}
@@ -80,12 +297,16 @@
                 {% endif %}
             </div>
 
-            <!-- Numéro de Ticket -->
             <div class="form-group">
-                <label for="ticket_number"><i class="fas fa-ticket-alt"></i> Numéro de Ticket:</label>
-                <input type="text" name="ticket_number" id="ticket_number" value="{{ participant.ticket_number }}" class="form-control" required>
+                <label for="ticket_number">
+                    <i class="fas fa-ticket-alt"></i> Numéro de Ticket
+                </label>
+                <input type="text" name="ticket_number" id="ticket_number" 
+                       value="{{ participant.ticket_number }}" 
+                       class="form-control" required>
                 {% if form.ticket_number.errors %}
                     <div class="error-message">
+                        <i class="fas fa-times-circle"></i>
                         {% for error in form.ticket_number.errors %}
                             <p>{{ error }}</p>
                         {% endfor %}
@@ -93,12 +314,15 @@
                 {% endif %}
             </div>
 
-            <!-- Commentaires -->
             <div class="form-group">
-                <label for="comments"><i class="fas fa-comment-alt"></i> Commentaires:</label>
-                <textarea name="comments" id="comments" rows="4" class="form-control" required>{{ participant.comments }}</textarea>
+                <label for="comments">
+                    <i class="fas fa-comment-alt"></i> Commentaires
+                </label>
+                <textarea name="comments" id="comments" rows="4" 
+                          class="form-control" required>{{ participant.comments }}</textarea>
                 {% if form.comments.errors %}
                     <div class="error-message">
+                        <i class="fas fa-times-circle"></i>
                         {% for error in form.comments.errors %}
                             <p>{{ error }}</p>
                         {% endfor %}
@@ -106,15 +330,22 @@
                 {% endif %}
             </div>
 
-            <!-- Statut de Paiement -->
             <div class="form-group">
-                <label for="payment_status"><i class="fas fa-credit-card"></i> Statut de Paiement:</label>
-                <select name="payment_status" id="payment_status" class="form-control" required>
-                    <option value="True" {% if participant.payment_status %}selected{% endif %}>Payé</option>
-                    <option value="False" {% if not participant.payment_status %}selected{% endif %}>Non payé</option>
+                <label for="payment_status">
+                    <i class="fas fa-credit-card"></i> Statut de Paiement
+                </label>
+                <select name="payment_status" id="payment_status" 
+                        class="form-control" required>
+                    <option value="True" {% if participant.payment_status %}selected{% endif %}>
+                        Payé
+                    </option>
+                    <option value="False" {% if not participant.payment_status %}selected{% endif %}>
+                        Non payé
+                    </option>
                 </select>
                 {% if form.payment_status.errors %}
                     <div class="error-message">
+                        <i class="fas fa-times-circle"></i>
                         {% for error in form.payment_status.errors %}
                             <p>{{ error }}</p>
                         {% endfor %}
@@ -122,12 +353,24 @@
                 {% endif %}
             </div>
 
-            <!-- Niveau de Fitness -->
             <div class="form-group">
-                <label for="fitness_level"><i class="fas fa-dumbbell"></i> Niveau de Forme:</label>
-                {{ form.fitness_level }}
+                <label for="fitness_level" class="text-gray">
+                    <i class="fas fa-dumbbell"></i> Niveau de Forme
+                </label>
+                <select name="fitness_level" id="fitness_level" class="form-control" required>
+                    <option value="Beginner" {% if participant.fitness_level == "Beginner" %}selected{% endif %}>
+                        Débutant
+                    </option>
+                    <option value="Intermediate" {% if participant.fitness_level == "Intermediate" %}selected{% endif %}>
+                        Intermédiaire
+                    </option>
+                    <option value="Advanced" {% if participant.fitness_level == "Advanced" %}selected{% endif %}>
+                        Avancé
+                    </option>
+                </select>
                 {% if form.fitness_level.errors %}
                     <div class="error-message">
+                        <i class="fas fa-times-circle"></i>
                         {% for error in form.fitness_level.errors %}
                             <p>{{ error }}</p>
                         {% endfor %}
@@ -135,16 +378,34 @@
                 {% endif %}
             </div>
 
-            <!-- Bouton Soumettre -->
-            <button type="submit" class="btn btn-primary btn-block">Enregistrer</button>
-        </form>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Enregistrer
+            </button>
 
-        <a href="{% url 'participant_list' event.id %}" class="btn btn-secondary btn-block mt-3">Retour à la Liste des Participants</a>
+            <a href="{% url 'participant_list' event.id %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour à la Liste des Participants
+            </a>
+        </form>
     </div>
 
-    <!-- Lien vers les scripts Bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const inputs = form.querySelectorAll('input, textarea, select');
+            
+            inputs.forEach(input => {
+                input.addEventListener('invalid', function(e) {
+                    e.preventDefault();
+                    if (!this.validity.valid) {
+                        this.classList.add('is-invalid');
+                    }
+                });
+
+                input.addEventListener('input', function() {
+                    this.classList.remove('is-invalid');
+                });
+            });
+        });
+    </script>
 </body>
 </html>

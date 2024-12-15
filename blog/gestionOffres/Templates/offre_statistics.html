@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiques des Offres</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Importation de Chart.js -->
+    <style>
+        .chart-container {
+            width: 80%;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Statistiques des Offres</h1>
+
+    <!-- Canvas pour vos graphiques -->
+    <div class="chart-container">
+        <canvas id="pricingChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="statusChart"></canvas>
+    </div>
+
+    <!-- Chart.js Script -->
+    <script>
+        // Variables à partir des données passées par Django
+        const statistics = {{ statistics|safe }};
+
+        // Données pour le graphique des prix
+        const pricingData = {
+            labels: ['Prix Moyen', 'Prix Maximum', 'Prix Minimum'],
+            datasets: [{
+                label: 'Prix en €',
+                data: [
+                    statistics.pricing.average_price,
+                    statistics.pricing.max_price,
+                    statistics.pricing.min_price
+                ],
+                backgroundColor: ['rgba(54, 162, 235, 0.5)', 'rgba(255, 99, 132, 0.5)', 'rgba(75, 192, 192, 0.5)'],
+                borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)', 'rgba(75, 192, 192, 1)'],
+                borderWidth: 1
+            }]
+        };
+
+        // Configuration du graphique des prix
+        const pricingConfig = {
+            type: 'bar',
+            data: pricingData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true },
+                    title: { display: true, text: 'Statistiques des Prix' }
+                }
+            }
+        };
+
+        // Initialisation du graphique des prix
+        const pricingChart = new Chart(
+            document.getElementById('pricingChart'),
+            pricingConfig
+        );
+
+        // Données pour le graphique des statuts des offres
+        const statusData = {
+            labels: ['Actives', 'À venir', 'Expirées'],
+            datasets: [{
+                label: 'Nombre d\'offres',
+                data: [
+                    statistics.status.active_offres_count,
+                    statistics.status.upcoming_offres_count,
+                    statistics.status.expired_offres_count
+                ],
+                backgroundColor: ['rgba(75, 192, 192, 0.5)', 'rgba(255, 205, 86, 0.5)', 'rgba(255, 99, 132, 0.5)'],
+                borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 205, 86, 1)', 'rgba(255, 99, 132, 1)'],
+                borderWidth: 1
+            }]
+        };
+
+        // Configuration du graphique des statuts des offres
+        const statusConfig = {
+            type: 'pie',
+            data: statusData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true },
+                    title: { display: true, text: 'Statistiques des Statuts des Offres' }
+                }
+            }
+        };
+
+        // Initialisation du graphique des statuts
+        const statusChart = new Chart(
+            document.getElementById('statusChart'),
+            statusConfig
+        );
+    </script>
+    <a href="{% url 'listViewoffre' %}" class="btn btn-retour mt-3">Retour à la liste des offres</a>
+
+</body>
+</html>

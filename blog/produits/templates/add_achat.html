@@ -1,54 +1,413 @@
-{% extends 'youssef.html' %}
+{% extends 'base.html' %}
 
 {% load static %}
 
 {% block content %}
 
-<script src="https://js.stripe.com/v3/"></script>
-
-<script>
-    var stripe = Stripe('your-publishable-key-here'); // Replace with your Stripe publishable key
-
-    document.querySelector('input[name="payment_method"]').forEach(function (radio) {
-        radio.addEventListener('change', function () {
-            if (this.value == 'stripe') {
-                // Show Stripe form when Stripe is selected
-                document.getElementById('stripe_payment').style.display = 'block';
-                createStripeToken();
-            } else {
-                // Hide Stripe form when PayPal is selected
-                document.getElementById('stripe_payment').style.display = 'none';
-            }
-        });
-    });
-
-    function createStripeToken() {
-        // Create a Stripe token (you should collect card details here)
-        var card = stripe.elements().create('card');
-        card.mount('#stripe_payment');
-        
-        // Handle form submission for Stripe
-        document.querySelector('form').addEventListener('submit', function (event) {
-            event.preventDefault();
-            stripe.createToken(card).then(function(result) {
-                if (result.error) {
-                    // Show error message
-                    console.log(result.error.message);
-                } else {
-                    // Append stripe token to form
-                    var stripeTokenInput = document.createElement('input');
-                    stripeTokenInput.type = 'hidden';
-                    stripeTokenInput.name = 'stripeToken';
-                    stripeTokenInput.value = result.token.id;
-                    document.querySelector('form').appendChild(stripeTokenInput);
-
-                    // Submit the form
-                    document.querySelector('form').submit();
-                }
-            });
-        });
+<style>
+    /* Rendre le fond noir et l'écriture orange */
+    body {
+        background-color: black;
+        color: rgb(255, 8, 0);
+        font-family: Arial, sans-serif;
+        text-align: center;
     }
-</script>
+
+    /* Augmenter la taille des images */
+    img {
+        width: 80%;  /* La largeur de l'image est 80% de la taille de l'écran */
+        max-width: 800px;  /* Limite la taille maximale de l'image */
+        height: auto;  /* Garde les proportions de l'image */
+        display: block;
+        margin: 0 auto;
+    }
+
+    /* Styliser le formulaire */
+    form {
+        margin-top: 30px;
+        padding: 20px;
+        background-color: rgba(0, 0, 0, 0.8);
+        border-radius: 10px;
+        display: inline-block;
+    }
+
+    button {
+        background-color: rgb(255, 81, 0);
+        color: black;
+        font-size: 16px;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    button:hover {
+        background-color: #ff7f00;  /* Change la couleur quand on survole le bouton */
+    }
+    h1 {
+            font-size: 5em; /* Augmente la taille du texte */
+            color: rgb(255, 147, 85);
+            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7), 0 0 25px rgb(26, 17, 0), 0 0 5px darkorange; /* Effet 3D */
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.8em; /* Augmente la taille du texte des paragraphes */
+            color: rgb(197, 89, 0);
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7), 0 0 15px rgb(49, 32, 0), 0 0 5px rgb(58, 32, 0); /* Effet 3D */
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        /* Grouping and Styling the Container */
+/* Main container styling */
+#product-detail-container {
+    max-width: 600px; /* Max width of the product container */
+    margin: 20px auto; /* Center the container */
+    padding: 20px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    background-color: #000000; /* Light background for the whole container */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* Image styling */
+.product-img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+/* Product title */
+.product-title {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #a15000;
+    margin-bottom: 15px;
+}
+
+/* Product info styling */
+.product-info {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+/* Label and information styling */
+.label {
+    font-weight: bold;
+    color: #bb7000; /* Blue color for labels */
+}
+
+.info {
+    color: #ababab; /* Dark gray for product information */
+}
+
+/* Button styling */
+.btn-buy {
+    background-color: #28a745; /* Green button */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.btn-buy:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+/* Optional: Add keyframes for fade-in animation */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px); /* Start with a slight downward position */
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0); /* End at the original position */
+    }
+}
+
+
+/* Styling the Image */
+.product-container img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+/* Styling the Button */
+.btn-buy {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-buy:hover {
+    background-color: #218838;
+}
+
+/* Adding Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Body Styling */
+body {
+    background-color: black;
+    color: orange;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+/* Image Styling */
+.product-img {
+    width: 50%;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+/* Container Styling for Product Details */
+#product-detail-container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    background-color: #000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* Product Title */
+.product-title {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #a15000;
+    margin-bottom: 15px;
+}
+
+/* Product Information Styling */
+.product-info {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.label {
+    font-weight: bold;
+    color: #bb7000;
+}
+
+.info {
+    color: #ababab;
+}
+
+/* Form and Button Styling */
+.add-achat-container {
+    max-width: 500px;
+    margin: 30px auto;
+    padding: 20px;
+    border: 2px solid #f0f0f0;
+    border-radius: 15px;
+    background: #000;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+}
+
+.payment-logo img {
+    width: 100px;
+    height: 50px;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 24px;
+    color: #da7401;
+    font-weight: bold;
+}
+
+.payment-method {
+    margin: 20px 0;
+    text-align: left;
+}
+
+.radio-label {
+    font-size: 16px;
+    margin: 10px 0;
+    display: block;
+    color: #555;
+}
+
+input[type="radio"] {
+    margin-right: 10px;
+}
+
+.btn-submit {
+    background-color: #ff5100;
+    color: black;
+    font-size: 16px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-submit:hover {
+    background-color: #ff7f00;
+}
+
+.btn-secondary {
+    background-color: #555;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #333;
+}
+
+/* Keyframes for Fade-in Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.product-info {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px;
+        background-color: #000;  /* Black background */
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        max-width: 450px;
+        margin: auto;
+        color: white;  /* Default text color */
+    }
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        font-size: 18px;  /* Increased text size */
+    }
+
+    .label {
+        font-weight: bold;
+        color: orange;  /* Orange color for labels */
+    }
+
+    .info {
+        color: white;  /* White color for the information text */
+    }
+
+    .product-info .info-item:last-child {
+        border-top: 1px solid #555;
+        padding-top: 10px;
+    }
+
+
+</style>
+<section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb-bg.jpg' %}">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb-text">
+                    <h2>Product Details</h2>
+                    <div class="bt-option">
+                        <a href="/">Home</a>
+                        <a href="{% url 'produit_list' %}">Products</a>
+                        <span>Product details</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div id="product-detail-container" class="product-container">
+    {% if produit.image %}
+        <img src="{{ produit.image.url }}" class="product-img" alt="{{ produit.nom }}" 
+             onerror="this.onerror=null; this.src='{% static 'images/default-product.jpg' %}';">
+    {% else %}
+        <img src="{% static 'images/default-product.jpg' %}" class="product-img" alt="{{ produit.nom }}">
+    {% endif %}
+    
+    <h1 class="product-title">{{ produit.nom }}</h1>
+    
+    <div class="product-info">
+        <div class="info-item">
+            <strong class="label">Category:</strong> 
+            <span class="info">{{ produit.categorie }}</span>
+        </div>
+        <div class="info-item">
+            <strong class="label">Description:</strong>
+            <span class="info">{{ produit.description }}</span>
+        </div>
+        <div class="info-item">
+            <strong class="label">Price:</strong>
+            <span class="info">{{ produit.prix }} €</span>
+        </div>
+        <div class="info-item">
+            <strong class="label">Available Quantity:</strong>
+            <span class="info">{{ produit.quantite_disponible }}</span>
+        </div>
+        <div class="info-item">
+            <strong class="label">In Stock:</strong>
+            <span class="info">{{ produit.en_stock|yesno:"Yes,No" }}</span>
+        </div>
+
+    </div>
+
+    <div class="add-achat-container">
+        <div class="payment-logo">
+            <img src="C:\Users\fessu\Desktop\image.png" alt="PayPal" width="100" height="50"> 
+        </div>
+        
+        <h1>Confirm Your Purchase</h1>
+        
+        <form method="POST" action="{% url 'add_achat' produit.reference %}">
+            {% csrf_token %}
+            <input type="hidden" name="client" id="client" value="{{ user.pk }}" readonly required>
+            <input type="hidden" name="produit" id="produit" value="{{ produit.reference }}" readonly required>
+    
+            <div class="payment-method">
+                <label for="payment_method_paypal" class="radio-label">
+                    <input type="radio" name="payment_method" id="payment_method_paypal" value="paypal" checked> PayPal
+                </label>
+            </div>
+    
+            <button type="submit" class="btn-submit">BUY</button>
+        </form>
+    </div>
+</div>
+
+<a href="{% url 'produit_list' %}" class="btn btn-secondary">Back to Products List</a>
 
 <style>
     /* Rendre le fond noir et l'écriture orange */
@@ -177,21 +536,50 @@ input[type="radio"] {
     }
 }
 
+
+
+
 </style>
-<div class="add-achat-container">
-    <h1>veuillez confirmer l'achat</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <!-- Payment Method Selection -->
-        <div class="payment-method">
-            <label for="payment_method_paypal" class="radio-label">
-                <input type="radio" name="payment_method" id="payment_method_paypal" value="paypal" checked> PayPal
-            </label>
-        </div>
-        <button type="submit" class="btn-submit">Add Achat</button>
-    </form>
-</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+
+<script src="https://js.stripe.com/v3/"></script>
+
+<script>
+    // Extract the product ID from the URL
+    function getProductIdFromUrl() {
+        const urlParts = window.location.pathname.split('/');
+        const productId = urlParts[urlParts.length - 2]; // This assumes the URL structure ends with /produit/achat/{product_id}/
+        console.log('Extracted Product ID:', productId); // Debugging log
+        return productId;
+    }
+
+    // Fill the product ID field in the form when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        const productId = getProductIdFromUrl(); // Get product ID
+        console.log('Product ID to be filled in form:', productId); // Debugging log
+
+        // Check if the produit input exists
+        const produitField = document.querySelector('input[name="produit"]');
+
+        if (produitField) {
+            console.log('Filling produit input field with:', productId); // Debugging log
+            produitField.value = productId;
+        } else {
+            console.log('produit input field not found'); // Debugging log
+        }
+    });
+</script>
+
+<center>
+    <iframe
+allow="microphone;"
+width="350"
+height="430"
+src="https://console.dialogflow.com/api-client/demo/embedded/18411e20-ffd7-4d2a-bfd5-d5b9119e24d5">
+</iframe>
+</center>
+
 
 
 

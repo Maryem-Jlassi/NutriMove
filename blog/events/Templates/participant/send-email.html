@@ -7,94 +7,217 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
+        :root {
+            --primary-color: #ff6b00;
+            --text-color: #ffffff;
+            --background-color: #1e1e1e;
+            --input-background: #2c2c2c;
+            --input-gray-background: #3a3a3a;
+            --border-radius: 12px;
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             padding: 20px;
+            line-height: 1.6;
         }
 
         .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 30px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background-color: var(--background-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 5px 15px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
         }
 
         h2 {
-            text-align: center;
-            color: #333;
+            color: var(--primary-color);
             margin-bottom: 30px;
-        }
-
-        form {
-            margin-top: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
             position: relative;
         }
 
-        label {
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
             font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .form-control {
+            background-color: var(--input-gray-background);
+            border: 2px solid transparent;
+            border-radius: var(--border-radius);
+            color: var(--text-color);
+            padding: 12px 16px;
+            width: 100%;
+            transition: all var(--transition-speed) ease;
+            font-size: 16px;
+        }
+
+        .form-control:focus {
+            background-color: var(--input-gray-background);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(255, 107, 0, 0.2);
+            outline: none;
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: var(--border-radius);
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 12px 24px;
+            width: 100%;
+            transition: all var(--transition-speed) ease;
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-            color: #333;
+            justify-content: center;
         }
 
-        .form-group i {
-            font-size: 18px;
-            color: #28a745;
+        .btn-primary:hover {
+            background-color: #ff8b33;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 107, 0, 0.4);
         }
 
-        input[type="email"],
-        textarea {
-            width: 100%;
-            padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-            background-color: #f9f9f9;
-            transition: all 0.3s ease;
+        .btn-primary i {
+            margin-right: 10px;
         }
 
-        input[type="email"]:focus,
-        textarea:focus {
-            border-color: #28a745;
-            background-color: #fff;
-            box-shadow: 0 0 8px rgba(40, 167, 69, 0.2);
+        .icon-prefix {
+            margin-right: 10px;
+            color: var(--primary-color);
+            transition: color var(--transition-speed) ease;
         }
 
-        button {
-            background-color: #28a745;
-            color: white;
-            padding: 12px 18px;
+        .form-group:focus-within .icon-prefix {
+            color: var(--primary-color);
+        }
+
+        /* Custom dropdown arrow */
+        .form-control[name="client"] {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: linear-gradient(45deg, transparent 50%, var(--primary-color) 50%), 
+                              linear-gradient(135deg, var(--primary-color) 50%, transparent 50%);
+            background-position: calc(100% - 20px) calc(1em + 2px), calc(100% - 15px) calc(1em + 2px);
+            background-size: 5px 5px, 5px 5px;
+            background-repeat: no-repeat;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .container {
+                padding: 20px;
+                margin: 0 10px;
+            }
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .form-input {
+            background-color: var(--input-background);
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
+            border-radius: var(--border-radius);
+            color: var(--text-color);
+            padding: 12px 16px;
             width: 100%;
+        }
+
+        .form-select {
+            appearance: none;
+            background-color: var(--input-background);
+            border: none;
+            border-radius: var(--border-radius);
+            color: var(--text-color);
+            padding: 12px 16px;
+            width: 100%;
+        }
+
+        .form-textarea {
+            background-color: var(--input-background);
+            border: none;
+            border-radius: var(--border-radius);
+            color: var(--text-color);
+            padding: 12px 16px;
+            resize: vertical;
+            width: 100%;
+        }
+
+        .form-submit {
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: var(--border-radius);
+            color: var(--text-color);
+            cursor: pointer;
             font-size: 16px;
-            transition: all 0.3s ease;
+            padding: 12px 24px;
+            width: 100%;
         }
 
-        button:hover {
-            background-color: #218838;
-            transform: translateY(-2px);
+        .form-submit:hover {
+            background-color: #ff8b33;
         }
 
-        .error-message {
-            color: red;
-            margin-top: 10px;
+        .form-back {
+            background-color: var(--input-background);
+            border: none;
+            border-radius: var(--border-radius);
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 15px;
+            padding: 12px 24px;
+            width: 100%;
         }
 
-        .success-message {
-            color: green;
-            margin-top: 10px;
+        .form-group:hover {
+            background-color: rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
@@ -102,37 +225,33 @@
     <div class="container">
         <h2>Envoyer un Email</h2>
 
-        <!-- Display any error or success messages -->
-        {% if messages %}
-            <div>
-                {% for message in messages %}
-                    <p class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">{{ message }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
-
         <form method="post">
             {% csrf_token %}
-
-            <!-- Champ pour le client (choix d'un client) -->
+            
             <div class="form-group">
-                <label for="id_client"><i class="fas fa-user"></i> Choisir un client</label>
-                {{ form.client }} <!-- Champ pour sélectionner un client -->
+                <label for="id_client">
+                    <i class="fas fa-user icon-prefix"></i> Choisir un client
+                </label>
+                {{ form.client }}
             </div>
 
-            <!-- Champ pour le titre -->
             <div class="form-group">
-                <label for="id_title"><i class="fas fa-heading"></i> Titre du message</label>
-                {{ form.title }} <!-- Champ pour saisir le titre -->
+                <label for="emailTitle">
+                    <i class="fas fa-heading icon-prefix"></i> Titre du message
+                </label>
+                {{ form.title }}
             </div>
 
-            <!-- Champ pour le message -->
             <div class="form-group">
-                <label for="id_message"><i class="fas fa-comment-alt"></i> Message</label>
-                {{ form.message }}  <!-- Le champ où vous écrivez le message -->
+                <label for="emailMessage">
+                    <i class="fas fa-comment-alt icon-prefix"></i> Message
+                </label>
+                {{ form.message }}
             </div>
 
-            <button type="submit"><i class="fas fa-paper-plane"></i> Envoyer l'Email</button>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-paper-plane"></i> Envoyer l'Email
+            </button>
         </form>
     </div>
 </body>
