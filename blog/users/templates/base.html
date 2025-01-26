@@ -461,7 +461,7 @@
                                     <li><a href="users/class-timetable/"> My Program</a></li>
                                 </ul>
                                 <div class="dropdown-footer">
-                                    <a href="#" class="logout">
+                                    <a href="http://localhost:3000/" class="logout">
                                         <i class="fa fa-sign-out"></i> Sign Out
                                     </a>
                                 </div>
@@ -656,16 +656,18 @@
                                     document.getElementById("goal-weight").value = profileData.goal_weight || "";
                                     document.getElementById("activity-level").value = profileData.activity_level || "";
                             
-                                    // Update profile picture if exists
+                                    // Update profile picture
                                     const profilePicture = document.getElementById("profile-picture");
+                                    const pictureUrlInput = document.getElementById("profile-picture-url");
+                                    
+                                    // Check if profile picture exists and is a valid URL
                                     if (profileData.profile_picture) {
                                         profilePicture.src = profileData.profile_picture;
-                                    }
-                            
-                                    // Populate the Profile Picture URL input
-                                    const pictureUrlInput = document.getElementById("profile-picture-url");
-                                    if (profileData.profile_picture) {
                                         pictureUrlInput.value = profileData.profile_picture;
+                                    } else {
+                                        // Fallback to a default placeholder if no picture
+                                        profilePicture.src = "/api/placeholder/200/200";
+                                        pictureUrlInput.value = "";
                                     }
                             
                                     // Update dropdown info (non-editable)
@@ -678,6 +680,10 @@
                                 } catch (error) {
                                     console.error("Error loading profile:", error.message);
                                     alert("Failed to load profile data.");
+                                    
+                                    // Set default placeholder if profile load fails
+                                    const profilePicture = document.getElementById("profile-picture");
+                                    profilePicture.src = "/api/placeholder/200/200";
                                 }
                             }
                             

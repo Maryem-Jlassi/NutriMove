@@ -15,10 +15,10 @@ import {
 import { styled } from "@mui/material/styles";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import axiosInstance from "../../axiosInstance"; // Import your axios instance
-import axios from "axios";
 import UserProfileDialog from "./UserProfileDialog ";
 import { Navigate } from "react-router-dom";
 
+// Styled Custom Navbar
 const CustomNavbar = styled(AppBar)(({ theme }) => ({
   background: "linear-gradient(90deg, #000000, #F36100)",
   borderBottom: "2px solid #F36100",
@@ -98,7 +98,7 @@ const Header = () => {
       localStorage.removeItem("refresh_token");
 
       // Redirect to login page after logout
-      window.location.href="/login";
+      window.location.href = "/login";
     } catch (error) {
       console.error("Error logging out:", error.message);
     } finally {

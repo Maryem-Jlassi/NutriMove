@@ -24,6 +24,7 @@
         </div>
     </div>
 </section>
+
 <section class="feedback-section spad">
     <div class="container">
         <div class="row">
@@ -54,24 +55,6 @@
                                 <button class="edit-btn" data-toggle="modal" data-target="#editFeedbackModal{{ feedback.id }}" title="Modifier">
                                     <i class="fas fa-pencil-alt"></i>
                                 </button>
-                                <style>
-                                    /* Supprimer le fond du bouton et la bordure */
-.edit-btn {
-    background: none;    /* Aucun fond */
-    border: none;        /* Aucun bord */
-    padding: 0;          /* Aucune marge intérieure */
-    color: inherit;      /* Couleur de texte héritée, pour que l'icône garde sa couleur */
-    cursor: pointer;     /* Curseur de type pointeur pour indiquer que c'est un bouton cliquable */
-}
-
-/* Optionnel: ajouter un effet de survol */
-.edit-btn:hover {
-    color: #007bff;      /* Exemple de couleur au survol */
-    transition: color 0.3s ease; /* Transition douce pour la couleur */
-}
-
-                                </style>
-                                
                                 
                                 <!-- Icone de suppression -->
                                 <button class="delete-btn" onclick="confirmDelete('{{ feedback.id }}')" title="Supprimer">
@@ -90,114 +73,89 @@
                             </div>
                         </div>
                         <!-- Modal pour modification du feedback -->
-        <div class="modal fade" id="editFeedbackModal{{ feedback.id }}" tabindex="-1" aria-labelledby="editFeedbackModalLabel{{ feedback.id }}" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title  text-white" id="editFeedbackModalLabel{{ feedback.id }}" >Modifier le Feedback</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <!-- Formulaire de modification -->
-                        <form method="POST" action="{% url 'feedback_update' feedback.id %}">
-                            {% csrf_token %}
-                            <label for="feedback_type">{{ form.feedback_type.label }}</label>
-
-                            {{ form.feedback_type}}
-                            <br>
-    
-    
-                                <label for="rating" class="larger-label">Évaluation :</label>
-                                <div class="rating" id="rating-stars">
-                                    <input type="radio" name="rating" value="5" id="star5" {% if form.rating.value == 5 %}checked{% endif %}>
-                                    <label for="star5" class="star">&#9733;</label>
-                                    
-                                    <input type="radio" name="rating" value="4" id="star4" {% if form.rating.value == 4 %}checked{% endif %}>
-                                    <label for="star4" class="star">&#9733;</label>
-                                    
-                                    <input type="radio" name="rating" value="3" id="star3" {% if form.rating.value == 3 %}checked{% endif %}>
-                                    <label for="star3" class="star">&#9733;</label>
-                                    
-                                    <input type="radio" name="rating" value="2" id="star2" {% if form.rating.value == 2 %}checked{% endif %}>
-                                    <label for="star2" class="star">&#9733;</label>
-                                    
-                                    <input type="radio" name="rating" value="1" id="star1" {% if form.rating.value == 1 %}checked{% endif %}>
-                                    <label for="star1" class="star">&#9733;</label>
-                                </div><br>
-                            <label for="comments">{{ form.comments.label }}    </label>
-                              {{ form.comments }}
-                              <br>
-                              <div class="form-check">
-                                <!-- Case à cocher pour l'anonymat -->
-                                <input type="checkbox" class="form-check-input" id="anonymous" name="anonymous" {% if form.anonymous.value %}checked{% endif %}>
-                                <label class="form-check-label" for="anonymous">{{ form.anonymous.label }}</label>            
-    
-                            </div>
-                            <div class="form-check">
-                                <!-- Case à cocher pour l'anonymat -->
-                                <input type="checkbox" class="form-check-input" id="accept_terms" name="accept_terms" {% if form.accept_terms.value %}checked{% endif %}>
-                                <label for="accept_terms">{{ form.accept_terms.label }}</label>                </div>
-                                <div class="form-check">
-                                    <!-- Case à cocher pour l'anonymat -->
-                                    <input type="checkbox" class="form-check-input" id="accept_moderation" name="accept_moderation" {% if form.accept_moderation.value %}checked{% endif %}>
-                                    <label for="accept_moderation">{{ form.accept_moderation.label }}</label>
+                        <div class="modal fade" id="editFeedbackModal{{ feedback.id }}" tabindex="-1" aria-labelledby="editFeedbackModalLabel{{ feedback.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title text-white" id="editFeedbackModalLabel{{ feedback.id }}">Modifier le Feedback</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <!-- Formulaire de modification -->
+                                        <form method="POST" action="{% url 'feedback_update' feedback.id %}">
+                                            {% csrf_token %}
+                                            <label for="feedback_type">{{ form.feedback_type.label }}</label>
+                                            {{ form.feedback_type }}
+                                            <br>
+                                            <label for="rating" class="larger-label">Évaluation :</label>
+                                            <div class="rating" id="rating-stars-{{ feedback.id }}">
+                                                <input type="radio" name="rating" value="1" id="star1-{{ feedback.id }}" {% if form.rating.value == 1 %}checked{% endif %}>
+                                                <label for="star1-{{ feedback.id }}" class="star">&#9733;</label>
+                                                
+                                                <input type="radio" name="rating" value="2" id="star2-{{ feedback.id }}" {% if form.rating.value == 2 %}checked{% endif %}>
+                                                <label for="star2-{{ feedback.id }}" class="star">&#9733;</label>
+                                                
+                                                <input type="radio" name="rating" value="3" id="star3-{{ feedback.id }}" {% if form.rating.value == 3 %}checked{% endif %}>
+                                                <label for="star3-{{ feedback.id }}" class="star">&#9733;</label>
+                                                
+                                                <input type="radio" name="rating" value="4" id="star4-{{ feedback.id }}" {% if form.rating.value == 4 %}checked{% endif %}>
+                                                <label for="star4-{{ feedback.id }}" class="star">&#9733;</label>
+                                                
+                                                <input type="radio" name="rating" value="5" id="star5-{{ feedback.id }}" {% if form.rating.value == 5 %}checked{% endif %}>
+                                                <label for="star5-{{ feedback.id }}" class="star">&#9733;</label>
+                                            </div><br>
+                                            <label for="comments">{{ form.comments.label }}</label>
+                                            {{ form.comments }}
+                                            <br>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="anonymous" name="anonymous" {% if form.anonymous.value %}checked{% endif %}>
+                                                <label class="form-check-label" for="anonymous">{{ form.anonymous.label }}</label>            
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="accept_terms" name="accept_terms" {% if form.accept_terms.value %}checked{% endif %}>
+                                                <label for="accept_terms">{{ form.accept_terms.label }}</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="accept_moderation" name="accept_moderation" {% if form.accept_moderation.value %}checked{% endif %}>
+                                                <label for="accept_moderation">{{ form.accept_moderation.label }}</label>
+                                            </div>
+                                            <br>
+                                            <div class="d-flex justify-content-between">
+                                                <button type="submit" class="btn btn-success">Mettre à jour</button>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
-    
-                            <br>
-                            <div class="d-flex justify-content-between">
-                                <button type="submit" class="btn btn-success">Mettre à jour</button>
                             </div>
-
-                         
-
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        </div>
                     {% empty %}
                         <p>Aucun feedback trouvé.</p>
                     {% endfor %}
                     
                     <!-- Pagination -->
-                    <!-- Inclure Bootstrap CSS dans le fichier base.html -->
-<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+                    <div class="pagination-wrapper">
+                        <div class="pagination-buttons">
+                            {% if page_obj.has_previous %}
+                                <a href="?page={{ page_obj.previous_page_number }}" class="pagination-btn">Précédente</a>
+                            {% endif %}
+                            
+                            <span class="current-page">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
+                            
+                            {% if page_obj.has_next %}
+                                <a href="?page={{ page_obj.next_page_number }}" class="pagination-btn">Suivante</a>
+                            {% endif %}
+                        </div>
+                    </div>
 
-<!-- Inclure jQuery et Bootstrap JS pour le bon fonctionnement des modals -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-
-
-                    
-<div class="pagination-wrapper">
-    <div class="pagination-buttons">
-        {% if page_obj.has_previous %}
-            <a href="?page={{ page_obj.previous_page_number }}" class="pagination-btn">Précédente</a>
-        {% endif %}
-        
-        <span class="current-page">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
-        
-        {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}" class="pagination-btn">Suivante</a>
-        {% endif %}
-    </div>
-</div>
-
-{% if messages %}
-    <div class="alert alert-info">
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    </div>
-{% endif %}
-
-
-
-
-
+                    {% if messages %}
+                        <div class="alert alert-info">
+                            {% for message in messages %}
+                                <p>{{ message }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>  
 
@@ -207,15 +165,12 @@
                     <div class="section-title feedback-title ">
                         <h2>Partagez vos pensées</h2>
                     </div>
-
                     
                     <form method="post">
-
                         {% csrf_token %}
                         
                         <label for="feedback_type">{{ form.feedback_type.label }}</label>
-
-                        {{ form.feedback_type}}
+                        {{ form.feedback_type }}
                         <br>
                         <label for="rating" class="larger-label">Évaluation :</label>
                         <div class="rating" id="rating-stars">
@@ -226,7 +181,7 @@
                             <label for="star2" class="star">&#9733;</label>
                             
                             <input type="radio" name="rating" value="3" id="star3" {% if form.rating.value == 3 %}checked{% endif %}>
-                            <label for="star3" class="star">&#9733;</label>
+                            <label for="star3" class="star">&#9733;</ label>
                             
                             <input type="radio" name="rating" value="4" id="star4" {% if form.rating.value == 4 %}checked{% endif %}>
                             <label for="star4" class="star">&#9733;</label>
@@ -235,67 +190,57 @@
                             <label for="star5" class="star">&#9733;</label>
                         </div><br>
                         
-                      
-                        <label for="comments">{{ form.comments.label }}    </label>
-                          {{ form.comments }}
-                        
-                          <br>
-                          <div class="form-check">
-                            <!-- Case à cocher pour l'anonymat -->
-                            <input type="checkbox" class="form-check-input" id="anonymous" name="anonymous" >
+                        <label for="comments">{{ form.comments.label }}</label>
+                        {{ form.comments }}
+                        <br>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="anonymous" name="anonymous">
                             <label class="form-check-label" for="anonymous">{{ form.anonymous.label }}</label>            
-
                         </div>
                         <div class="form-check">
-                            <!-- Case à cocher pour l'anonymat -->
-                            <input type="checkbox" class="form-check-input" id="accept_terms" name="accept_terms" >
-                            <label for="accept_terms">{{ form.accept_terms.label }}</label>                </div>
-                            <div class="form-check">
-                                <!-- Case à cocher pour l'anonymat -->
-                                <input type="checkbox" class="form-check-input" id="accept_moderation" name="accept_moderation" >
-                                <label for="accept_moderation">{{ form.accept_moderation.label }}</label>
-                            </div>
+                            <input type="checkbox" class="form-check-input" id="accept_terms" name="accept_terms">
+                            <label for="accept_terms">{{ form.accept_terms.label }}</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="accept_moderation" name="accept_moderation">
+                            <label for="accept_moderation">{{ form.accept_moderation.label }}</label>
+                        </div>
 
                         <!-- Bouton de soumission -->
                         <button type="submit" class="btn btn-primary">Soumettre</button>
-                        
-
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    
 </section>
-<!-- Add this form within your feedbackpage.html -->
-
-
 
 <style>
     .larger-feedback-form {
-    width: 80%; /* Augmente la largeur de la section */
-    margin: 0 auto; /* Centrer la section */
-}
+        width: 80%; /* Augmente la largeur de la section */
+        margin: 0 auto; /* Centrer la section */
+    }
 
-.leave-feedback {
-    padding: 20px; /* Ajouter un peu d'espace interne */
-    background-color: #2d2d2d; /* Couleur de fond */
-    border-radius: 10px; /* Coins arrondis */
-    border: 1px solid orange; /* Bordure subtile */
-}
+    .leave-feedback {
+        padding: 20px; /* Ajouter un peu d'espace interne */
+        background-color: #2d2d2d; /* Couleur de fond */
+        border-radius: 10px; /* Coins arrondis */
+        border: 1px solid orange; /* Bordure subtile */
+    }
 
     /* Styles pour les étoiles de l'évaluation */
-.star {
-    font-size: 24px;  /* Taille d'étoile plus grande */
-    color: white;   /* Couleur dorée pour les étoiles */
-    margin-right: 5px;
-}
+    .star {
+        font-size: 24px;  /* Taille d'étoile plus grande */
+        color: white;   /* Couleur dorée pour les étoiles */
+        margin-right: 5px;
+    }
 
-/* Pour les étoiles vides (lorsqu'elles ne sont pas sélectionnées) */
-.star-empty {
-    color: #E0E0E0;   /* Couleur gris clair pour les étoiles vides */
-}
-.feedback-item .edit-btn i, .feedback-item .delete-btn i {
+    /* Pour les étoiles vides (lorsqu'elles ne sont pas sélectionnées) */
+    .star-empty {
+        color: #E0E0E0;   /* Couleur gris clair pour les étoiles vides */
+    }
+
+    .feedback-item .edit-btn i, .feedback-item .delete-btn i {
         color: orange; /* Icône orange */
         font-size: 20px;
     }
@@ -314,27 +259,30 @@
     .pagination-btn:hover {
         background-color: #ff6f00;
     }
-/* Styles pour les étoiles dans la liste de feedback */
-.feedback-item .rating-stars {
-    font-size: 20px;
-}
 
-/* Agrandir les étoiles dans le formulaire */
-#rating-stars .star {
-    font-size: 30px;  /* Étoiles plus grandes dans le formulaire */
-    cursor: pointer;
-}
+    /* Styles pour les étoiles dans la liste de feedback */
+    .feedback-item .rating-stars {
+        font-size: 20px;
+    }
 
-/* Ajout d'un effet au survol des étoiles */
-#rating-stars .star:hover {
-    color: #FF8C00;  /* Couleur orange survolée */
-}
-/* Styles pour aligner les titres */
-.section-title.feedback-title h2 {
+    /* Agrandir les étoiles dans le formulaire */
+    #rating-stars .star {
+        font-size: 30px;  /* Étoiles plus grandes dans le formulaire */
+        cursor: pointer;
+    }
+
+    /* Ajout d'un effet au survol des étoiles */
+    #rating-stars .star:hover {
+        color: #FF8C00;  /* Couleur orange survolée */
+    }
+
+    /* Styles pour aligner les titres */
+    .section-title.feedback-title h2 {
         font-size: 32px;
         color: white;
         text-align: center;
     }
+
     .feedback-title h2 {
         font-size: 32px;
         font-weight: bold;
@@ -346,15 +294,17 @@
     .feedback-widget .section-title.feedback-title {
         margin-bottom: 30px;
     }
-.feedback-item {
+
+    .feedback-item {
         border: 1px solid orange; /* Bordure subtile autour des feedbacks */
         border-radius: 10px; /* Coins arrondis */
         background-color: #2d2d2d; /* Fond clair */
         color: #2d2d2d; /* Texte noir pour une meilleure lisibilité */
     }
+
     /* Style pour le fond de la section de feedback (fond sombre) */
     .feedback-section {
-        background-color: #1e1e1e; /* Fond sombre */
+ background-color: #1e1e1e; /* Fond sombre */
         color: #fff; /* Texte en blanc */
         padding: 60px 0;
     }
@@ -376,13 +326,14 @@
     .star:hover ~ .star {
         color: orange;
     }
-    input[type="radio"]:checked + label.star {
-    color: gold; /* Couleur dorée pour l'étoile sélectionnée */
-}
 
-input[type="radio"]:not(:checked) + label.star:hover {
-    color: orange; /* Couleur orange lors du survol */
-}
+    input[type="radio"]:checked + label.star {
+        color: gold; /* Couleur dorée pour l'étoile sélectionnée */
+    }
+
+    input[type="radio"]:not(:checked) + label.star:hover {
+        color: orange; /* Couleur orange lors du survol */
+    }
 
     input[type="radio"] {
         display: none;
@@ -393,17 +344,20 @@ input[type="radio"]:not(:checked) + label.star:hover {
     input[type="radio"]:checked + label ~ label {
         color: orange;
     }
-     /* Formulaire sur fond sombre */
-     .leave-feedback {
+
+    /* Formulaire sur fond sombre */
+    .leave-feedback {
         background-color: #2d2d2d;
         padding: 30px;
         border-radius: 10px;
     }
-/* Texte des labels et champs de formulaire en blanc */
-.form-group label,
+
+    /* Texte des labels et champs de formulaire en blanc */
+    .form-group label,
     .form-check-label {
         color: white; /* Texte en blanc */
     }
+
     .confirm-delete-message {
         display: none;
         background-color: rgba(0, 0, 0, 0.7);
@@ -427,119 +381,115 @@ input[type="radio"]:not(:checked) + label.star:hover {
         background-color: #ff6f00; /* Changement de couleur du bouton au survol */
     }
 
-    
-  .feedback-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-  }
+    .feedback-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-  .edit-btn,
-  .delete-btn {
-      text-decoration: none;
-      color: inherit;
-      font-size: 18px; /* Ajustez la taille selon vos besoins */
-  }
+    .edit-btn,
+    .delete-btn {
+        text-decoration: none;
+        color: inherit;
+        font-size: 18px; /* Ajustez la taille selon vos besoins */
+    }
 
-  .delete-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      transition: color 0.3s ease;
+    .delete-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
 
-  }
+    /* Espacement supplémentaire entre l'étiquette et la case à cocher */
+    .form-check-label {
+        margin-left: 5px;
+    }
 
+    .modal-content {
+        background-color:  #2d2d2d;  /* Couleur du fond du modal */
+        color: white;  /* Texte en blanc */
+        border-radius: 10px;  /* Coins arrondis pour le modal */
+    }
 
-/* Espacement supplémentaire entre l'étiquette et la case à cocher */
-.form-check-label {
-    margin-left: 5px;
-}
+    .modal-header {
+        background-color:  #2d2d2d; /* Un bleu légèrement plus foncé pour l'en-tête */
+        color: white;  /* Texte en blanc dans l'en-tête */
+        border-bottom: 2px solid  #2d2d2d; /* Bordure en bas de l'en-tête */
+    }
 
-    .star {
-    font-size: 24px;
-    color: yellow;
-    cursor: pointer;
-}
+    .modal-footer .btn {
+        border-radius: 5px;
+        padding: 10px 20px;
+    }
 
-.rating input {
-    display: none; /* Cache les cases à cocher */
-}
+    .modal-footer .btn-secondary {
+        background-color: orange; /* Gris pour le bouton "Annuler" */
+        border-color: orange;
+    }
 
-.rating label {
-    display: inline-block;
-    cursor: pointer;
-}
-
-.rating input:checked ~ label,
-.rating label:hover,
-.rating label:hover ~ label {
-    color: orange; /* Couleur des étoiles sélectionnées ou au survol */
-}
-
-
-/* Personnalisation du fond du modal */
-.modal-content {
-    background-color:  #2d2d2d;  /* Couleur du fond du modal */
-    color: white;  /* Texte en blanc */
-    border-radius: 10px;  /* Coins arrondis pour le modal */
-}
-
-/* Personnalisation de l'en-tête du modal */
-.modal-header {
-    background-color:  #2d2d2d; /* Un bleu légèrement plus foncé pour l'en-tête */
-    color: white;  /* Texte en blanc dans l'en-tête */
-    border-bottom: 2px solid  #2d2d2d; /* Bordure en bas de l'en-tête */
-}
-
-/* Personnalisation des boutons du modal */
-.modal-footer .btn {
-    border-radius: 5px;
-    padding: 10px 20px;
-}
-
-
-
-.modal-footer .btn-secondary {
-    background-color: orange; /* Gris pour le bouton "Annuler" */
-    border-color: orange;
-}
-
-/* Personnalisation de l'arrière-plan du modal */
-.modal-backdrop {
-    background-color: rgba(0, 0, 0, 0.5); /* Fond noir avec transparence pour l'arrière-plan */
-}
-
-
-
-
-
-.rating input {
-    display: none;
-}
-
-.rating label {
-    font-size: 30px;
-    color: #ddd;
-    cursor: pointer;
-}
-
-.rating input:checked ~ label,
-.rating input:hover ~ label {
-    color: gold;
-}
-
-.rating input:checked + label {
-    color: gold;
-}
-
-
-
-
-    
+    .modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.5); /* Fond noir avec transparence pour l'arrière-plan */
+    }
 </style>
 
-
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Function to handle star rating interaction
+        function setupStarRating(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            const stars = container.querySelectorAll('input[type="radio"]');
+            const starLabels = container.querySelectorAll('label.star');
+
+            // Function to update star colors
+            function updateStarColors(selectedValue) {
+                stars.forEach((star, index) => {
+                    const label = starLabels[index];
+                    if (parseInt(star.value) <= parseInt(selectedValue)) {
+                        label.style.color = 'orange';
+                    } else {
+                        label.style.color = 'white';
+                    }
+                });
+            }
+
+            // Event listener for star selection
+            stars.forEach(star => {
+                star.addEventListener('change', function() {
+                    const selectedValue = this.value;
+                    updateStarColors(selectedValue);
+                });
+            });
+
+            // Hover effect
+            starLabels.forEach((label, index) => {
+                label.addEventListener('mouseover', function() {
+                    const hoveredValue = stars[index].value;
+                    updateStarColors(hoveredValue);
+                });
+
+                label.addEventListener('mouseout', function() {
+                    const currentSelectedStar = Array.from(stars).find(star => star.checked);
+                    updateStarColors(currentSelectedStar ? currentSelectedStar.value : 0);
+                });
+            });
+
+            // Initial setup for pre-selected rating
+            const initialSelectedStar = Array.from(stars).find(star => star.checked);
+            if (initialSelectedStar) {
+                updateStarColors(initialSelectedStar.value);
+            }
+        }
+
+        // Setup star rating for main form and edit modals
+        const starRatingContainers = document.querySelectorAll('.rating');
+        starRatingContainers.forEach(container => {
+            setupStarRating(container.id);
+        });
+    });
+
     function confirmDelete(feedbackId) {
         document.querySelector(`#confirm-delete${feedbackId}`).style.display = 'block';
     }
@@ -547,15 +497,6 @@ input[type="radio"]:not(:checked) + label.star:hover {
     function cancelDelete(feedbackId) {
         document.querySelector(`#confirm-delete${feedbackId}`).style.display = 'none';
     }
-      // Sélectionne tous les éléments input[type="radio"]
-      const radios = document.querySelectorAll('input[name="rating"]');
-    
-    radios.forEach((radio) => {
-        radio.addEventListener('change', function () {
-            const ratingValue = this.value;
-            console.log("Évaluation sélectionnée:", ratingValue);
-        });
-    });
 </script>
 
 {% endblock %}

@@ -6,7 +6,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import LockIcon from '@mui/icons-material/Lock';
-
+import logo from '../dashboard/logo.png';
 const drawerWidth = 200;
 
 const CustomDrawer = styled(Drawer)(({ theme }) => ({
@@ -72,6 +72,17 @@ const Sidebar = ({ activeSection, onSelectItem }) => {
 
   return (
     <CustomDrawer variant="permanent">
+              {/* Add the logo to the left of the navbar */}
+              <img
+  src={logo}
+  alt="Logo"
+  style={{
+    height: "40px", // Adjust the height as needed
+    marginRight: "16px", // Space between the logo and the profile icon
+    marginTop: "20px",
+    marginLeft: "20px",  // Adjust the space from the top
+  }}
+/>
       <List sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '200px' }}>
         {menuItems.map((item) => (
           <CustomListItem

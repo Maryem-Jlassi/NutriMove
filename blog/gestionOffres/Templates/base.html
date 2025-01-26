@@ -44,12 +44,16 @@
         </div>
         <nav class="canvas-menu mobile-menu">
             <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="offres/">Offres</a></li>
-                <li><a href="{% static 'classes.html' %}">Classes</a></li>
-                <li><a href="{% static 'services.html' %}">Services</a></li>
-                <li><a href="{% static 'team.html' %}">Our Team</a></li>
-                <li><a href="{% static 'contact.html' %}">Contact</a></li>
+                <li class="active"><a href="{% url 'index' %}">Home</a></li>
+                <li><a href="{% url 'produit_list' %}">Produit</a></li>
+                <li><a href="{% url 'event_list' %}">events</a></li>
+                <li><a href="{% url 'listViewoffre' %}">offres</a></li>
+                <li><a href="{% url 'home' %}">blog</a></li>
+                <li><a href="{% url 'feedback_list' %}">feedback</a></li>
+                
+                
+                
+
             </ul>
         </nav>
         <div id="mobile-menu-wrap"></div>
@@ -63,7 +67,7 @@
             <div class="row">
                 <div class="col-lg-3">
                     <div class="logo">
-                        <a href="{% static 'index.html' %}">
+                        <a href="{% url 'index' %}">
                             <img src="{% static 'img/logo.png' %}" alt="">
                         </a>
                     </div>
@@ -71,371 +75,373 @@
                 <div class="col-lg-6">
                     <nav class="nav-menu">
                         <ul>
-                            <li class="active"><a href="/">Home</a></li>
-                            <li><a href="events/">Events</a></li>
-                            <li><a href="{% static 'class-details.html' %}">Classes</a></li>
-                            <li><a href="{% static 'services.html' %}">Services</a></li>
-                            <li><a href="{% static 'team.html' %}">Our Team</a></li>
-                            <li><a href="{% static 'contact.html' %}">Contact</a></li>
-                        </ul>
+                            <li class="active"><a href="{% url 'index' %}">Home</a></li>
+                            <li><a href="{% url 'produit_list' %}">Produit</a></li>
+                            <li><a href="{% url 'event_list' %}">events</a></li>
+                            <li><a href="{% url 'listViewoffre' %}">offres</a></li>
+                            <li><a href="{% url 'home' %}">blog</a></li>
+                            <li><a href="{% url 'feedback_list' %}">feedback</a></li>
+                            
+                     </ul>       
                     </nav>
                 </div>
                 <style>
                 /* Profile Icon and Dropdown Styles */
-.profile-icon {
-    position: relative;
-    cursor: pointer;
-    margin-left: 20px;
-}
-
-.profile-toggle {
-    padding: 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #ffffff;
-    font-family: "Oswald", sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: color 0.3s;
-}
-
-.profile-toggle:hover {
-    color: #f36100;
-}
-
-.profile-toggle i {
-    transition: transform 0.3s ease;
-}
-
-.profile-toggle:hover i {
-    transform: scale(1.1) rotate(5deg);
-}
-
-.profile-dropdown {
-    position: absolute;
-    top: 40px;
-    right: 150px;
-    width: 240px;
-    background: #252525;
-    border-radius: 4px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-}
-
-.profile-dropdown.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
-.profile-header {
-    padding: 20px;
-    text-align: center;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.avatar {
-    width: 50px;
-    height: 50px;
-    background: #f36100;
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 10px;
-    font-size: 20px;
-    transition: transform 0.3s ease;
-}
-
-.profile-dropdown:hover .avatar {
-    transform: scale(1.05);
-}
-
-.user-name {
-    color: #ffffff;
-    font-weight: 500;
-    margin-bottom: 5px;
-    font-family: "Oswald", sans-serif;
-}
-
-.user-email {
-    color: rgba(255,255,255,0.7);
-    font-size: 13px;
-}
-
-.menu-items {
-    list-style: none;
-    padding: 8px 0;
-    margin: 0;
-}
-
-.menu-items li a {
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #ffffff;
-    text-decoration: none;
-    transition: all 0.3s;
-    font-size: 14px;
-}
-
-.menu-items li a:hover {
-    background: rgba(243, 97, 0, 0.1);
-    color: #f36100;
-}
-
-.menu-items li a i {
-    font-size: 16px;
-    transition: transform 0.3s;
-}
-
-.menu-items li a:hover i {
-    transform: translateX(2px);
-}
-
-.dropdown-footer {
-    padding: 12px 20px;
-    border-top: 1px solid rgba(255,255,255,0.1);
-}
-
-.logout {
-    color: #ff4d4d;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 14px;
-    transition: color 0.3s;
-}
-
-.logout:hover {
-    color: #ff6666;
-}
-
-.profile-modal {
-    display: none; /* Hidden by default */
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-    background: #fff;
-    width: 90%;
-    max-width: 500px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-.profile-modal.show {
-    display: block; /* Show when "show" class is added */
-}
-/* Modal Styles */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1001;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-}
-
-.modal.show {
-    opacity: 1;
-    visibility: visible;
-}
-
-.modal-content {
-    background: #ffffff;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 600px;
-    max-height: 85vh;
-    overflow-y: auto;
-    transform: translateY(-20px);
-    transition: transform 0.3s ease;
-}
-
-.modal.show .modal-content {
-    transform: translateY(0);
-}
-
-.modal-header {
-    padding: 20px;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #252525;
-    color: white;
-    border-radius: 8px 8px 0 0;
-}
-
-.modal-header h2 {
-    margin: 0;
-    font-family: "Oswald", sans-serif;
-    font-size: 24px;
-    color: #f36100;
-}
-
-.close {
-    font-size: 24px;
-    cursor: pointer;
-    color: #ffffff;
-    transition: color 0.3s;
-}
-
-.close:hover {
-    color: #f36100;
-}
-
-.profile-container {
-    padding: 20px;
-}
-
-.profile-picture-section {
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-.profile-picture-container {
-    position: relative;
-    width: 120px;
-    height: 120px;
-    margin: 0 auto;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 3px solid #f36100;
-}
-
-.profile-picture-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.profile-picture-container:hover img {
-    transform: scale(1.05);
-}
-
-.profile-picture-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(243, 97, 0, 0.9);
-    color: white;
-    padding: 6px;
-    cursor: pointer;
-    font-size: 13px;
-    transform: translateY(100%);
-    transition: transform 0.3s ease;
-}
-
-.profile-picture-container:hover .profile-picture-overlay {
-    transform: translateY(0);
-}
-
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-/* Adjust field widths based on content */
-.form-group.full-width {
-    grid-column: span 2;
-}
-
-.form-group.half-width {
-    grid-column: span 1;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-}
-
-.form-group label {
-    margin-bottom: 6px;
-    font-weight: 500;
-    color: #333;
-    font-size: 14px;
-}
-
-.form-group input,
-.form-group select {
-    padding: 6px 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-    transition: border-color 0.3s;
-}
-
-.form-group input:focus,
-.form-group select:focus {
-    border-color: #f36100;
-    outline: none;
-}
-
-/* Specific field width adjustments */
-.form-group input[type="number"] {
-    width: 120px;
-}
-
-.form-group select {
-    width: 160px;
-}
-
-.save-btn {
-    background: #f36100;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    font-family: "Oswald", sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.3s;
-    width: auto;
-    margin: 0 auto;
-    display: block;
-    min-width: 200px;
-}
-
-.save-btn:hover {
-    background: #ff7b2b;
-    transform: translateY(-2px);
-}
-
-@media (max-width: 768px) {
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .form-group.full-width,
-    .form-group.half-width {
-        grid-column: span 1;
-    }
-}
+                .profile-icon {
+                    position: relative;
+                    cursor: pointer;
+                    margin-left: 20px;
+                }
+                
+                .profile-toggle {
+                    padding: 10px;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    color: #ffffff;
+                    font-family: "Oswald", sans-serif;
+                    font-size: 15px;
+                    font-weight: 500;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    transition: color 0.3s;
+                }
+                
+                .profile-toggle:hover {
+                    color: #f36100;
+                }
+                
+                .profile-toggle i {
+                    transition: transform 0.3s ease;
+                }
+                
+                .profile-toggle:hover i {
+                    transform: scale(1.1) rotate(5deg);
+                }
+                
+                .profile-dropdown {
+                    position: absolute;
+                    top: 40px;
+                    right: 150px;
+                    width: 240px;
+                    background: #252525;
+                    border-radius: 4px;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                    z-index: 1000;
+                    opacity: 0;
+                    visibility: hidden;
+                    transform: translateY(-10px);
+                    transition: all 0.3s ease;
+                }
+                
+                .profile-dropdown.show {
+                    opacity: 1;
+                    visibility: visible;
+                    transform: translateY(0);
+                }
+                
+                .profile-header {
+                    padding: 20px;
+                    text-align: center;
+                    border-bottom: 1px solid rgba(255,255,255,0.1);
+                }
+                
+                .avatar {
+                    width: 50px;
+                    height: 50px;
+                    background: #f36100;
+                    color: white;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin: 0 auto 10px;
+                    font-size: 20px;
+                    transition: transform 0.3s ease;
+                }
+                
+                .profile-dropdown:hover .avatar {
+                    transform: scale(1.05);
+                }
+                
+                .user-name {
+                    color: #ffffff;
+                    font-weight: 500;
+                    margin-bottom: 5px;
+                    font-family: "Oswald", sans-serif;
+                }
+                
+                .user-email {
+                    color: rgba(255,255,255,0.7);
+                    font-size: 13px;
+                }
+                
+                .menu-items {
+                    list-style: none;
+                    padding: 8px 0;
+                    margin: 0;
+                }
+                
+                .menu-items li a {
+                    padding: 10px 20px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    color: #ffffff;
+                    text-decoration: none;
+                    transition: all 0.3s;
+                    font-size: 14px;
+                }
+                
+                .menu-items li a:hover {
+                    background: rgba(243, 97, 0, 0.1);
+                    color: #f36100;
+                }
+                
+                .menu-items li a i {
+                    font-size: 16px;
+                    transition: transform 0.3s;
+                }
+                
+                .menu-items li a:hover i {
+                    transform: translateX(2px);
+                }
+                
+                .dropdown-footer {
+                    padding: 12px 20px;
+                    border-top: 1px solid rgba(255,255,255,0.1);
+                }
+                
+                .logout {
+                    color: #ff4d4d;
+                    text-decoration: none;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    font-size: 14px;
+                    transition: color 0.3s;
+                }
+                
+                .logout:hover {
+                    color: #ff6666;
+                }
+                
+                .profile-modal {
+                    display: none; /* Hidden by default */
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    z-index: 1000;
+                    background: #fff;
+                    width: 90%;
+                    max-width: 500px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+                }
+                .profile-modal.show {
+                    display: block; /* Show when "show" class is added */
+                }
+                /* Modal Styles */
+                .modal {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0,0,0,0.7);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 1001;
+                    opacity: 0;
+                    visibility: hidden;
+                    transition: all 0.3s ease;
+                }
+                
+                .modal.show {
+                    opacity: 1;
+                    visibility: visible;
+                }
+                
+                .modal-content {
+                    background: #ffffff;
+                    border-radius: 8px;
+                    width: 90%;
+                    max-width: 600px;
+                    max-height: 85vh;
+                    overflow-y: auto;
+                    transform: translateY(-20px);
+                    transition: transform 0.3s ease;
+                }
+                
+                .modal.show .modal-content {
+                    transform: translateY(0);
+                }
+                
+                .modal-header {
+                    padding: 20px;
+                    border-bottom: 1px solid #eee;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    background: #252525;
+                    color: white;
+                    border-radius: 8px 8px 0 0;
+                }
+                
+                .modal-header h2 {
+                    margin: 0;
+                    font-family: "Oswald", sans-serif;
+                    font-size: 24px;
+                    color: #f36100;
+                }
+                
+                .close {
+                    font-size: 24px;
+                    cursor: pointer;
+                    color: #ffffff;
+                    transition: color 0.3s;
+                }
+                
+                .close:hover {
+                    color: #f36100;
+                }
+                
+                .profile-container {
+                    padding: 20px;
+                }
+                
+                .profile-picture-section {
+                    text-align: center;
+                    margin-bottom: 25px;
+                }
+                
+                .profile-picture-container {
+                    position: relative;
+                    width: 120px;
+                    height: 120px;
+                    margin: 0 auto;
+                    border-radius: 50%;
+                    overflow: hidden;
+                    border: 3px solid #f36100;
+                }
+                
+                .profile-picture-container img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    transition: transform 0.3s ease;
+                }
+                
+                .profile-picture-container:hover img {
+                    transform: scale(1.05);
+                }
+                
+                .profile-picture-overlay {
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    background: rgba(243, 97, 0, 0.9);
+                    color: white;
+                    padding: 6px;
+                    cursor: pointer;
+                    font-size: 13px;
+                    transform: translateY(100%);
+                    transition: transform 0.3s ease;
+                }
+                
+                .profile-picture-container:hover .profile-picture-overlay {
+                    transform: translateY(0);
+                }
+                
+                .form-grid {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 15px;
+                    margin-bottom: 20px;
+                }
+                
+                /* Adjust field widths based on content */
+                .form-group.full-width {
+                    grid-column: span 2;
+                }
+                
+                .form-group.half-width {
+                    grid-column: span 1;
+                }
+                
+                .form-group {
+                    display: flex;
+                    flex-direction: column;
+                }
+                
+                .form-group label {
+                    margin-bottom: 6px;
+                    font-weight: 500;
+                    color: #333;
+                    font-size: 14px;
+                }
+                
+                .form-group input,
+                .form-group select {
+                    padding: 6px 8px;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    font-size: 14px;
+                    transition: border-color 0.3s;
+                }
+                
+                .form-group input:focus,
+                .form-group select:focus {
+                    border-color: #f36100;
+                    outline: none;
+                }
+                
+                /* Specific field width adjustments */
+                .form-group input[type="number"] {
+                    width: 120px;
+                }
+                
+                .form-group select {
+                    width: 160px;
+                }
+                
+                .save-btn {
+                    background: #f36100;
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 16px;
+                    font-family: "Oswald", sans-serif;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    transition: all 0.3s;
+                    width: auto;
+                    margin: 0 auto;
+                    display: block;
+                    min-width: 200px;
+                }
+                
+                .save-btn:hover {
+                    background: #ff7b2b;
+                    transform: translateY(-2px);
+                }
+                
+                @media (max-width: 768px) {
+                    .form-grid {
+                        grid-template-columns: 1fr;
+                    }
+                    
+                    .form-group.full-width,
+                    .form-group.half-width {
+                        grid-column: span 1;
+                    }
+                }
+                
                     </style>
                     
                     <div class="col-lg-3">
@@ -452,12 +458,10 @@
                                 </div>
                                 <ul class="menu-items">
                                     <li><a href="#" id="view-profile"><i class="fa fa-user"></i> My Profile</a></li>
-                                    <li><a href="#"><i class="fa fa-cog"></i> Settings</a></li>
-                                    <li><a href="#"><i class="fa fa-calendar"></i> My Schedule</a></li>
-                                    <li><a href="#"><i class="fa fa-credit-card"></i> Billing</a></li>
+                                    <li><a href="users/class-timetable/"> My Program</a></li>
                                 </ul>
                                 <div class="dropdown-footer">
-                                    <a href="#" class="logout">
+                                    <a href="http://localhost:3000/" class="logout">
                                         <i class="fa fa-sign-out"></i> Sign Out
                                     </a>
                                 </div>
@@ -466,13 +470,13 @@
                     </div>
                     
                     <!-- Modal -->
-                    <div id="profile-modal" class="modal" >
+                    <div id="profile-modal" class="modal">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h2>Profile Settings</h2>
                                 <span class="close" id="close-modal">&times;</span>
                             </div>
-                            
+                    
                             <div class="profile-container">
                                 <div class="profile-picture-section">
                                     <div class="profile-picture-container">
@@ -482,29 +486,34 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+                    
                                 <form id="profile-form">
                                     <div class="form-grid">
+                                        <div class="form-group">
+                                            <label for="profile-picture-url">Profile Picture URL</label>
+                                            <input type="url" id="profile-picture-url" name="profile-picture-url" placeholder="Enter the URL of your profile picture">
+                                        </div>
+                    
                                         <div class="form-group">
                                             <label for="first_name">First Name</label>
                                             <input type="text" id="first_name" name="first_name" placeholder="Enter your first name">
                                         </div>
-                                        
+                    
                                         <div class="form-group">
                                             <label for="last_name">Last Name</label>
                                             <input type="text" id="last_name" name="last_name" placeholder="Enter your last name">
                                         </div>
-                                        
+                    
                                         <div class="form-group">
                                             <label for="email">Email Address</label>
                                             <input type="email" id="email" name="email" placeholder="Enter your email">
                                         </div>
-                                        
+                    
                                         <div class="form-group">
                                             <label for="age">Age</label>
                                             <input type="number" id="age" name="age" placeholder="Enter your age">
                                         </div>
-                                        
+                    
                                         <div class="form-group">
                                             <label for="sex">Sex</label>
                                             <select id="sex" name="sex">
@@ -514,22 +523,22 @@
                                                 <option value="other">Other</option>
                                             </select>
                                         </div>
-                                        
+                    
                                         <div class="form-group">
                                             <label for="weight">Weight (kg)</label>
                                             <input type="number" id="weight" name="weight" placeholder="Enter your weight">
                                         </div>
-                                        
+                    
                                         <div class="form-group">
                                             <label for="height">Height (cm)</label>
                                             <input type="number" id="height" name="height" placeholder="Enter your height">
                                         </div>
-                                        
+                    
                                         <div class="form-group">
                                             <label for="goal-weight">Goal Weight (kg)</label>
                                             <input type="number" id="goal-weight" name="goal-weight" placeholder="Enter your goal weight">
                                         </div>
-                                        
+                    
                                         <div class="form-group">
                                             <label for="activity-level">Activity Level</label>
                                             <select id="activity-level" name="activity-level">
@@ -542,170 +551,187 @@
                                             </select>
                                         </div>
                                     </div>
-                                    
+                    
                                     <button type="submit" class="save-btn">Save Changes</button>
                                 </form>
                             </div>
                         </div>
                     </div>
                     
+                    
                     <script>
                         document.addEventListener("DOMContentLoaded", function () {
-                        const profileToggle = document.querySelector(".profile-toggle");
-                        const profileDropdown = document.querySelector(".profile-dropdown");
-                        const viewProfile = document.getElementById("view-profile");
-                        const profileModal = document.getElementById("profile-modal");
-                        const closeModal = document.getElementById("close-modal");
+                            const profileToggle = document.querySelector(".profile-toggle");
+                            const profileDropdown = document.querySelector(".profile-dropdown");
+                            const viewProfile = document.getElementById("view-profile");
+                            const profileModal = document.getElementById("profile-modal");
+                            const closeModal = document.getElementById("close-modal");
                     
-                        // Remove inline display: none style for profile dropdown
-                        profileDropdown.style.display = '';
+                            // Remove inline display: none style for profile dropdown
+                            profileDropdown.style.display = '';
                     
-                        // Ensure required elements exist
-                        if (!profileToggle || !profileDropdown) {
-                            console.error("Required elements not found");
-                            return;
-                        }
-                    
-                        // **Load Profile Data Immediately (on page load)**
-                        loadProfileData();
-                    
-                        // Toggle dropdown visibility
-                        profileToggle.addEventListener('click', function(event) {
-                            event.stopPropagation(); 
-                            profileDropdown.classList.toggle('show');
-                        });
-                    
-                        // Close the dropdown if clicked outside
-                        document.addEventListener('click', function() {
-                            profileDropdown.classList.remove('show');
-                        });
-                    
-                        // Prevent dropdown from closing when clicking inside it
-                        profileDropdown.addEventListener('click', function(event) {
-                            event.stopPropagation();
-                        });
-                    
-                        // Open modal from dropdown to update profile
-                        viewProfile.addEventListener("click", function (e) {
-    try {
-        e.preventDefault();
-        console.log("View profile clicked");
-        profileDropdown.classList.remove('show'); // This hides the dropdown if it's open
-        profileModal.classList.add('show'); // Add show class to display the modal
-        loadProfileData(); // Ensure this function loads the data properly
-    } catch (error) {
-        console.error("Error opening profile modal:", error);
-    }
-});
-                        // Close modal
-                        closeModal.addEventListener("click", function () {
-                            profileModal.style.display = "none";
-                        });
-                    
-                        // Close modal when clicking outside
-                        window.addEventListener("click", function (event) {
-                            if (event.target === profileModal) {
-                                profileModal.style.display = "none";
+                            // Ensure required elements exist
+                            if (!profileToggle || !profileDropdown) {
+                                console.error("Required elements not found");
+                                return;
                             }
-                        });
                     
-                        // Helper function to get a cookie value by name
-                        function getCookie(name) {
-                            const value = `; ${document.cookie}`;
-                            const parts = value.split(`; ${name}=`);
-                            if (parts.length === 2) return parts.pop().split(";").shift();
-                        }
+                            // **Load Profile Data Immediately (on page load)**
+                            loadProfileData();
                     
-                        // Function to fetch profile data from the backend
-                        async function loadProfileData() {
-                            try {
-                                const token = getCookie("access_token");
-                                if (!token) throw new Error("Token not found");
+                            // Toggle dropdown visibility
+                            profileToggle.addEventListener('click', function (event) {
+                                event.stopPropagation();
+                                profileDropdown.classList.toggle('show');
+                            });
                     
-                                const response = await fetch("/users/profile-client/", {
-                                    method: "GET",
-                                    headers: {
-                                        "Content-Type": "application/json",
-                                        "Authorization": `Bearer ${token}`,
-                                    },
-                                });
+                            // Close the dropdown if clicked outside
+                            document.addEventListener('click', function () {
+                                profileDropdown.classList.remove('show');
+                            });
                     
-                                if (!response.ok) throw new Error("Failed to fetch profile data");
+                            // Prevent dropdown from closing when clicking inside it
+                            profileDropdown.addEventListener('click', function (event) {
+                                event.stopPropagation();
+                            });
                     
-                                const profileData = await response.json();
-                    
-                                // Populate all form fields for editing
-                                document.getElementById("first_name").value = profileData.first_name || "";
-                                document.getElementById("last_name").value = profileData.last_name || "";
-                                document.getElementById("email").value = profileData.email || "";
-                                document.getElementById("age").value = profileData.age || "";
-                                document.getElementById("sex").value = profileData.sexe || "";
-                                document.getElementById("weight").value = profileData.weight || "";
-                                document.getElementById("height").value = profileData.height || "";
-                                document.getElementById("goal-weight").value = profileData.goal_weight || "";
-                                document.getElementById("activity-level").value = profileData.activity_level || "";
-                    
-                                // Update profile picture if exists
-                                const profilePicture = document.getElementById("profile-picture");
-                                if (profileData.profile_picture) {
-                                    profilePicture.src = profileData.profile_picture;
+                            // Open modal from dropdown to update profile
+                            viewProfile.addEventListener("click", function (e) {
+                                try {
+                                    e.preventDefault();
+                                    console.log("View profile clicked");
+                                    profileDropdown.classList.remove('show'); // Hide the dropdown if it's open
+                                    profileModal.classList.add('show'); // Add show class to display the modal
+                                    loadProfileData(); // Ensure this function loads the data properly
+                                } catch (error) {
+                                    console.error("Error opening profile modal:", error);
                                 }
+                            });
                     
-                                // Update dropdown info (non-editable)
-                                document.getElementById("user-name").textContent = `${profileData.first_name} ${profileData.last_name}`;
-                                document.getElementById("user-email").textContent = profileData.email;
-                                document.getElementById("profile-avatar").textContent = 
-                                    profileData.first_name && profileData.last_name ? 
-                                    `${profileData.first_name[0]}${profileData.last_name[0]}` : 
-                                    "JD";
-                            } catch (error) {
-                                console.error("Error loading profile:", error.message);
-                                alert("Failed to load profile data.");
+                            // Close modal
+                            closeModal.addEventListener("click", function () {
+                                profileModal.style.display = "none";
+                            });
+                    
+                            // Close modal when clicking outside
+                            window.addEventListener("click", function (event) {
+                                if (event.target === profileModal) {
+                                    profileModal.style.display = "none";
+                                }
+                            });
+                    
+                            // Helper function to get a cookie value by name
+                            function getCookie(name) {
+                                const value = `; ${document.cookie}`;
+                                const parts = value.split(`; ${name}=`);
+                                if (parts.length === 2) return parts.pop().split(";").shift();
                             }
-                        }
                     
-                        // Handle form submission (update profile)
-                        const profileForm = document.getElementById("profile-form");
-                        profileForm.addEventListener("submit", async function (event) {
-                            event.preventDefault();
-                    
-                            const formData = new FormData(profileForm);
-                            const data = {
-                                first_name: formData.get("first_name"),
-                                last_name: formData.get("last_name"),
-                                email: formData.get("email"),
-                                age: formData.get("age"),
-                                sexe: formData.get("sex"),
-                                weight: formData.get("weight"),
-                                height: formData.get("height"),
-                                goal_weight: formData.get("goal-weight"),
-                                activity_level: formData.get("activity-level"),
-                            };
-                    
-                            try {
-                                const token = getCookie("access_token");
-                                if (!token) throw new Error("Token not found");
-                    
-                                const response = await fetch("/users/update-profile/", {
-                                    method: "PUT",
-                                    headers: {
-                                        "Content-Type": "application/json",
-                                        "Authorization": `Bearer ${token}`,
-                                    },
-                                    body: JSON.stringify(data),
-                                });
-                    
-                                if (!response.ok) throw new Error("Failed to update profile");
-                    
-                                alert("Profile updated successfully!");
-                                profileModal.style.display = "none"; // Close the modal
-                                loadProfileData(); // Refresh the profile data
-                            } catch (error) {
-                                console.error("Error updating profile:", error.message);
-                                alert("Failed to update profile.");
+                            // Function to fetch profile data from the backend
+                            async function loadProfileData() {
+                                try {
+                                    const token = getCookie("access_token");
+                                    if (!token) throw new Error("Token not found");
+                            
+                                    const response = await fetch("/users/profile-client/", {
+                                        method: "GET",
+                                        headers: {
+                                            "Content-Type": "application/json",
+                                            "Authorization": `Bearer ${token}`,
+                                        },
+                                    });
+                            
+                                    if (!response.ok) throw new Error("Failed to fetch profile data");
+                            
+                                    const profileData = await response.json();
+                            
+                                    // Populate all form fields for editing
+                                    document.getElementById("first_name").value = profileData.first_name || "";
+                                    document.getElementById("last_name").value = profileData.last_name || "";
+                                    document.getElementById("email").value = profileData.email || "";
+                                    document.getElementById("age").value = profileData.age || "";
+                                    document.getElementById("sex").value = profileData.sexe || "";
+                                    document.getElementById("weight").value = profileData.weight || "";
+                                    document.getElementById("height").value = profileData.height || "";
+                                    document.getElementById("goal-weight").value = profileData.goal_weight || "";
+                                    document.getElementById("activity-level").value = profileData.activity_level || "";
+                            
+                                    // Update profile picture
+                                    const profilePicture = document.getElementById("profile-picture");
+                                    const pictureUrlInput = document.getElementById("profile-picture-url");
+                                    
+                                    // Check if profile picture exists and is a valid URL
+                                    if (profileData.profile_picture) {
+                                        profilePicture.src = profileData.profile_picture;
+                                        pictureUrlInput.value = profileData.profile_picture;
+                                    } else {
+                                        // Fallback to a default placeholder if no picture
+                                        profilePicture.src = "/api/placeholder/200/200";
+                                        pictureUrlInput.value = "";
+                                    }
+                            
+                                    // Update dropdown info (non-editable)
+                                    document.getElementById("user-name").textContent = `${profileData.first_name} ${profileData.last_name}`;
+                                    document.getElementById("user-email").textContent = profileData.email;
+                                    document.getElementById("profile-avatar").textContent =
+                                        profileData.first_name && profileData.last_name ?
+                                        `${profileData.first_name[0]}${profileData.last_name[0]}` :
+                                        "JD";
+                                } catch (error) {
+                                    console.error("Error loading profile:", error.message);
+                                    alert("Failed to load profile data.");
+                                    
+                                    // Set default placeholder if profile load fails
+                                    const profilePicture = document.getElementById("profile-picture");
+                                    profilePicture.src = "/api/placeholder/200/200";
+                                }
                             }
+                            
+                    
+                            // Handle form submission (update profile)
+                            const profileForm = document.getElementById("profile-form");
+                            profileForm.addEventListener("submit", async function (event) {
+                                event.preventDefault();
+                            
+                                const formData = new FormData(profileForm);
+                                const data = {
+                                    first_name: formData.get("first_name"),
+                                    last_name: formData.get("last_name"),
+                                    email: formData.get("email"),
+                                    age: formData.get("age"),
+                                    sexe: formData.get("sex"),
+                                    weight: formData.get("weight"),
+                                    height: formData.get("height"),
+                                    goal_weight: formData.get("goal-weight"),
+                                    activity_level: formData.get("activity-level"),
+                                    profile_picture: formData.get("profile-picture-url") || "",  // Add profile picture URL here
+                                };
+                            
+                                try {
+                                    const token = getCookie("access_token");
+                                    if (!token) throw new Error("Token not found");
+                            
+                                    const response = await fetch("/users/update-profile-client/", {
+                                        method: "PUT",
+                                        headers: {
+                                            "Content-Type": "application/json",
+                                            "Authorization": `Bearer ${token}`,
+                                        },
+                                        body: JSON.stringify(data),
+                                    });
+                            
+                                    if (!response.ok) throw new Error("Failed to update profile");
+                            
+                                    alert("Profile updated successfully!");
+                                    profileModal.style.display = "none"; // Close the modal
+                                    loadProfileData(); // Refresh the profile data
+                                } catch (error) {
+                                    console.error("Error updating profile:", error.message);
+                                    alert("Failed to update profile.");
+                                }
+                            });
+                            
                         });
-                    });
                     </script>
                 </div>
             </div>
